@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
-import { setAuthorFeatured, setAuthorVerified } from './api'
+import { adminDeleteAuthor, setAuthorFeatured, setAuthorVerified } from './api'
 import { useActor, useAdminAuthors } from './hooks'
 
 export function AuthorsAdminPage() {
@@ -89,6 +89,19 @@ export function AuthorsAdminPage() {
                 </Button>
                 <Button asChild size="sm" variant="ghost">
                   <Link to={`/authors/${a.id}/edit`}>{t('authors.editProfile')}</Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  onClick={async () => {
+                    if (!window.confirm(t('authors.deleteConfirm'))) return
+                    await adminDeleteAuthor(actor, a)
+                    toast({ description: t('authors.delete'), variant: 'success' })
+                    await refresh()
+                  }}
+                >
+                  {t('authors.delete')}
                 </Button>
               </div>
             </li>

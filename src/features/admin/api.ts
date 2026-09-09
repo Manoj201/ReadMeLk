@@ -30,6 +30,8 @@ import {
   usersCol,
 } from '@/lib/firestore'
 import { applyReviewDelta, type AggregateFields } from '@/lib/rating'
+import { deleteBook } from '@/features/books/api'
+import { deleteAuthorProfile } from '@/features/authors/api'
 import type {
   AdminAction,
   AdminActionType,
@@ -190,6 +192,11 @@ export async function setAuthorFeatured(actor: Actor, id: string, featured: bool
   await writeLog(actor, featured ? 'author.feature' : 'author.unfeature', 'author', id)
 }
 
+export async function adminDeleteAuthor(actor: Actor, author: Author) {
+  await deleteAuthorProfile(author.id)
+  await writeLog(actor, 'author.delete', 'author', author.id, author.nameEn || author.nameSi)
+}
+
 /* ---------------- books ---------------- */
 
 export async function listBooksForAdmin(): Promise<Book[]> {
@@ -200,6 +207,11 @@ export async function listBooksForAdmin(): Promise<Book[]> {
 export async function setBookFeatured(actor: Actor, id: string, featured: boolean) {
   await updateDoc(bookDoc(id), { featured, updatedAt: serverTimestamp() })
   await writeLog(actor, featured ? 'book.feature' : 'book.unfeature', 'book', id)
+}
+
+export async function adminDeleteBook(actor: Actor, book: Book) {
+  await deleteBook(book)
+  await writeLog(actor, 'book.delete', 'book', book.id, book.titleEn || book.titleSi)
 }
 
 /* ---------------- users ---------------- */

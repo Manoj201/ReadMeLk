@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
-import { setBookFeatured } from './api'
+import { adminDeleteBook, setBookFeatured } from './api'
 import { useActor, useAdminBooks } from './hooks'
 
 export function BooksAdminPage() {
@@ -70,6 +70,19 @@ export function BooksAdminPage() {
                 </Button>
                 <Button asChild size="sm" variant="ghost">
                   <Link to={`/books/${b.id}/edit`}>{t('books.edit')}</Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  onClick={async () => {
+                    if (!window.confirm(t('books.deleteConfirm'))) return
+                    await adminDeleteBook(actor, b)
+                    toast({ description: t('books.delete'), variant: 'success' })
+                    await qc.invalidateQueries({ queryKey: ['admin'] })
+                  }}
+                >
+                  {t('books.delete')}
                 </Button>
               </div>
             </li>

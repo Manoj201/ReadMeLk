@@ -27,7 +27,7 @@ export function BookDetailPage() {
   if (bookQ.isLoading) return <LoadingBlock className="container py-12" />
   if (bookQ.isError) return <ErrorState onRetry={() => bookQ.refetch()} />
   const book = bookQ.data
-  if (!book) return <EmptyState title={t('browse.empty')} />
+  if (!book) return <EmptyState title={t('detail.notFound')} />
 
   const title = pick(book.titleEn, book.titleSi)
   const desc = pick(book.descriptionEn, book.descriptionSi)

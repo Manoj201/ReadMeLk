@@ -3,6 +3,22 @@
 Milestones are ordered so each depends only on earlier ones. Every **[MVP]** story in
 [04-features-user-stories.md](04-features-user-stories.md) lands in M0–M6.
 
+## Status
+
+**M0–M6 implemented.** The app is built, typechecks, lint-clean, unit-tested, and
+deploys via GitHub Actions + Vercel; Firestore/Storage rules + indexes are in the repo.
+Includes: heritage design system with **self-hosted** Sinhala/Latin fonts, auth
+(email + Google), author profiles + book registration with in-browser image
+downscaling, guest vs verified reviews with client-side aggregate transactions,
+Bayesian home ranking, the full `/admin` area (moderation queue, review/author/book
+delete + restore, verify/feature toggles, `author`-role management) with an immutable
+`adminActions` audit log, and App Check wiring (opt-in).
+
+**Deferred (was always post-v1, not part of this build):** Cloud Functions + moving
+aggregates server-side, Algolia full-text search, Tamil locale, helpful-vote sorting,
+author claim/verification workflow, reading lists, reader password reset / profile edit.
+Setup steps the owner performs are in [`SETUP.md`](../../SETUP.md).
+
 ---
 
 ## M0 — Scaffold

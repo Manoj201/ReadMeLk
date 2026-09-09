@@ -33,7 +33,7 @@ export function AuthorProfilePage() {
   if (authorQ.isLoading) return <LoadingBlock className="container py-12" />
   if (authorQ.isError) return <ErrorState onRetry={() => authorQ.refetch()} />
   const author = authorQ.data
-  if (!author) return <EmptyState title={t('browse.empty')} />
+  if (!author) return <EmptyState title={t('profile.notFound')} />
 
   const name = pick(author.nameEn, author.nameSi)
   const bio = pick(author.bioEn, author.bioSi)

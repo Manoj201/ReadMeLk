@@ -28,7 +28,8 @@
     "language": "Language",
     "writeReview": "Write a review",
     "reviewsTitle": "Reader reviews",
-    "authorRemoved": "This author's profile was removed."
+    "authorRemoved": "This author's profile was removed.",
+    "notFound": "That book doesn't exist or was removed."
   },
   "form": {
     "newTitle": "Register a book",

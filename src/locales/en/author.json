@@ -6,6 +6,7 @@
   },
   "profile": {
     "about": "About",
+    "notFound": "That author profile doesn't exist or was removed.",
     "booksTitle": "Books",
     "reviewsTitle": "Reviews of this author",
     "verified": "Verified author",
