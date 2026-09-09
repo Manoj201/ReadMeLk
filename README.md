@@ -36,19 +36,38 @@ yarn dev
 
 ## Firebase
 
-1. Create a project; enable Email/Password + Google auth, Firestore (`asia-south1`), Storage.
-2. Put the web config into `.env.local` (and Vercel env vars).
-3. Deploy rules + indexes:
-   ```bash
-   yarn firebase deploy --only firestore:rules,firestore:indexes,storage
-   ```
-4. Grant the first admin (custom claim, no in-app path):
+1. Create a project; enable Email/Password + Google auth, Firestore, Storage.
+2. Put the web config into `.env.local` (and the Vercel project env vars).
+3. `echo '{ "projects": { "default": "<your-project-id>" } }' > .firebaserc`
+4. Deploy rules + indexes: `yarn fb:deploy`
+5. Grant the first admin (custom claim, no in-app path):
    ```bash
    yarn add -D firebase-admin
    GOOGLE_APPLICATION_CREDENTIALS=./service-account.json node scripts/set-admin.mjs <uid>
    ```
 
-Local emulators: `yarn firebase emulators:start` then `VITE_USE_EMULATORS=true yarn dev`.
+Local emulators: `yarn fb:emulators` then `VITE_USE_EMULATORS=true yarn dev`
+(seed sample data: `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 GCLOUD_PROJECT=readme-demo yarn seed`).
+
+### Database (Cloud Firestore)
+
+- **No schema step.** Firestore is document/NoSQL — the collections (`users`, `authors`,
+  `books`, `reviews`, `reports`, `adminActions`) are created on first write. The shapes
+  live in [`src/types/index.ts`](src/types/index.ts) and
+  [`.claude/planning/03-data-model.md`](.claude/planning/03-data-model.md).
+- When you create the database, choose **Native mode** and location
+  **`asia-south1` (Mumbai)** — location is permanent.
+- **You must deploy the composite indexes** ([`firestore.indexes.json`](firestore.indexes.json)).
+  Multi-field queries (browse/sort, home ranking) fail with a `FAILED_PRECONDITION` error
+  until the indexes finish building — `yarn fb:deploy` handles it, or click the link in the
+  error to create each one.
+- **You must deploy the security rules** ([`firestore.rules`](firestore.rules),
+  [`storage.rules`](storage.rules)) — the default locked rules block all client access, and
+  "test mode" rules expire after 30 days.
+- Free **Spark** plan is enough (no Cloud Functions). Rating aggregates are kept current by
+  a client-side `runTransaction`, not a DB trigger.
+- Optional: turn on **Point-in-time recovery** (Firestore → Backups) and set a low-traffic
+  budget alert.
 
 ## CI / CD (GitHub Actions)
 
