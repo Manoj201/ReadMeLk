@@ -5,8 +5,11 @@ and readers — registered or guest — rate and review both books and authors. 
 ranks the best-reviewed books with a Bayesian score. Visual design draws on Sri Lankan
 heritage (flag palette, ola-leaf motifs, warm parchment neutrals).
 
+> **Setting this up for real?** Follow [`SETUP.md`](SETUP.md) — every manual step
+> (Firebase, database, Storage/App Check, GitHub, Vercel) in order.
+>
 > Full architecture, data model, i18n strategy, design system and roadmap live in
-> [`.claude/planning/`](.claude/planning/README.md). Start there.
+> [`.claude/planning/`](.claude/planning/README.md).
 
 ## Stack
 

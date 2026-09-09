@@ -9,10 +9,15 @@ coverage
 .env
 .env.*.local
 
-# firebase
+# firebase / gcp — never commit credentials
 .firebase/
 firebase-debug.log
 *-debug.log
+service-account*.json
+gcp-*.json
+
+# vercel
+.vercel
 
 # logs
 logs
