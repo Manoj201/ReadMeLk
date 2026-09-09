@@ -95,9 +95,14 @@ function UserMenu() {
           <Link to="/me">{t('nav.myProfile')}</Link>
         </DropdownMenuItem>
         {hasRole(user, 'author') && user.authorProfileId ? (
-          <DropdownMenuItem asChild>
-            <Link to={`/authors/${user.authorProfileId}`}>{t('nav.authors')}</Link>
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem asChild>
+              <Link to={`/authors/${user.authorProfileId}`}>{t('nav.myAuthorPage')}</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/books/new">{t('nav.addBook')}</Link>
+            </DropdownMenuItem>
+          </>
         ) : (
           <DropdownMenuItem asChild>
             <Link to="/register/author">{t('nav.becomeAuthor')}</Link>

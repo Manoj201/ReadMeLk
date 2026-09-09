@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BadgeCheck, Globe, MapPin, Pencil } from 'lucide-react'
+import { BadgeCheck, Globe, MapPin, Pencil, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,7 @@ import { useAuthor } from './hooks'
 export function AuthorProfilePage() {
   const { authorId } = useParams()
   const { t } = useTranslation('author')
+  const { t: tc } = useTranslation('common')
   const { pick } = useLocalizedField()
   const uid = useAuthStore((s) => s.user?.uid ?? null)
 
@@ -119,7 +120,17 @@ export function AuthorProfilePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-serif text-lg font-semibold">{t('profile.booksTitle')}</h2>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="font-serif text-lg font-semibold">{t('profile.booksTitle')}</h2>
+              {isOwner ? (
+                <Button asChild size="sm">
+                  <Link to="/books/new">
+                    <Plus className="h-4 w-4" />
+                    {tc('nav.addBook')}
+                  </Link>
+                </Button>
+              ) : null}
+            </div>
             {booksQ.isLoading ? (
               <LoadingBlock />
             ) : booksQ.data && booksQ.data.length > 0 ? (
@@ -129,7 +140,16 @@ export function AuthorProfilePage() {
                 ))}
               </div>
             ) : (
-              <EmptyState title={t('profile.noBooks')} />
+              <EmptyState
+                title={t('profile.noBooks')}
+                action={
+                  isOwner ? (
+                    <Button asChild size="sm">
+                      <Link to="/books/new">{tc('nav.addBook')}</Link>
+                    </Button>
+                  ) : undefined
+                }
+              />
             )}
           </section>
 

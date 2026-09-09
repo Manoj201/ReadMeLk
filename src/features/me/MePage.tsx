@@ -28,13 +28,22 @@ export function MePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('nav.becomeAuthor')}</CardTitle>
+          <CardTitle>
+            {hasRole(user, 'author') && user.authorProfileId
+              ? t('nav.myAuthorPage')
+              : t('nav.becomeAuthor')}
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-wrap gap-2">
           {hasRole(user, 'author') && user.authorProfileId ? (
-            <Button asChild variant="outline">
-              <Link to={`/authors/${user.authorProfileId}`}>{t('nav.myProfile')}</Link>
-            </Button>
+            <>
+              <Button asChild variant="outline">
+                <Link to={`/authors/${user.authorProfileId}`}>{t('nav.myAuthorPage')}</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/books/new">{t('nav.addBook')}</Link>
+              </Button>
+            </>
           ) : (
             <Button asChild>
               <Link to="/register/author">{t('nav.becomeAuthor')}</Link>

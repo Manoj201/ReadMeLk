@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -13,6 +15,7 @@ import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
 import { ShelfBanner } from '@/components/artwork'
 import { GENRES, genreLabel } from '@/lib/genres'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
+import { hasRole, useAuthStore } from '@/stores/authStore'
 import type { BookLang } from '@/types'
 import { BookCard } from './BookCard'
 import { useBooks } from './hooks'
@@ -22,7 +25,9 @@ const ANY = '__any__'
 
 export function BooksBrowsePage() {
   const { t } = useTranslation('book')
+  const { t: tc } = useTranslation('common')
   const { active } = useLocalizedField()
+  const isAuthor = useAuthStore((s) => hasRole(s.user, 'author') && !!s.user?.authorProfileId)
   const [params, setParams] = useSearchParams()
 
   const [genre, setGenre] = useState(params.get('genre') ?? '')
@@ -50,7 +55,16 @@ export function BooksBrowsePage() {
     <div className="container py-8">
       <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-5 py-4">
         <h1 className="font-serif text-2xl font-semibold sm:text-3xl">{t('browse.title')}</h1>
-        <ShelfBanner className="hidden max-w-[220px] shrink-0 sm:block" />
+        {isAuthor ? (
+          <Button asChild size="sm">
+            <Link to="/books/new">
+              <Plus className="h-4 w-4" />
+              {tc('nav.addBook')}
+            </Link>
+          </Button>
+        ) : (
+          <ShelfBanner className="hidden max-w-[220px] shrink-0 sm:block" />
+        )}
       </div>
 
       <div className="mb-6 flex flex-wrap items-end gap-3">
