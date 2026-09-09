@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
-import { MotifDivider } from '@/components/motifs'
+import { OpenBookBanner } from '@/components/artwork'
 import { AuthorCard } from './AuthorCard'
 import { useAuthors } from './hooks'
 
@@ -22,8 +22,10 @@ export function AuthorsBrowsePage() {
 
   return (
     <div className="container py-8">
-      <h1 className="font-serif text-2xl font-semibold">{t('browse.title')}</h1>
-      <MotifDivider className="my-4 max-w-xs" />
+      <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-5 py-4">
+        <h1 className="font-serif text-2xl font-semibold sm:text-3xl">{t('browse.title')}</h1>
+        <OpenBookBanner className="hidden max-w-[180px] shrink-0 sm:block" />
+      </div>
       <Input
         className="mb-6 max-w-sm"
         placeholder={t('browse.searchPlaceholder')}

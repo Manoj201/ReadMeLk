@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LotusMark } from '@/components/motifs'
+import { OpenBookBanner } from '@/components/artwork'
 import { authErrorKey, signInEmail, signInGoogle, signUpEmail } from './authApi'
 
 function useAfterAuth() {
@@ -68,7 +68,7 @@ export function SignInPage() {
 
   return (
     <div className="container flex max-w-md flex-col items-center py-12">
-      <LotusMark className="mb-4 h-10 w-10" />
+      <OpenBookBanner className="mb-4 max-w-[200px]" />
       <Card className="w-full">
         <CardHeader>
           <CardTitle>{t('signIn.title')}</CardTitle>
@@ -143,7 +143,7 @@ export function SignUpPage() {
 
   return (
     <div className="container flex max-w-md flex-col items-center py-12">
-      <LotusMark className="mb-4 h-10 w-10" />
+      <OpenBookBanner className="mb-4 max-w-[200px]" />
       <Card className="w-full">
         <CardHeader>
           <CardTitle>{t('signUp.title')}</CardTitle>

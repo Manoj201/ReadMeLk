@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
-import { MotifDivider } from '@/components/motifs'
+import { ShelfBanner } from '@/components/artwork'
 import { GENRES, genreLabel } from '@/lib/genres'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import type { BookLang } from '@/types'
@@ -48,8 +48,10 @@ export function BooksBrowsePage() {
 
   return (
     <div className="container py-8">
-      <h1 className="font-serif text-2xl font-semibold">{t('browse.title')}</h1>
-      <MotifDivider className="my-4 max-w-xs" />
+      <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-5 py-4">
+        <h1 className="font-serif text-2xl font-semibold sm:text-3xl">{t('browse.title')}</h1>
+        <ShelfBanner className="hidden max-w-[220px] shrink-0 sm:block" />
+      </div>
 
       <div className="mb-6 flex flex-wrap items-end gap-3">
         <Input

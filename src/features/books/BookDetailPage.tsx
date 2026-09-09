@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BookOpen, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
+import { CoverFallback } from '@/components/artwork'
 import { Button } from '@/components/ui/button'
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
 import { BilingualChip, GenreBadges } from '@/components/forms'
@@ -38,13 +39,11 @@ export function BookDetailPage() {
     <div className="container grid gap-8 py-8 lg:grid-cols-[1fr_340px]">
       <div className="space-y-8">
         <div className="flex flex-col gap-6 sm:flex-row">
-          <div className="aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
+          <div className="mx-auto aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:mx-0">
             {book.coverURL ? (
               <img src={book.coverURL} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                <BookOpen className="h-10 w-10" />
-              </div>
+              <CoverFallback seed={book.id.charCodeAt(0) + book.id.length} />
             )}
           </div>
           <div className="flex-1 space-y-2">
@@ -62,14 +61,19 @@ export function BookDetailPage() {
               <p className="text-sm text-muted-foreground">{t('detail.authorRemoved')}</p>
             )}
             <GenreBadges genres={book.genres} />
-            {isOwner ? (
-              <Button asChild variant="outline" size="sm">
-                <Link to={`/books/${book.id}/edit`}>
-                  <Pencil className="h-4 w-4" />
-                  {t('form.editTitle')}
-                </Link>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Button asChild size="sm" className="lg:hidden">
+                <a href="#review-form">{t('detail.writeReview')}</a>
               </Button>
-            ) : null}
+              {isOwner ? (
+                <Button asChild variant="outline" size="sm">
+                  <Link to={`/books/${book.id}/edit`}>
+                    <Pencil className="h-4 w-4" />
+                    {t('form.editTitle')}
+                  </Link>
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
 

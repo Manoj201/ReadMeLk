@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { LanguageToggle } from '@/components/LanguageToggle'
-import { MotifDivider, OlaLeafTexture } from '@/components/motifs'
+import { MotifDivider } from '@/components/motifs'
+import { HeroScene, ShelfBanner } from '@/components/artwork'
 import { GENRES, genreLabel } from '@/lib/genres'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import { BookCard } from '@/features/books/BookCard'
@@ -13,12 +14,24 @@ import { useTopAuthors } from '@/features/authors/hooks'
 import { useRecentReviews } from '@/features/reviews/hooks'
 import { formatRelative } from '@/lib/format'
 
-function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+function SectionHeading({
+  title,
+  subtitle,
+  shelf,
+}: {
+  title: string
+  subtitle?: string
+  shelf?: boolean
+}) {
   return (
     <div className="mb-4">
       <h2 className="font-serif text-xl font-semibold">{title}</h2>
       {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
-      <MotifDivider className="mt-2 max-w-xs" />
+      {shelf ? (
+        <ShelfBanner className="mt-2" />
+      ) : (
+        <MotifDivider className="mt-2 max-w-xs" />
+      )}
     </div>
   )
 }
@@ -33,27 +46,42 @@ export function HomePage() {
   return (
     <div>
       <section className="relative overflow-hidden border-b border-border bg-card">
-        <OlaLeafTexture className="text-secondary opacity-[0.06]" />
-        <div className="container relative flex flex-col items-start gap-4 py-14">
-          <h1 className="max-w-2xl font-serif text-3xl font-semibold sm:text-4xl">
-            {t('hero.title')}
-          </h1>
-          <p className="max-w-xl text-muted-foreground">{t('hero.subtitle')}</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button asChild size="lg">
-              <Link to="/books">{t('hero.browseCta')}</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link to="/register/author">{t('hero.becomeAuthorCta')}</Link>
-            </Button>
-            <LanguageToggle />
+        {/* vector scene — sits behind the copy, full-height on desktop */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-3/4 md:w-3/5">
+          <HeroScene className="h-full w-full" />
+        </div>
+        {/* readability wash: heavier on small screens where text overlaps the art */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-card via-card/90 to-card/40 sm:via-card/70 sm:to-transparent" />
+
+        <div className="container relative py-16 sm:py-24">
+          <div className="flex max-w-xl flex-col items-start gap-4 md:max-w-[600px]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
+              සිංහල · English
+            </span>
+            <h1 className="font-serif text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl">
+              {t('hero.title')}
+            </h1>
+            <p className="text-base text-muted-foreground sm:text-lg">{t('hero.subtitle')}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button asChild size="lg">
+                <Link to="/books">{t('hero.browseCta')}</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link to="/register/author">{t('hero.becomeAuthorCta')}</Link>
+              </Button>
+              <LanguageToggle />
+            </div>
           </div>
         </div>
       </section>
 
       <div className="container space-y-14 py-12">
         <section>
-          <SectionHeading title={t('bestReviewed.title')} subtitle={t('bestReviewed.subtitle')} />
+          <SectionHeading
+            title={t('bestReviewed.title')}
+            subtitle={t('bestReviewed.subtitle')}
+            shelf
+          />
           {bestBooks.isLoading ? (
             <LoadingBlock rows={2} />
           ) : bestBooks.data && bestBooks.data.length > 0 ? (

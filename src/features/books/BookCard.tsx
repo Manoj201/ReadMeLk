@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BookOpen } from 'lucide-react'
+import { CoverFallback } from '@/components/artwork'
 import { RatingStars } from '@/components/RatingStars'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import { formatRating } from '@/lib/format'
@@ -22,12 +22,14 @@ export function BookCard({ book }: { book: Book }) {
           <img
             src={book.coverURL}
             alt=""
+            loading="lazy"
             className="h-full w-full object-cover transition-transform group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-            <BookOpen className="h-10 w-10" />
-          </div>
+          <CoverFallback
+            seed={book.id.charCodeAt(0) + book.id.length}
+            className="transition-transform group-hover:scale-105"
+          />
         )}
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">

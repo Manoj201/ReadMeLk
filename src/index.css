@@ -136,9 +136,23 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     min-height: 100vh;
+    /* guard against a stray wide element causing a horizontal scrollbar on phones */
+    overflow-x: hidden;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* anchored jump to the review form clears the sticky header */
+  :target,
+  #review-form {
+    scroll-margin-top: 5rem;
   }
 
   h1,

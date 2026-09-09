@@ -42,11 +42,16 @@ export function AuthorProfilePage() {
   return (
     <div>
       <div className="relative border-b border-border bg-card">
-        <OlaLeafTexture className="text-secondary opacity-[0.05]" />
         {author.coverURL ? (
-          <img src={author.coverURL} alt="" className="h-40 w-full object-cover sm:h-56" />
+          <img
+            src={author.coverURL}
+            alt=""
+            className="h-40 w-full object-cover sm:h-56"
+          />
         ) : (
-          <div className="h-24 w-full sm:h-32" />
+          <div className="relative h-28 w-full overflow-hidden bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/10 sm:h-40">
+            <OlaLeafTexture className="text-foreground opacity-[0.06]" />
+          </div>
         )}
         <div className="container relative -mt-12 flex flex-col gap-4 pb-6 sm:flex-row sm:items-end">
           <Avatar className="h-24 w-24 border-4 border-background">
