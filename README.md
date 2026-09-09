@@ -69,6 +69,26 @@ Local emulators: `yarn fb:emulators` then `VITE_USE_EMULATORS=true yarn dev`
 - Optional: turn on **Point-in-time recovery** (Firestore → Backups) and set a low-traffic
   budget alert.
 
+### Storage & upload safety (paid plan)
+
+Uploads are validated on **both** sides — important now that billing is enabled:
+
+- **Client** ([`src/lib/storage.ts`](src/lib/storage.ts)): every image is decoded, downscaled
+  (avatars ≤512px / ~900 KB, covers ≤1600px / ~2.6 MB) and **re-encoded to WebP** through a
+  canvas before upload. Re-encoding guarantees a real raster image and strips any embedded
+  script or metadata; the downscale is the main lever on storage + egress cost. Only
+  `image/jpeg|png|webp` are accepted; **SVG is rejected** (stored-XSS vector).
+- **Storage rules** ([`storage.rules`](storage.rules)): write allowed only to the parent
+  doc's owner, only to the filenames `profile.*` / `cover.*`, only `image/jpeg|png|webp`
+  under 4 MB. Everything else is denied.
+- **Orphan cleanup**: deleting a book or author best-effort deletes its Storage objects
+  (no Cloud Function, so it's client-side and non-transactional).
+- **Scripted abuse** (someone hitting Storage/Firestore directly, bypassing the app) can't
+  be stopped by rules alone. Turn on **App Check**: set `VITE_APPCHECK_SITE_KEY` to a
+  reCAPTCHA v3 site key, then enable enforcement per service in the Firebase console. Also
+  set a **billing budget alert** while you're there.
+
+
 ## CI / CD (GitHub Actions)
 
 | Workflow | Trigger | Does |

@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { GenreCheckboxes, ImageField } from '@/components/forms'
 import { LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
-import { uploadImage, authorPhotoDir } from '@/lib/storage'
+import { uploadImage, authorPhotoDir, AVATAR_IMAGE, COVER_IMAGE } from '@/lib/storage'
 import { updateDoc, serverTimestamp } from 'firebase/firestore'
 import { authorDoc } from '@/lib/firestore'
 import { useAuthStore } from '@/stores/authStore'
@@ -109,8 +109,10 @@ export function AuthorFormPage() {
         id = await createAuthorProfile(user!.uid, clean)
       }
       const patch: Record<string, unknown> = {}
-      if (photo) patch.photoURL = await uploadImage(authorPhotoDir(id), 'profile', photo)
-      if (cover) patch.coverURL = await uploadImage(authorPhotoDir(id), 'cover', cover)
+      if (photo)
+        patch.photoURL = await uploadImage(authorPhotoDir(id), 'profile', photo, AVATAR_IMAGE)
+      if (cover)
+        patch.coverURL = await uploadImage(authorPhotoDir(id), 'cover', cover, COVER_IMAGE)
       if (Object.keys(patch).length) {
         await updateDoc(authorDoc(id), { ...patch, updatedAt: serverTimestamp() })
       }

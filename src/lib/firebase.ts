@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
 import {
   getAuth,
   setPersistence,
@@ -28,6 +29,25 @@ const app = initializeApp(
     : // Fallback keeps the app importable in dev/CI without secrets.
       { apiKey: 'demo', projectId: 'readme-demo', appId: 'demo' },
 )
+
+/**
+ * App Check — the real defence against scripted abuse of Firestore/Storage on the
+ * paid plan. Opt-in: set VITE_APPCHECK_SITE_KEY (reCAPTCHA v3 site key) to enable,
+ * then turn on enforcement per service in the Firebase console. In dev, set
+ * VITE_APPCHECK_DEBUG_TOKEN (or 'true') to register a debug token.
+ */
+const appCheckKey = import.meta.env.VITE_APPCHECK_SITE_KEY
+if (appCheckKey) {
+  const debug = import.meta.env.VITE_APPCHECK_DEBUG_TOKEN
+  if (import.meta.env.DEV && debug) {
+    // @ts-expect-error — self is untyped for this Firebase debug hook
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = debug === 'true' ? true : debug
+  }
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(appCheckKey),
+    isTokenAutoRefreshEnabled: true,
+  })
+}
 
 export const auth = getAuth(app)
 export const db = getFirestore(app)

@@ -11,6 +11,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { authorDoc, authorsCol, docData, listData, userDoc } from '@/lib/firestore'
+import { deleteImageByUrl } from '@/lib/storage'
 import { ZERO_AGGREGATE } from '@/lib/rating'
 import type { Author, SocialLink } from '@/types'
 
@@ -83,5 +84,8 @@ export async function updateAuthorProfile(
 }
 
 export async function deleteAuthorProfile(id: string): Promise<void> {
+  const author = await fetchAuthor(id)
   await deleteDoc(authorDoc(id))
+  await deleteImageByUrl(author?.photoURL)
+  await deleteImageByUrl(author?.coverURL)
 }

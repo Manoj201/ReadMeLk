@@ -19,7 +19,7 @@ import { GenreCheckboxes, ImageField } from '@/components/forms'
 import { LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
 import { bookDoc } from '@/lib/firestore'
-import { bookCoverDir, uploadImage } from '@/lib/storage'
+import { bookCoverDir, COVER_IMAGE, uploadImage } from '@/lib/storage'
 import { useAuthStore } from '@/stores/authStore'
 import type { BookLang } from '@/types'
 import { createBook, deleteBook, updateBook, type BookInput } from './api'
@@ -108,7 +108,7 @@ export function BookFormPage() {
       if (editing) await updateBook(id, clean)
       else id = await createBook(user!.uid, user!.authorProfileId, clean)
       if (cover) {
-        const coverURL = await uploadImage(bookCoverDir(id), 'cover', cover)
+        const coverURL = await uploadImage(bookCoverDir(id), 'cover', cover, COVER_IMAGE)
         await updateDoc(bookDoc(id), { coverURL, updatedAt: serverTimestamp() })
       }
       await qc.invalidateQueries({ queryKey: ['book', id] })
@@ -131,7 +131,7 @@ export function BookFormPage() {
 
   async function onDelete() {
     if (!existing || !window.confirm(t('form.deleteConfirm'))) return
-    await deleteBook(existing.id, existing.authorId)
+    await deleteBook(existing)
     await qc.invalidateQueries({ queryKey: ['books'] })
     toast({ description: t('form.deleteConfirm'), variant: 'success' })
     navigate(`/authors/${existing.authorId}`)

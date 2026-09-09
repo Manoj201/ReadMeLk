@@ -1,6 +1,13 @@
 rules_version = '2';
 
 // ReadMe — Storage rules. See .claude/planning/07-firebase-setup.md
+//
+// The client already decodes + downscales + re-encodes every image before upload
+// (src/lib/storage.ts). These rules are the server-side backstop: only the parent
+// doc's owner may write, only to the two known filenames, only small raster images.
+// SVG is rejected (stored-XSS vector). Scripted abuse is best fought with App Check
+// — enable it in the console once you have traffic.
+
 service firebase.storage {
   match /b/{bucket}/o {
 
@@ -14,19 +21,25 @@ service firebase.storage {
       return isSignedIn()
         && firestore.get(/databases/(default)/documents/books/$(bookId)).data.ownerUid == request.auth.uid;
     }
-    function validImage() {
-      return request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+    function okImage() {
+      return request.resource.size < 4 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
     }
 
     match /authorPhotos/{authorId}/{file} {
       allow read: if true;
-      allow write: if ownsAuthor(authorId) && validImage();
+      allow write: if ownsAuthor(authorId)
+        && file.matches('(profile|cover)[.](jpe?g|png|webp)')
+        && okImage();
+      allow delete: if ownsAuthor(authorId);
     }
 
     match /bookCovers/{bookId}/{file} {
       allow read: if true;
-      allow write: if ownsBook(bookId) && validImage();
+      allow write: if ownsBook(bookId)
+        && file.matches('cover[.](jpe?g|png|webp)')
+        && okImage();
+      allow delete: if ownsBook(bookId);
     }
 
     match /{allOther=**} {

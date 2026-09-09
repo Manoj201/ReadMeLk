@@ -127,6 +127,8 @@ review, report, or `adminActions` doc; back-dating an audit entry
 | Fake author profiles / books | Trust-on-write + report queue + `verified` badge | Manual verification workflow, email/domain checks |
 | Someone scripts many `users` docs | Auth required to create; `roles` forced to `['reader']` | App Check; abuse monitoring |
 | A rogue/compromised admin edits or deletes content broadly | Immutable `adminActions` audit log (no update/delete); `admin` grantable only via CLI + service-account key; rules block escalating anyone to `admin` from the client | Function-gated admin actions with approvals; alerting on the audit stream |
+| Malicious / oversized image uploads (stored XSS, storage + egress cost) | Client re-encodes every image through a canvas (raster-only, metadata stripped) and downscales it; `image/jpeg\|png\|webp` only, SVG rejected; Storage rules cap type/size/filename to the owner; orphan objects deleted on doc delete | App Check enforcement on Storage; a Function to reject on dimension/heuristics; bucket lifecycle rules |
+| Scripted writes bypassing the app (direct SDK/API calls) | Rules bound what any client may do, but can't tell the app apart from a script | **App Check** (reCAPTCHA v3) — wired in `src/lib/firebase.ts`, enable via `VITE_APPCHECK_SITE_KEY` + console enforcement; billing budget alert |
 | Denormalized `reviewerName` goes stale after a rename | Accepted for v1 | Function backfill on user update |
 
 These are acceptable for an MVP with low traffic and active moderation. The upgrade path

@@ -60,7 +60,7 @@
     "tooLong": "Too long",
     "url": "Enter a valid URL",
     "year": "Enter a valid year",
-    "image": "Choose an image up to 5 MB"
+    "image": "Use a JPG, PNG or WebP image"
   },
   "footer": {
     "rights": "Built for Sri Lankan readers",

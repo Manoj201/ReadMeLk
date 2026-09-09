@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { authorDoc, bookDoc, booksCol, docData, listData } from '@/lib/firestore'
+import { deleteImageByUrl } from '@/lib/storage'
 import { ZERO_AGGREGATE } from '@/lib/rating'
 import type { Author, Book, BookLang } from '@/types'
 
@@ -119,12 +120,15 @@ export async function updateBook(id: string, input: Partial<BookInput>): Promise
   await updateDoc(bookDoc(id), { ...input, updatedAt: serverTimestamp() })
 }
 
-export async function deleteBook(id: string, authorId: string): Promise<void> {
-  await deleteDoc(bookDoc(id))
+export async function deleteBook(
+  book: Pick<Book, 'id' | 'authorId' | 'coverURL'>,
+): Promise<void> {
+  await deleteDoc(bookDoc(book.id))
+  await deleteImageByUrl(book.coverURL)
   await runTransaction(db, async (tx) => {
-    const a = await tx.get(authorDoc(authorId))
+    const a = await tx.get(authorDoc(book.authorId))
     if (!a.exists()) return
-    tx.update(authorDoc(authorId), {
+    tx.update(authorDoc(book.authorId), {
       bookCount: Math.max(0, (a.data().bookCount ?? 0) - 1),
       updatedAt: serverTimestamp(),
     })
