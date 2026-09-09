@@ -28,8 +28,9 @@ yarn dev
 | `yarn build` | type-check + production build to `dist/` |
 | `yarn preview` | serve the production build |
 | `yarn lint` | ESLint (typescript-eslint, react-hooks, jsx-a11y) |
+| `yarn typecheck` | `tsc -b` (no emit) |
 | `yarn test` | Vitest unit tests |
-| `yarn format` | Prettier |
+| `yarn format` / `yarn format:check` | Prettier write / verify |
 | `yarn i18n:check` | fail if `en` / `si` locale key sets diverge |
 | `yarn seed` | seed dev data into the Firestore emulator |
 
@@ -48,6 +49,34 @@ yarn dev
    ```
 
 Local emulators: `yarn firebase emulators:start` then `VITE_USE_EMULATORS=true yarn dev`.
+
+## CI / CD (GitHub Actions)
+
+| Workflow | Trigger | Does |
+|---|---|---|
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | every push to `main` + every PR | `format:check` → `lint` → `i18n:check` → `typecheck` → `test` → `build`, uploads `dist/` |
+| [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) | push to `main` (+ manual) | **opt-in.** Deploys the site to Vercel and the Firestore/Storage rules + indexes to Firebase. Each job is a no-op until its secrets are set. |
+
+`.github/dependabot.yml` opens grouped weekly dependency + action-version PRs.
+
+### Repository secrets for `deploy.yml`
+
+Set these in **GitHub → Settings → Secrets and variables → Actions** (skip a group to skip that deploy):
+
+| Secret | For | Where to get it |
+|---|---|---|
+| `VERCEL_TOKEN` | Vercel deploy | Vercel → Account Settings → Tokens |
+| `VERCEL_ORG_ID` | Vercel deploy | `.vercel/project.json` after `vercel link`, or Vercel project settings |
+| `VERCEL_PROJECT_ID` | Vercel deploy | same as above |
+| `FIREBASE_SERVICE_ACCOUNT` | rules deploy | Firebase console → Project settings → Service accounts → *Generate new private key* (paste the whole JSON) |
+| `FIREBASE_PROJECT_ID` | rules deploy | your Firebase project id |
+
+> The `VITE_FIREBASE_*` build vars live in the **Vercel project** (Settings → Environment
+> Variables), not in GitHub — `vercel build` pulls them during the deploy.
+
+Prefer Vercel's own Git integration (auto preview per PR, production on `main`)? Import the
+repo at [vercel.com/new](https://vercel.com/new), set the env vars there, and delete the
+`vercel` job from `deploy.yml` — `ci.yml` still guards every PR.
 
 ## Project layout
 

@@ -21,7 +21,8 @@ export function BooksAdminPage() {
     const needle = q.trim().toLowerCase()
     if (!needle) return data ?? []
     return (data ?? []).filter(
-      (b) => b.titleEn.toLowerCase().includes(needle) || b.titleSi.toLowerCase().includes(needle),
+      (b) =>
+        b.titleEn.toLowerCase().includes(needle) || b.titleSi.toLowerCase().includes(needle),
     )
   }, [data, q])
 
@@ -58,7 +59,10 @@ export function BooksAdminPage() {
                   variant="outline"
                   onClick={async () => {
                     await setBookFeatured(actor, b.id, !b.featured)
-                    toast({ description: t(b.featured ? 'books.unfeature' : 'books.feature'), variant: 'success' })
+                    toast({
+                      description: t(b.featured ? 'books.unfeature' : 'books.feature'),
+                      variant: 'success',
+                    })
                     await qc.invalidateQueries({ queryKey: ['admin'] })
                   }}
                 >

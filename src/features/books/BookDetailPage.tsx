@@ -48,7 +48,8 @@ export function BookDetailPage() {
           </div>
           <div className="flex-1 space-y-2">
             <h1 className="font-serif text-2xl font-semibold">
-              {title.value || '—'} {title.isFallback ? <BilingualChip shown={title.lang!} /> : null}
+              {title.value || '—'}{' '}
+              {title.isFallback ? <BilingualChip shown={title.lang!} /> : null}
             </h1>
             {authorName ? (
               <p className="text-muted-foreground">

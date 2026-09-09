@@ -14,5 +14,8 @@ export function useAuthors() {
 }
 
 export function useTopAuthors(max = 6) {
-  return useQuery({ queryKey: ['home', 'topAuthors', max], queryFn: () => fetchTopAuthors(max) })
+  return useQuery({
+    queryKey: ['home', 'topAuthors', max],
+    queryFn: () => fetchTopAuthors(max),
+  })
 }

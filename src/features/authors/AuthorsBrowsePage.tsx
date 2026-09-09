@@ -15,8 +15,7 @@ export function AuthorsBrowsePage() {
     const needle = q.trim().toLowerCase()
     if (!needle) return data ?? []
     return (data ?? []).filter(
-      (a) =>
-        a.nameEn.toLowerCase().includes(needle) || a.nameSi.toLowerCase().includes(needle),
+      (a) => a.nameEn.toLowerCase().includes(needle) || a.nameSi.toLowerCase().includes(needle),
     )
   }, [data, q])
 

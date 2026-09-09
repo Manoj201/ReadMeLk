@@ -113,12 +113,16 @@ export function BookFormPage() {
       }
       await qc.invalidateQueries({ queryKey: ['book', id] })
       await qc.invalidateQueries({ queryKey: ['books'] })
-      toast({ description: t(editing ? 'form.submitEdit' : 'form.submitNew'), variant: 'success' })
+      toast({
+        description: t(editing ? 'form.submitEdit' : 'form.submitNew'),
+        variant: 'success',
+      })
       navigate(`/books/${id}`)
     } catch (err) {
-      const msg = err instanceof Error && err.message === 'needAuthorProfile'
-        ? t('form.needAuthorProfile')
-        : t('form.atLeastOneTitle')
+      const msg =
+        err instanceof Error && err.message === 'needAuthorProfile'
+          ? t('form.needAuthorProfile')
+          : t('form.atLeastOneTitle')
       setError(msg)
     } finally {
       setBusy(false)
@@ -144,11 +148,19 @@ export function BookFormPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="titleEn">{t('form.titleEn')}</Label>
-                <Input id="titleEn" value={form.titleEn} onChange={(e) => set('titleEn', e.target.value)} />
+                <Input
+                  id="titleEn"
+                  value={form.titleEn}
+                  onChange={(e) => set('titleEn', e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="titleSi">{t('form.titleSi')}</Label>
-                <Input id="titleSi" value={form.titleSi} onChange={(e) => set('titleSi', e.target.value)} />
+                <Input
+                  id="titleSi"
+                  value={form.titleSi}
+                  onChange={(e) => set('titleSi', e.target.value)}
+                />
               </div>
             </div>
 
@@ -173,12 +185,19 @@ export function BookFormPage() {
               </div>
             </div>
 
-            <ImageField label={t('form.cover')} currentUrl={existing?.coverURL} onSelect={setCover} />
+            <ImageField
+              label={t('form.cover')}
+              currentUrl={existing?.coverURL}
+              onSelect={setCover}
+            />
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="language">{t('form.language')}</Label>
-                <Select value={form.language} onValueChange={(v) => set('language', v as BookLang)}>
+                <Select
+                  value={form.language}
+                  onValueChange={(v) => set('language', v as BookLang)}
+                >
                   <SelectTrigger id="language">
                     <SelectValue />
                   </SelectTrigger>
@@ -191,7 +210,11 @@ export function BookFormPage() {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="isbn">{t('form.isbn')}</Label>
-                <Input id="isbn" value={form.isbn ?? ''} onChange={(e) => set('isbn', e.target.value)} />
+                <Input
+                  id="isbn"
+                  value={form.isbn ?? ''}
+                  onChange={(e) => set('isbn', e.target.value)}
+                />
               </div>
             </div>
 
@@ -202,7 +225,9 @@ export function BookFormPage() {
                   id="year"
                   type="number"
                   value={form.publishedYear ?? ''}
-                  onChange={(e) => set('publishedYear', e.target.value ? Number(e.target.value) : null)}
+                  onChange={(e) =>
+                    set('publishedYear', e.target.value ? Number(e.target.value) : null)
+                  }
                 />
               </div>
               <div className="space-y-1.5">
@@ -219,7 +244,9 @@ export function BookFormPage() {
                   id="pages"
                   type="number"
                   value={form.pageCount ?? ''}
-                  onChange={(e) => set('pageCount', e.target.value ? Number(e.target.value) : null)}
+                  onChange={(e) =>
+                    set('pageCount', e.target.value ? Number(e.target.value) : null)
+                  }
                 />
               </div>
             </div>

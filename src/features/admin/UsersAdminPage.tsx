@@ -21,8 +21,7 @@ export function UsersAdminPage() {
     if (!needle) return data ?? []
     return (data ?? []).filter(
       (u) =>
-        u.displayName.toLowerCase().includes(needle) ||
-        u.email.toLowerCase().includes(needle),
+        u.displayName.toLowerCase().includes(needle) || u.email.toLowerCase().includes(needle),
     )
   }, [data, q])
 

@@ -1,11 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import type { TargetType } from '@/types'
-import {
-  fetchMyReview,
-  fetchRecentReviews,
-  fetchReviews,
-  fetchReviewsByUser,
-} from './api'
+import { fetchMyReview, fetchRecentReviews, fetchReviews, fetchReviewsByUser } from './api'
 
 export function useReviews(targetType: TargetType, targetId: string | undefined) {
   return useQuery({

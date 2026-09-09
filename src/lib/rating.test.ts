@@ -34,7 +34,11 @@ describe('bayesianScore', () => {
 
 describe('applyReviewDelta', () => {
   it('adds a new verified review', () => {
-    const next = applyReviewDelta(ZERO_AGGREGATE, { newRating: 4, isCreate: true, isGuest: false })
+    const next = applyReviewDelta(ZERO_AGGREGATE, {
+      newRating: 4,
+      isCreate: true,
+      isGuest: false,
+    })
     expect(next.ratingSum).toBe(4)
     expect(next.ratingCount).toBe(1)
     expect(next.ratingAvg).toBe(4)
@@ -42,14 +46,22 @@ describe('applyReviewDelta', () => {
   })
 
   it('counts a guest rating but not toward reviewCount', () => {
-    const next = applyReviewDelta(ZERO_AGGREGATE, { newRating: 5, isCreate: true, isGuest: true })
+    const next = applyReviewDelta(ZERO_AGGREGATE, {
+      newRating: 5,
+      isCreate: true,
+      isGuest: true,
+    })
     expect(next.ratingCount).toBe(1)
     expect(next.ratingSum).toBe(5)
     expect(next.reviewCount).toBe(0)
   })
 
   it('applies an edit as a delta without changing counts', () => {
-    const base = applyReviewDelta(ZERO_AGGREGATE, { newRating: 2, isCreate: true, isGuest: false })
+    const base = applyReviewDelta(ZERO_AGGREGATE, {
+      newRating: 2,
+      isCreate: true,
+      isGuest: false,
+    })
     const edited = applyReviewDelta(base, { oldRating: 2, newRating: 5, isGuest: false })
     expect(edited.ratingCount).toBe(1)
     expect(edited.ratingSum).toBe(5)
@@ -66,7 +78,11 @@ describe('applyReviewDelta', () => {
   })
 
   it('never goes negative', () => {
-    const next = applyReviewDelta(ZERO_AGGREGATE, { oldRating: 5, isDelete: true, isGuest: false })
+    const next = applyReviewDelta(ZERO_AGGREGATE, {
+      oldRating: 5,
+      isDelete: true,
+      isGuest: false,
+    })
     expect(next.ratingCount).toBe(0)
     expect(next.ratingSum).toBe(0)
     expect(next.ratingAvg).toBe(0)

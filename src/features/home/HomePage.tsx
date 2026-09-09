@@ -27,11 +27,7 @@ function SectionHeading({
     <div className="mb-4">
       <h2 className="font-serif text-xl font-semibold">{title}</h2>
       {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
-      {shelf ? (
-        <ShelfBanner className="mt-2" />
-      ) : (
-        <MotifDivider className="mt-2 max-w-xs" />
-      )}
+      {shelf ? <ShelfBanner className="mt-2" /> : <MotifDivider className="mt-2 max-w-xs" />}
     </div>
   )
 }

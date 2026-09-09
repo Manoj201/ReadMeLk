@@ -33,16 +33,51 @@ export const router = createBrowserRouter([
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/books', element: <BooksBrowsePage /> },
-      { path: '/books/new', element: <RequireAuth><BookFormPage /></RequireAuth> },
+      {
+        path: '/books/new',
+        element: (
+          <RequireAuth>
+            <BookFormPage />
+          </RequireAuth>
+        ),
+      },
       { path: '/books/:bookId', element: <BookDetailPage /> },
-      { path: '/books/:bookId/edit', element: <RequireAuth><BookFormPage /></RequireAuth> },
+      {
+        path: '/books/:bookId/edit',
+        element: (
+          <RequireAuth>
+            <BookFormPage />
+          </RequireAuth>
+        ),
+      },
       { path: '/authors', element: <AuthorsBrowsePage /> },
       { path: '/authors/:authorId', element: <AuthorProfilePage /> },
-      { path: '/authors/:authorId/edit', element: <RequireAuth><AuthorFormPage /></RequireAuth> },
-      { path: '/register/author', element: <RequireAuth><AuthorFormPage /></RequireAuth> },
+      {
+        path: '/authors/:authorId/edit',
+        element: (
+          <RequireAuth>
+            <AuthorFormPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/register/author',
+        element: (
+          <RequireAuth>
+            <AuthorFormPage />
+          </RequireAuth>
+        ),
+      },
       { path: '/signin', element: <SignInPage /> },
       { path: '/signup', element: <SignUpPage /> },
-      { path: '/me', element: <RequireAuth><MePage /></RequireAuth> },
+      {
+        path: '/me',
+        element: (
+          <RequireAuth>
+            <MePage />
+          </RequireAuth>
+        ),
+      },
       {
         path: '/admin',
         element: (

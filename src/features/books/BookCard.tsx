@@ -34,7 +34,9 @@ export function BookCard({ book }: { book: Book }) {
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <p className="line-clamp-2 font-serif font-medium leading-tight">{title}</p>
-        {author ? <p className="text-xs text-muted-foreground">{t('detail.by', { name: author })}</p> : null}
+        {author ? (
+          <p className="text-xs text-muted-foreground">{t('detail.by', { name: author })}</p>
+        ) : null}
         <div className="mt-auto flex items-center gap-1 pt-1 text-xs text-muted-foreground">
           {book.ratingCount > 0 ? (
             <>

@@ -1,0 +1,114 @@
+name: Deploy
+
+# Continuous deployment for the main branch.
+#
+# Two independent, OPT-IN targets — each runs only when its secrets are present,
+# so the workflow is a harmless no-op until you configure them:
+#
+#   Vercel (hosting)          VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+#                             (set the VITE_FIREBASE_* vars in the Vercel project
+#                              itself — `vercel build` reads them via `vercel pull`)
+#
+#   Firebase (rules/indexes)  FIREBASE_SERVICE_ACCOUNT   full service-account JSON
+#                             FIREBASE_PROJECT_ID
+#
+# Prefer Vercel's native Git integration? Delete the `vercel` job and let Vercel
+# build straight from the repo (preview per PR, production on main).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  vercel:
+    name: Vercel (production)
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for Vercel secrets
+        id: gate
+        run: |
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Vercel secrets not set — skipping deploy."
+          fi
+
+      - name: Set up Node
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Pull Vercel project settings & env
+        if: steps.gate.outputs.ready == 'true'
+        run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build
+        if: steps.gate.outputs.ready == 'true'
+        run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy (prebuilt)
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          url=$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "Deployed to $url"
+          {
+            echo "### Vercel production deploy"
+            echo ""
+            echo "$url"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  firebase-rules:
+    name: Firebase rules & indexes
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for Firebase secrets
+        id: gate
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ] && [ -n "$FIREBASE_PROJECT_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Firebase secrets not set — skipping rules deploy."
+          fi
+
+      - name: Set up Node
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Write service-account key
+        if: steps.gate.outputs.ready == 'true'
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/gcp-sa.json"
+
+      - name: Deploy Firestore & Storage rules + indexes
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/gcp-sa.json
+        run: >
+          npx --yes firebase-tools@13 deploy
+          --only firestore:rules,firestore:indexes,storage
+          --project "$FIREBASE_PROJECT_ID"
+          --non-interactive

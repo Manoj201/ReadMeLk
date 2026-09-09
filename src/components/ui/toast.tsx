@@ -54,7 +54,10 @@ const ToastClose = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Close
     ref={ref}
-    className={cn('shrink-0 rounded-md p-1 text-foreground/60 hover:text-foreground', className)}
+    className={cn(
+      'shrink-0 rounded-md p-1 text-foreground/60 hover:text-foreground',
+      className,
+    )}
     toast-close=""
     {...props}
   >
@@ -67,7 +70,11 @@ const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Title ref={ref} className={cn('text-sm font-semibold', className)} {...props} />
+  <ToastPrimitives.Title
+    ref={ref}
+    className={cn('text-sm font-semibold', className)}
+    {...props}
+  />
 ))
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
@@ -85,11 +92,4 @@ ToastDescription.displayName = ToastPrimitives.Description.displayName
 
 export type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
-export {
-  ToastProvider,
-  ToastViewport,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastClose,
-}
+export { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose }

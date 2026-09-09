@@ -13,7 +13,9 @@ import type { Review } from '@/types'
 
 export function useActor() {
   const user = useAuthStore((s) => s.user)
-  return user ? { uid: user.uid, displayName: user.displayName } : { uid: '', displayName: 'admin' }
+  return user
+    ? { uid: user.uid, displayName: user.displayName }
+    : { uid: '', displayName: 'admin' }
 }
 
 export const useAdminStats = () =>
@@ -26,7 +28,10 @@ export const useOpenReports = () =>
   useQuery({ queryKey: ['admin', 'reports'], queryFn: fetchOpenReports })
 
 export const useAdminReviews = (status?: Review['status']) =>
-  useQuery({ queryKey: ['admin', 'reviews', status ?? 'all'], queryFn: () => fetchReviewsForAdmin(status) })
+  useQuery({
+    queryKey: ['admin', 'reviews', status ?? 'all'],
+    queryFn: () => fetchReviewsForAdmin(status),
+  })
 
 export const useAdminAuthors = () =>
   useQuery({ queryKey: ['admin', 'authors'], queryFn: listAuthorsForAdmin })

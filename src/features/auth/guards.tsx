@@ -23,7 +23,8 @@ export function RequireRole({ role, children }: { role: Role; children: ReactNod
 
   if (status === 'loading') return <LoadingBlock className="container py-12" />
 
-  const allowed = role === 'admin' ? isAdminClaim || hasRole(user, 'admin') : hasRole(user, role)
+  const allowed =
+    role === 'admin' ? isAdminClaim || hasRole(user, 'admin') : hasRole(user, role)
   if (!allowed) return <Navigate to="/404" replace />
   return <>{children}</>
 }

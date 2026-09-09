@@ -42,9 +42,7 @@ export function toast(props: Omit<ToasterToast, 'id'>) {
   const id = genId()
   const dismiss = () =>
     setState({
-      toasts: memoryState.toasts.map((t) =>
-        t.id === id ? { ...t, open: false } : t,
-      ),
+      toasts: memoryState.toasts.map((t) => (t.id === id ? { ...t, open: false } : t)),
     })
 
   setState({

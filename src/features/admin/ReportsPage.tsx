@@ -28,7 +28,8 @@ function ReportRow({ report }: { report: Report }) {
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <Badge variant="outline">{report.reason}</Badge>
         <span className="text-muted-foreground">
-          {t('reports.reportedBy')} {report.reporterUid ? report.reporterUid.slice(0, 6) : t('reports.guest')}
+          {t('reports.reportedBy')}{' '}
+          {report.reporterUid ? report.reporterUid.slice(0, 6) : t('reports.guest')}
         </span>
         <Link
           to={`/${report.targetType === 'book' ? 'books' : 'authors'}/${report.targetId}`}

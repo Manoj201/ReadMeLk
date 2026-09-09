@@ -54,7 +54,12 @@ function ReviewItem({ review }: { review: Review }) {
       <div className="mt-2 flex items-center gap-1">
         <ReportDialog review={review} />
         {canDelete ? (
-          <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={onDelete}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground"
+            onClick={onDelete}
+          >
             {t('list.delete')}
           </Button>
         ) : null}

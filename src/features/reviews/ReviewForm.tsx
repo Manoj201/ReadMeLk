@@ -76,7 +76,8 @@ export function ReviewForm({ targetType, targetId }: Props) {
   }, [draftKey, rating, bodyLang, titleEn, titleSi, body, guestName, setDraft])
 
   const disabled = useMemo(
-    () => busy || rating === 0 || body.trim().length < 4 || (!user && guestName.trim().length < 2),
+    () =>
+      busy || rating === 0 || body.trim().length < 4 || (!user && guestName.trim().length < 2),
     [busy, rating, body, user, guestName],
   )
 
@@ -104,7 +105,10 @@ export function ReviewForm({ targetType, targetId }: Props) {
       await qc.invalidateQueries({ queryKey: [targetType, targetId] })
       if (!user) setCooldownLeft(guestCooldownRemaining(targetId))
     } catch (err) {
-      const msg = err instanceof Error && err.message === 'cooldown' ? t('form.cooldown') : t('form.title')
+      const msg =
+        err instanceof Error && err.message === 'cooldown'
+          ? t('form.cooldown')
+          : t('form.title')
       toast({ description: msg, variant: 'destructive' })
     } finally {
       setBusy(false)
@@ -216,5 +220,7 @@ export function ReviewForm({ targetType, targetId }: Props) {
 }
 
 export function reviewTitleFor(review: Review, lang: ContentLang): string {
-  return (lang === 'si' ? review.titleSi : review.titleEn) ?? review.titleEn ?? review.titleSi ?? ''
+  return (
+    (lang === 'si' ? review.titleSi : review.titleEn) ?? review.titleEn ?? review.titleSi ?? ''
+  )
 }

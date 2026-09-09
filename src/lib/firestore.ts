@@ -29,9 +29,7 @@ export const reviewDoc = (id: string) => doc(reviewsCol, id)
 export const reportDoc = (id: string) => doc(reportsCol, id)
 
 /** Attach the doc id to a single snapshot (null when the doc is missing). */
-export function docData<T extends { id: string }>(
-  snap: DocumentSnapshot<Stored<T>>,
-): T | null {
+export function docData<T extends { id: string }>(snap: DocumentSnapshot<Stored<T>>): T | null {
   const data = snap.data()
   return data ? ({ id: snap.id, ...data } as T) : null
 }

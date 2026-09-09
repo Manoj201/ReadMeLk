@@ -13,12 +13,7 @@ export function MotifDivider({ className }: { className?: string }) {
       className={cn('h-4 w-full text-border', className)}
       preserveAspectRatio="none"
     >
-      <path
-        d="M0 8 H90 M150 8 H240"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-      />
+      <path d="M0 8 H90 M150 8 H240" stroke="currentColor" strokeWidth="1.5" fill="none" />
       <path
         d="M120 2c-6 0-9 4-9 6s3 6 9 6 9-4 9-6-3-6-9-6Zm0 2.5c4 0 6 2 6 3.5s-2 3.5-6 3.5-6-2-6-3.5 2-3.5 6-3.5Z"
         fill="currentColor"
@@ -72,7 +67,12 @@ export function OlaLeafTexture({ className }: { className?: string }) {
       <defs>
         <pattern id="ola" width="48" height="14" patternUnits="userSpaceOnUse">
           <path d="M0 7h48" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-          <path d="M12 3v8M24 3v8M36 3v8" stroke="currentColor" strokeWidth="0.6" opacity="0.3" />
+          <path
+            d="M12 3v8M24 3v8M36 3v8"
+            stroke="currentColor"
+            strokeWidth="0.6"
+            opacity="0.3"
+          />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#ola)" />

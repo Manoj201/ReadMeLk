@@ -105,7 +105,12 @@ export function ImageField({
             <ImagePlus className="h-5 w-5" />
           </div>
         )}
-        <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => inputRef.current?.click()}
+        >
           {t('actions.edit')}
         </Button>
       </div>

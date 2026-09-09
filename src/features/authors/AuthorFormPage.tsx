@@ -15,11 +15,7 @@ import { updateDoc, serverTimestamp } from 'firebase/firestore'
 import { authorDoc } from '@/lib/firestore'
 import { useAuthStore } from '@/stores/authStore'
 import type { SocialLink } from '@/types'
-import {
-  createAuthorProfile,
-  updateAuthorProfile,
-  type AuthorInput,
-} from './api'
+import { createAuthorProfile, updateAuthorProfile, type AuthorInput } from './api'
 import { useAuthor } from './hooks'
 
 const empty: AuthorInput = {
@@ -119,7 +115,10 @@ export function AuthorFormPage() {
         await updateDoc(authorDoc(id), { ...patch, updatedAt: serverTimestamp() })
       }
       await qc.invalidateQueries({ queryKey: ['author', id] })
-      toast({ description: t(editing ? 'form.submitEdit' : 'form.submitRegister'), variant: 'success' })
+      toast({
+        description: t(editing ? 'form.submitEdit' : 'form.submitRegister'),
+        variant: 'success',
+      })
       navigate(`/authors/${id}`)
     } catch (err) {
       console.error(err)
@@ -140,28 +139,54 @@ export function AuthorFormPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="nameEn">{t('form.nameEn')}</Label>
-                <Input id="nameEn" value={form.nameEn} onChange={(e) => set('nameEn', e.target.value)} />
+                <Input
+                  id="nameEn"
+                  value={form.nameEn}
+                  onChange={(e) => set('nameEn', e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="nameSi">{t('form.nameSi')}</Label>
-                <Input id="nameSi" value={form.nameSi} onChange={(e) => set('nameSi', e.target.value)} />
+                <Input
+                  id="nameSi"
+                  value={form.nameSi}
+                  onChange={(e) => set('nameSi', e.target.value)}
+                />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="bioEn">{t('form.bioEn')}</Label>
-                <Textarea id="bioEn" rows={4} value={form.bioEn} onChange={(e) => set('bioEn', e.target.value)} />
+                <Textarea
+                  id="bioEn"
+                  rows={4}
+                  value={form.bioEn}
+                  onChange={(e) => set('bioEn', e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="bioSi">{t('form.bioSi')}</Label>
-                <Textarea id="bioSi" rows={4} value={form.bioSi} onChange={(e) => set('bioSi', e.target.value)} />
+                <Textarea
+                  id="bioSi"
+                  rows={4}
+                  value={form.bioSi}
+                  onChange={(e) => set('bioSi', e.target.value)}
+                />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <ImageField label={t('form.photo')} currentUrl={existing?.photoURL} onSelect={setPhoto} />
-              <ImageField label={t('form.cover')} currentUrl={existing?.coverURL} onSelect={setCover} />
+              <ImageField
+                label={t('form.photo')}
+                currentUrl={existing?.photoURL}
+                onSelect={setPhoto}
+              />
+              <ImageField
+                label={t('form.cover')}
+                currentUrl={existing?.coverURL}
+                onSelect={setCover}
+              />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
@@ -171,7 +196,9 @@ export function AuthorFormPage() {
                   id="birthYear"
                   type="number"
                   value={form.birthYear ?? ''}
-                  onChange={(e) => set('birthYear', e.target.value ? Number(e.target.value) : null)}
+                  onChange={(e) =>
+                    set('birthYear', e.target.value ? Number(e.target.value) : null)
+                  }
                 />
               </div>
               <div className="space-y-1.5">
@@ -219,7 +246,9 @@ export function AuthorFormPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => set('socialLinks', [...form.socialLinks, { label: '', url: '' }])}
+                onClick={() =>
+                  set('socialLinks', [...form.socialLinks, { label: '', url: '' }])
+                }
               >
                 {t('form.addLink')}
               </Button>

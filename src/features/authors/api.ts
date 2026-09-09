@@ -50,10 +50,7 @@ export async function fetchTopAuthors(max = 6): Promise<Author[]> {
     .slice(0, max)
 }
 
-export async function createAuthorProfile(
-  uid: string,
-  input: AuthorInput,
-): Promise<string> {
+export async function createAuthorProfile(uid: string, input: AuthorInput): Promise<string> {
   const ref = await addDoc(authorsCol, {
     ownerUid: uid,
     photoURL: null,
@@ -78,7 +75,10 @@ export async function createAuthorProfile(
   return ref.id
 }
 
-export async function updateAuthorProfile(id: string, input: Partial<AuthorInput>): Promise<void> {
+export async function updateAuthorProfile(
+  id: string,
+  input: Partial<AuthorInput>,
+): Promise<void> {
   await updateDoc(authorDoc(id), { ...input, updatedAt: serverTimestamp() })
 }
 

@@ -49,7 +49,10 @@ export function AuthorsAdminPage() {
               key={a.id}
               className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-3 text-sm"
             >
-              <Link to={`/authors/${a.id}`} className="font-medium underline underline-offset-2">
+              <Link
+                to={`/authors/${a.id}`}
+                className="font-medium underline underline-offset-2"
+              >
                 {a.nameEn || a.nameSi || a.id}
               </Link>
               {a.verified ? <BadgeCheck className="h-4 w-4 text-primary" /> : null}
@@ -61,7 +64,10 @@ export function AuthorsAdminPage() {
                   variant="outline"
                   onClick={async () => {
                     await setAuthorVerified(actor, a.id, !a.verified)
-                    toast({ description: t(a.verified ? 'authors.unverify' : 'authors.verify'), variant: 'success' })
+                    toast({
+                      description: t(a.verified ? 'authors.unverify' : 'authors.verify'),
+                      variant: 'success',
+                    })
                     await refresh()
                   }}
                 >
@@ -72,7 +78,10 @@ export function AuthorsAdminPage() {
                   variant="outline"
                   onClick={async () => {
                     await setAuthorFeatured(actor, a.id, !a.featured)
-                    toast({ description: t(a.featured ? 'authors.unfeature' : 'authors.feature'), variant: 'success' })
+                    toast({
+                      description: t(a.featured ? 'authors.unfeature' : 'authors.feature'),
+                      variant: 'success',
+                    })
                     await refresh()
                   }}
                 >

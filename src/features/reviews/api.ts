@@ -74,10 +74,7 @@ export async function fetchReviews(
   return listData<Review>(snap)
 }
 
-export async function fetchMyReview(
-  targetId: string,
-  uid: string,
-): Promise<Review | null> {
+export async function fetchMyReview(targetId: string, uid: string): Promise<Review | null> {
   return docData<Review>(await getDoc(reviewDoc(verifiedReviewId(targetId, uid))))
 }
 

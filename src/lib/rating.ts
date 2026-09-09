@@ -47,7 +47,10 @@ export interface ReviewDelta {
  * Single source of truth for how a review create/edit/delete moves a target's
  * denormalized aggregates. Pure — the Firestore transaction just persists the result.
  */
-export function applyReviewDelta(current: AggregateFields, delta: ReviewDelta): AggregateFields {
+export function applyReviewDelta(
+  current: AggregateFields,
+  delta: ReviewDelta,
+): AggregateFields {
   const old = delta.oldRating ?? 0
   const next = delta.isDelete ? 0 : (delta.newRating ?? 0)
 

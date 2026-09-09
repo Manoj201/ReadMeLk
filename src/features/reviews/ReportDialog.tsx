@@ -98,7 +98,12 @@ export function ReportDialog({ review }: { review: Review }) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="note">{t('report.note')}</Label>
-            <Textarea id="note" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
+            <Textarea
+              id="note"
+              rows={3}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
           </div>
           <Button type="submit" disabled={busy}>
             {t('report.submit')}

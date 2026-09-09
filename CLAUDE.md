@@ -29,8 +29,14 @@ Planning complete. Implementation not started. **Read `.claude/planning/README.m
 | `yarn build` | production build to `dist/` |
 | `yarn preview` | preview the production build |
 | `yarn lint` | ESLint |
+| `yarn typecheck` | `tsc -b` |
 | `yarn test` | Vitest |
-| `yarn format` | Prettier |
+| `yarn format` / `yarn format:check` | Prettier write / verify |
+| `yarn i18n:check` | en/si locale key parity |
+
+CI (`.github/workflows/ci.yml`) runs format:check → lint → i18n:check → typecheck → test →
+build on every PR and push to `main`. `deploy.yml` is opt-in (Vercel + Firebase rules) and
+gated on repo secrets — see README "CI / CD".
 
 ## Conventions
 

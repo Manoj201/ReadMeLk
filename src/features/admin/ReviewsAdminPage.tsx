@@ -28,14 +28,16 @@ export function ReviewsAdminPage() {
     if (!needle) return data ?? []
     return (data ?? []).filter(
       (r) =>
-        r.body.toLowerCase().includes(needle) ||
-        r.reviewerName.toLowerCase().includes(needle),
+        r.body.toLowerCase().includes(needle) || r.reviewerName.toLowerCase().includes(needle),
     )
   }, [data, q])
 
   async function act(review: Review, removed: boolean) {
     await setReviewRemoved(actor, review, removed)
-    toast({ description: t(removed ? 'reviews.remove' : 'reviews.restore'), variant: 'success' })
+    toast({
+      description: t(removed ? 'reviews.remove' : 'reviews.restore'),
+      variant: 'success',
+    })
     await qc.invalidateQueries({ queryKey: ['admin'] })
   }
 
@@ -82,7 +84,9 @@ export function ReviewsAdminPage() {
                   →
                 </Link>
               </div>
-              <p className="mt-1 line-clamp-3 whitespace-pre-line text-foreground/90">{r.body}</p>
+              <p className="mt-1 line-clamp-3 whitespace-pre-line text-foreground/90">
+                {r.body}
+              </p>
               <div className="mt-2">
                 {r.status === 'removed' ? (
                   <Button size="sm" variant="outline" onClick={() => act(r, false)}>

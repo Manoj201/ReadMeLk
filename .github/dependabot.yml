@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      react:
+        patterns: ['react', 'react-dom', 'react-router-dom', '@types/react*']
+      radix:
+        patterns: ['@radix-ui/*']
+      dev-tooling:
+        patterns:
+          - eslint*
+          - '@typescript-eslint/*'
+          - typescript-eslint
+          - prettier*
+          - vitest
+          - '@vitejs/*'
+          - '@testing-library/*'
+    ignore:
+      # Node 20.9 predates these; hold until the runtime is bumped
+      - dependency-name: '@testing-library/jest-dom'
+        versions: ['>=6.10.0']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday

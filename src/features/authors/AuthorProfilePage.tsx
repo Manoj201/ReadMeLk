@@ -43,11 +43,7 @@ export function AuthorProfilePage() {
     <div>
       <div className="relative border-b border-border bg-card">
         {author.coverURL ? (
-          <img
-            src={author.coverURL}
-            alt=""
-            className="h-40 w-full object-cover sm:h-56"
-          />
+          <img src={author.coverURL} alt="" className="h-40 w-full object-cover sm:h-56" />
         ) : (
           <div className="relative h-28 w-full overflow-hidden bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/10 sm:h-40">
             <OlaLeafTexture className="text-foreground opacity-[0.06]" />
@@ -138,7 +134,9 @@ export function AuthorProfilePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-serif text-lg font-semibold">{t('profile.reviewsTitle')}</h2>
+            <h2 className="mb-3 font-serif text-lg font-semibold">
+              {t('profile.reviewsTitle')}
+            </h2>
             {reviewsQ.isLoading ? <LoadingBlock /> : <ReviewList reviews={reviews} />}
           </section>
         </div>
