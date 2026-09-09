@@ -28,52 +28,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  vercel:
-    name: Vercel (production)
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check for Vercel secrets
-        id: gate
-        run: |
-          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Vercel secrets not set — skipping deploy."
-          fi
-
-      - name: Set up Node
-        if: steps.gate.outputs.ready == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Pull Vercel project settings & env
-        if: steps.gate.outputs.ready == 'true'
-        run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-
-      - name: Build
-        if: steps.gate.outputs.ready == 'true'
-        run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
-
-      - name: Deploy (prebuilt)
-        if: steps.gate.outputs.ready == 'true'
-        run: |
-          url=$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")
-          echo "Deployed to $url"
-          {
-            echo "### Vercel production deploy"
-            echo ""
-            echo "$url"
-          } >> "$GITHUB_STEP_SUMMARY"
-
   firebase-rules:
     name: Firebase rules & indexes
     runs-on: ubuntu-latest
