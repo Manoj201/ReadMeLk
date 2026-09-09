@@ -121,20 +121,30 @@ the home ranking will show an error.
 
 ---
 
-## 8. 🌐 App Check (recommended now that billing is on)
+## 8. 🌐 App Check — optional, recommended on the paid plan
 
-Stops scripts hitting Firestore/Storage directly, which rules can't detect.
+Stops scripts hitting Firestore/Storage directly, which rules can't detect. Safe to skip
+for launch and add later — it blocks nothing else.
 
-1. Build → **App Check** → your Web app → **Register** → provider **reCAPTCHA v3** →
-   register → copy the **site key**.
-2. Add to `.env.local` (and later to Vercel, step 13):
+Use **classic reCAPTCHA v3**, *not* reCAPTCHA Enterprise — it's free and it's what the code
+already uses (`ReCaptchaV3Provider` in `src/lib/firebase.ts`). *(Want Enterprise instead?
+Create the key in Google Cloud console → Security → reCAPTCHA → Create key, and change the
+provider in `src/lib/firebase.ts` to `ReCaptchaEnterpriseProvider`.)*
+
+1. Create the key at **https://www.google.com/recaptcha/admin/create**:
+   - Label `ReadMe` · type **Score based (v3)**
+   - Domains: `localhost` + your Vercel domain(s)
+   - Submit → you get a **Site key** (public) and a **Secret key** (private).
+2. 🌐 Firebase → Build → **App Check** → your Web app → open the **reCAPTCHA** row (not
+   "reCAPTCHA Enterprise") → paste the **Secret key** → **Save**.
+3. Put the **Site key** in `.env.local` (and Vercel env, step 13):
    ```
-   VITE_APPCHECK_SITE_KEY=your-recaptcha-v3-site-key
+   VITE_APPCHECK_SITE_KEY=your-recaptcha-v3-SITE-key
    ```
-3. Local dev token: also set `VITE_APPCHECK_DEBUG_TOKEN=true`, restart `yarn dev`, open the
-   browser console, copy the printed debug token, and paste it in App Check → your app →
+4. Local dev token: also set `VITE_APPCHECK_DEBUG_TOKEN=true`, restart `yarn dev`, open the
+   browser console, copy the printed debug token, paste it in App Check → your app →
    **Manage debug tokens**.
-4. Once the app still works with App Check active, turn on **Enforcement** for **Cloud
+5. Once the app still works with App Check active, turn on **Enforcement** for **Cloud
    Firestore** and **Cloud Storage** (App Check → APIs).
 
 ---
