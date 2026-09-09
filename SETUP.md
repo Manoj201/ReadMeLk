@@ -9,7 +9,7 @@ Legend: 🖥️ local terminal · 🌐 a web console · ✅ already done by you
 
 ## 0. Before you start
 
-- Node **20.9+** and **Yarn 1.x** installed (`node -v`, `yarn -v`).
+- Node **24+** (see `.nvmrc`) and **Yarn 1.x** installed (`node -v`, `yarn -v`).
 - A **Google account** (for Firebase) and a **GitHub account**.
 - ✅ You've already created a Firebase project on the **Blaze** (pay-as-you-go) plan and
   enabled Storage.

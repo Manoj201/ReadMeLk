@@ -20,7 +20,7 @@ Functions**) · react-i18next · deploy on Vercel.
 ## Getting started
 
 ```bash
-yarn install --ignore-engines      # Node 20.9 predates some packages' engines fields
+yarn install --ignore-engines      # Node 24+ (see .nvmrc); flag skips deps' engines caps
 cp .env.example .env.local          # fill from Firebase console → Project settings
 yarn dev
 ```

@@ -20,10 +20,6 @@ updates:
           - vitest
           - '@vitejs/*'
           - '@testing-library/*'
-    ignore:
-      # Node 20.9 predates these; hold until the runtime is bumped
-      - dependency-name: '@testing-library/jest-dom'
-        versions: ['>=6.10.0']
 
   - package-ecosystem: github-actions
     directory: /
