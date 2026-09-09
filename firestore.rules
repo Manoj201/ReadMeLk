@@ -1,0 +1,146 @@
+rules_version = '2';
+
+// ReadMe — Firestore security rules.
+// Companion doc: .claude/planning/07-firebase-setup.md and 08-security-and-moderation.md
+// No Cloud Functions: clients maintain rating aggregates inside a transaction, so
+// aggregate writes are *bounded* here rather than fully authenticated.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function isAdmin() { return isSignedIn() && request.auth.token.admin == true; }
+    function userData() {
+      return get(/databases/$(database)/documents/users/$(uid())).data;
+    }
+    function isAuthor() {
+      return isSignedIn() && 'author' in userData().roles;
+    }
+
+    // roles stored on the user doc may only ever be reader/author — never admin
+    function rolesAreSafe(r) {
+      return r.hasOnly(['reader', 'author']) && ('reader' in r);
+    }
+
+    function changed(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(keys);
+    }
+    function onlyChanged(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // Bound how far one client write may move rating aggregates.
+    function aggregateDeltaOk() {
+      let o = resource.data;
+      let n = request.resource.data;
+      return n.ratingCount >= 0
+        && (n.ratingCount - o.ratingCount) >= -1
+        && (n.ratingCount - o.ratingCount) <= 1
+        && (n.reviewCount - o.reviewCount) >= -1
+        && (n.reviewCount - o.reviewCount) <= 1
+        && n.ratingAvg >= 0 && n.ratingAvg <= 5
+        && n.bayesianScore >= 0 && n.bayesianScore <= 5
+        && (n.ratingSum - o.ratingSum) >= -5
+        && (n.ratingSum - o.ratingSum) <= 5;
+    }
+
+    // ---- users ----------------------------------------------------------
+    match /users/{userId} {
+      allow read: if true; // public profile fields (email is never rendered)
+      allow create: if isSignedIn() && userId == uid()
+        && request.resource.data.roles == ['reader']
+        && request.resource.data.uid == userId;
+      allow update: if
+        (userId == uid() && rolesAreSafe(request.resource.data.roles))
+        || (isAdmin() && rolesAreSafe(request.resource.data.roles));
+      allow delete: if isAdmin();
+    }
+
+    // ---- authors -------------------------------------------------------
+    match /authors/{authorId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.ownerUid == uid()
+        && request.resource.data.verified == false
+        && request.resource.data.featured == false
+        && request.resource.data.ratingCount == 0
+        && request.resource.data.bookCount == 0;
+      allow update: if isAdmin()
+        // owner edits profile fields, never verified / featured / aggregates
+        || (resource.data.ownerUid == uid()
+            && request.resource.data.verified == resource.data.verified
+            && request.resource.data.featured == resource.data.featured
+            && !changed(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount']))
+        // an aggregate-only bump from the review transaction
+        || (isSignedIn()
+            && onlyChanged(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount','bookCount','updatedAt'])
+            && aggregateDeltaOk());
+      allow delete: if isAdmin() || resource.data.ownerUid == uid();
+    }
+
+    // ---- books --------------------------------------------------------
+    match /books/{bookId} {
+      allow read: if true;
+      allow create: if isAuthor()
+        && request.resource.data.ownerUid == uid()
+        && request.resource.data.featured == false
+        && request.resource.data.ratingCount == 0;
+      allow update: if isAdmin()
+        || (resource.data.ownerUid == uid()
+            && request.resource.data.featured == resource.data.featured
+            && !changed(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount']))
+        || (isSignedIn()
+            && onlyChanged(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount','updatedAt'])
+            && aggregateDeltaOk());
+      allow delete: if isAdmin() || resource.data.ownerUid == uid();
+    }
+
+    // ---- reviews -----------------------------------------------------
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status == 'published'
+        || isAdmin()
+        || (isSignedIn() && resource.data.authorUid == uid());
+
+      allow create: if
+        // verified: deterministic id, tied to the caller
+        (isSignedIn()
+          && request.resource.data.isGuest == false
+          && request.resource.data.authorUid == uid()
+          && reviewId == request.resource.data.targetId + '_' + uid()
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+          && request.resource.data.status == 'published')
+        ||
+        // guest: no auth, name required, not attributable
+        (request.resource.data.isGuest == true
+          && request.resource.data.authorUid == null
+          && request.resource.data.guestName is string
+          && request.resource.data.guestName.size() >= 2
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+          && request.resource.data.status == 'published');
+
+      allow update: if isAdmin()
+        || (isSignedIn() && resource.data.authorUid == uid()
+            && request.resource.data.authorUid == resource.data.authorUid
+            && request.resource.data.isGuest == resource.data.isGuest);
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.authorUid == uid());
+    }
+
+    // ---- reports ---------------------------------------------------
+    match /reports/{reportId} {
+      allow create: if request.resource.data.status == 'open'
+        && request.resource.data.reviewId is string;
+      allow read, update: if isAdmin();
+      allow delete: if false; // keep the moderation trail
+    }
+
+    // ---- adminActions (immutable audit log) ----------------------
+    match /adminActions/{actionId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && request.resource.data.actorUid == uid();
+      allow update, delete: if false;
+    }
+  }
+}

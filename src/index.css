@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ReadMe design tokens — Sri Lankan heritage theme.
+ * Source palette + rationale: .claude/planning/06-design-system.md
+ *
+ * NOTE: fonts are referenced by CSS variable below with robust fallback stacks.
+ * Self-hosting Noto Sans/Serif Sinhala + Inter + a display serif is an M1 task
+ * (see .claude/planning/09-roadmap.md). No third-party font CDN by project policy.
+ */
+
+:root {
+  --font-latin-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-latin-serif: 'Source Serif 4', 'Frank Ruhl Libre', Georgia, 'Times New Roman', serif;
+  --font-sinhala-sans: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+  --font-sinhala-serif: 'Noto Serif Sinhala', 'Noto Sans Sinhala', serif;
+
+  /* ---- heritage palette (light) ---- */
+  --paper: 40 55% 95%;
+  --paper-raised: 45 60% 98%;
+  --paper-sunk: 40 52% 87%;
+  --ink: 24 16% 12%;
+  --ink-soft: 27 11% 32%;
+  --line: 40 40% 75%;
+  --brand-gold: 36 79% 57%;
+  --brand-gold-deep: 35 71% 42%;
+  --brand-crimson: 352 66% 33%;
+  --brand-crimson-deep: 351 69% 25%;
+  --brand-green: 166 58% 28%;
+  --brand-orange: 21 82% 53%;
+
+  /* ---- shadcn semantic tokens (light) ---- */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-raised);
+  --card-foreground: var(--ink);
+  --popover: var(--paper-raised);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand-crimson);
+  --primary-foreground: 45 60% 98%;
+  --secondary: var(--brand-gold);
+  --secondary-foreground: 24 16% 12%;
+  --muted: var(--paper-sunk);
+  --muted-foreground: var(--ink-soft);
+  --accent: 40 52% 87%;
+  --accent-foreground: 35 71% 32%;
+  --destructive: 355 67% 42%;
+  --destructive-foreground: 45 60% 98%;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brand-gold-deep);
+
+  /* ---- functional ---- */
+  --rating: 38 74% 53%;
+  --success: 166 58% 28%;
+  --warning: 37 76% 45%;
+  --info: 203 41% 38%;
+
+  --radius: 0.625rem;
+}
+
+:root:not([data-theme='light']) {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --paper: 27 22% 10%;
+    --paper-raised: 30 20% 14%;
+    --paper-sunk: 32 42% 6%;
+    --ink: 38 50% 89%;
+    --ink-soft: 37 24% 66%;
+    --line: 33 22% 20%;
+    --brand-gold: 36 83% 65%;
+    --brand-gold-deep: 36 79% 57%;
+    --brand-crimson: 353 49% 53%;
+    --brand-crimson-deep: 353 49% 45%;
+    --brand-green: 165 42% 51%;
+    --brand-orange: 21 82% 60%;
+
+    --primary-foreground: 27 22% 10%;
+    --secondary-foreground: 27 22% 10%;
+    --accent: 33 22% 20%;
+    --accent-foreground: 36 83% 65%;
+    --destructive: 355 71% 64%;
+    --destructive-foreground: 27 22% 10%;
+
+    --rating: 36 83% 65%;
+    --success: 165 42% 51%;
+    --warning: 39 76% 57%;
+    --info: 201 44% 61%;
+  }
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: 27 22% 10%;
+  --paper-raised: 30 20% 14%;
+  --paper-sunk: 32 42% 6%;
+  --ink: 38 50% 89%;
+  --ink-soft: 37 24% 66%;
+  --line: 33 22% 20%;
+  --brand-gold: 36 83% 65%;
+  --brand-gold-deep: 36 79% 57%;
+  --brand-crimson: 353 49% 53%;
+  --brand-crimson-deep: 353 49% 45%;
+  --brand-green: 165 42% 51%;
+  --brand-orange: 21 82% 60%;
+
+  --primary-foreground: 27 22% 10%;
+  --secondary-foreground: 27 22% 10%;
+  --accent: 33 22% 20%;
+  --accent-foreground: 36 83% 65%;
+  --destructive: 355 71% 64%;
+  --destructive-foreground: 27 22% 10%;
+
+  --rating: 36 83% 65%;
+  --success: 165 42% 51%;
+  --warning: 39 76% 57%;
+  --info: 201 44% 61%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100vh;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+    text-wrap: balance;
+  }
+
+  /* Sinhala needs more vertical breathing room (see 05-i18n.md / 06-design-system.md) */
+  body.lang-si {
+    font-family: var(--font-sinhala-sans), var(--font-latin-sans), sans-serif;
+    line-height: 1.72;
+  }
+
+  body.lang-si h1,
+  body.lang-si h2,
+  body.lang-si h3 {
+    font-family: var(--font-sinhala-serif), var(--font-latin-serif), serif;
+    line-height: 1.4;
+  }
+
+  body.lang-en {
+    font-family: var(--font-latin-sans), var(--font-sinhala-sans), sans-serif;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

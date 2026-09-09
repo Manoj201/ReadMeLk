@@ -1,0 +1,63 @@
+{
+  "browse": {
+    "title": "පොත්",
+    "searchPlaceholder": "නමින් සොයන්න…",
+    "filters": {
+      "genre": "ප්‍රභේදය",
+      "language": "භාෂාව",
+      "minRating": "අවම ශ්‍රේණිය",
+      "sort": "පිළිවෙළ",
+      "anyGenre": "ඕනෑම ප්‍රභේදයක්",
+      "anyLanguage": "ඕනෑම භාෂාවක්",
+      "anyRating": "ඕනෑම ශ්‍රේණියක්"
+    },
+    "sort": {
+      "top": "වඩාත් විචාරිත",
+      "recent": "අලුතින් එකතු කළ"
+    },
+    "empty": "ඔබේ පෙරහන් වලට ගැළපෙන පොත් තවම නැත."
+  },
+  "detail": {
+    "by": "{{name}} විසිනි",
+    "about": "මෙම පොත ගැන",
+    "details": "විස්තර",
+    "isbn": "ISBN",
+    "publisher": "ප්‍රකාශකයා",
+    "year": "ප්‍රකාශිත වර්ෂය",
+    "pages": "පිටු",
+    "language": "භාෂාව",
+    "writeReview": "විචාරයක් ලියන්න",
+    "reviewsTitle": "පාඨක විචාර",
+    "authorRemoved": "මෙම කතුවරයාගේ පැතිකඩ ඉවත් කර ඇත."
+  },
+  "form": {
+    "newTitle": "පොතක් ලියාපදිංචි කරන්න",
+    "editTitle": "පොත සංස්කරණය කරන්න",
+    "titleEn": "නම (ඉංග්‍රීසි)",
+    "titleSi": "නම (සිංහල)",
+    "descriptionEn": "විස්තරය (ඉංග්‍රීසි)",
+    "descriptionSi": "විස්තරය (සිංහල)",
+    "cover": "කවර රූපය",
+    "genres": "ප්‍රභේද",
+    "language": "භාෂාව",
+    "year": "ප්‍රකාශිත වර්ෂය",
+    "publisher": "ප්‍රකාශකයා",
+    "pageCount": "පිටු ගණන",
+    "isbn": "ISBN",
+    "submitNew": "පොත ප්‍රකාශ කරන්න",
+    "submitEdit": "වෙනස්කම් සුරකින්න",
+    "deleteConfirm": "මෙම පොත මකන්නද? මෙය ආපසු හැරවිය නොහැක.",
+    "needAuthorProfile": "පොතක් ලියාපදිංචි කිරීමට පෙර ඔබේ කතුවර පැතිකඩ සාදන්න.",
+    "atLeastOneTitle": "අවම වශයෙන් එක් භාෂාවකින් නම ඇතුළත් කරන්න."
+  },
+  "language": {
+    "si": "සිංහල",
+    "en": "ඉංග්‍රීසි",
+    "bilingual": "ද්විභාෂා"
+  },
+  "card": {
+    "ratingsCount": "ශ්‍රේණිගත කිරීම් {{count}}",
+    "ratingsCount_other": "ශ්‍රේණිගත කිරීම් {{count}}",
+    "noRatings": "තවම ශ්‍රේණිගත කිරීම් නැත"
+  }
+}

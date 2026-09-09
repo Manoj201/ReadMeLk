@@ -1,0 +1,75 @@
+{
+  "app": {
+    "name": "ReadMe",
+    "tagline": "Sri Lankan books, reviewed by readers"
+  },
+  "nav": {
+    "home": "Home",
+    "books": "Books",
+    "authors": "Authors",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "myProfile": "My profile",
+    "becomeAuthor": "Become an author",
+    "admin": "Admin",
+    "signOut": "Sign out",
+    "menu": "Menu"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "submit": "Submit",
+    "retry": "Try again",
+    "back": "Back",
+    "viewAll": "View all",
+    "readMore": "Read more",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Toggle theme"
+  },
+  "lang": {
+    "label": "Language",
+    "si": "සිංහල",
+    "en": "English",
+    "switchTo": "Switch to {{lang}}"
+  },
+  "contentLang": {
+    "si": "සිංහල",
+    "en": "English",
+    "shownIn": "Shown in {{lang}}"
+  },
+  "state": {
+    "loading": "Loading…",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We couldn't load this. Please try again.",
+    "empty": "Nothing here yet"
+  },
+  "pagination": {
+    "loadMore": "Load more"
+  },
+  "validation": {
+    "required": "This field is required",
+    "tooShort": "Too short",
+    "tooLong": "Too long",
+    "url": "Enter a valid URL",
+    "year": "Enter a valid year",
+    "image": "Choose an image up to 5 MB"
+  },
+  "footer": {
+    "rights": "Built for Sri Lankan readers",
+    "builtWith": "Sinhala & English",
+    "heritage": "පොත් · කතුවරුන් · විචාර"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist.",
+    "cta": "Go home"
+  }
+}

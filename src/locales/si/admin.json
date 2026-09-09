@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard": "පාලක පුවරුව",
+    "reports": "වාර්තා",
+    "reviews": "විචාර",
+    "authors": "කතුවරුන්",
+    "books": "පොත්",
+    "users": "පරිශීලකයෝ"
+  },
+  "guard": {
+    "denied": "පරිපාලකයන් පමණි."
+  },
+  "dashboard": {
+    "title": "පරිපාලක පාලක පුවරුව",
+    "counts": {
+      "users": "පරිශීලකයෝ",
+      "authors": "කතුවරුන්",
+      "books": "පොත්",
+      "reviews": "විචාර",
+      "openReports": "විවෘත වාර්තා"
+    },
+    "recentActions": "මෑත පරිපාලක ක්‍රියා",
+    "noActions": "තවම පරිපාලක ක්‍රියා සටහන් කර නැත."
+  },
+  "reports": {
+    "title": "විවෘත වාර්තා",
+    "empty": "විවෘත වාර්තා නැත. ",
+    "reason": "හේතුව",
+    "note": "සටහන",
+    "reportedBy": "වාර්තා කළේ",
+    "guest": "අමුත්තෙක්",
+    "viewTarget": "ඉලක්කය බලන්න",
+    "removeReview": "විචාරය ඉවත් කරන්න",
+    "dismiss": "ඉවත් දමන්න",
+    "actioned": "ක්‍රියාත්මක කළා"
+  },
+  "reviews": {
+    "title": "විචාර",
+    "searchPlaceholder": "විචාර පෙළ හෝ විචාරකයා සොයන්න…",
+    "filter": {
+      "all": "සියල්ල",
+      "published": "ප්‍රකාශිත",
+      "removed": "ඉවත් කළ"
+    },
+    "remove": "ඉවත් කරන්න",
+    "restore": "යළි පිහිටුවන්න",
+    "status": {
+      "published": "ප්‍රකාශිත",
+      "removed": "ඉවත් කළ",
+      "reported": "වාර්තා කළ"
+    }
+  },
+  "authors": {
+    "title": "කතුවරුන්",
+    "searchPlaceholder": "කතුවරුන් සොයන්න…",
+    "verify": "සත්‍යාපනය කරන්න",
+    "unverify": "ලාංඡනය ඉවත් කරන්න",
+    "feature": "විශේෂාංගගත කරන්න",
+    "unfeature": "ඉවත් කරන්න",
+    "editProfile": "සංස්කරණය",
+    "delete": "මකන්න",
+    "deleteConfirm": "මෙම කතුවර පැතිකඩ මකන්නද? ඔවුන්ගේ පොත් රැඳේ."
+  },
+  "books": {
+    "title": "පොත්",
+    "searchPlaceholder": "පොත් සොයන්න…",
+    "feature": "විශේෂාංගගත කරන්න",
+    "unfeature": "ඉවත් කරන්න",
+    "edit": "සංස්කරණය",
+    "delete": "මකන්න",
+    "deleteConfirm": "මෙම පොත මකන්නද? මෙය ආපසු හැරවිය නොහැක."
+  },
+  "users": {
+    "title": "පරිශීලකයෝ",
+    "searchPlaceholder": "නමින් හෝ විද්‍යුත් තැපෑලෙන් සොයන්න…",
+    "grantAuthor": "කතුවර භූමිකාව ලබා දෙන්න",
+    "revokeAuthor": "කතුවර භූමිකාව ඉවත් කරන්න",
+    "roles": "භූමිකා",
+    "isAdmin": "පරිපාලක",
+    "adminNote": "පරිපාලක භූමිකාව ලබා දෙන්නේ set-admin CLI ස්ක්‍රිප්ට් එක හරහා පමණි."
+  },
+  "log": {
+    "action": "ක්‍රියාව",
+    "target": "ඉලක්කය",
+    "when": "කවදා",
+    "by": "විසින්"
+  }
+}

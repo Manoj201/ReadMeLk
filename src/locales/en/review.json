@@ -1,0 +1,64 @@
+{
+  "form": {
+    "title": "Write a review",
+    "ratingLabel": "Your rating",
+    "reviewTitleEn": "Review headline (English)",
+    "reviewTitleSi": "Review headline (Sinhala)",
+    "body": "Your review",
+    "bodyLang": "Review language",
+    "asGuest": "Post as a guest",
+    "asUser": "Posting as {{name}}",
+    "guestName": "Your name",
+    "guestNameHint": "Shown publicly with your review.",
+    "guestNamePublicWarning": "This name will be visible to everyone.",
+    "submit": "Post review",
+    "update": "Update review",
+    "signInPrompt": "Sign in to post as a verified reader, or continue as a guest.",
+    "cooldown": "You just posted a guest review here. Try again in a few minutes.",
+    "editYours": "You've reviewed this. Edit your review below.",
+    "delete": "Delete my review",
+    "deleteConfirm": "Delete your review?"
+  },
+  "list": {
+    "title": "Reviews",
+    "empty": "No reviews yet.",
+    "verifiedBadge": "Verified reader",
+    "guestBadge": "Guest",
+    "helpful": "Helpful ({{count}})",
+    "report": "Report",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "summary": {
+    "averageLabel": "Average rating",
+    "ratingsLabel": "{{count}} rating",
+    "ratingsLabel_other": "{{count}} ratings",
+    "reviewsLabel": "{{count}} written review",
+    "reviewsLabel_other": "{{count}} written reviews",
+    "distribution": "Rating breakdown",
+    "stars": "{{count}} star",
+    "stars_other": "{{count}} stars"
+  },
+  "report": {
+    "title": "Report this review",
+    "reasonLabel": "Reason",
+    "reason": {
+      "spam": "Spam or advertising",
+      "offensive": "Offensive or abusive",
+      "offTopic": "Off topic",
+      "notReview": "Not a real review",
+      "other": "Other"
+    },
+    "note": "Anything else? (optional)",
+    "submit": "Send report",
+    "done": "Thanks — our moderators will take a look."
+  },
+  "stars": {
+    "aria": "Rating: {{value}} of 5",
+    "set": "Set rating to {{value}}"
+  },
+  "target": {
+    "book": "book",
+    "author": "author"
+  }
+}

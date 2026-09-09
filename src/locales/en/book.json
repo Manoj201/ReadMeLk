@@ -1,0 +1,63 @@
+{
+  "browse": {
+    "title": "Books",
+    "searchPlaceholder": "Search by title…",
+    "filters": {
+      "genre": "Genre",
+      "language": "Language",
+      "minRating": "Min rating",
+      "sort": "Sort",
+      "anyGenre": "Any genre",
+      "anyLanguage": "Any language",
+      "anyRating": "Any rating"
+    },
+    "sort": {
+      "top": "Best reviewed",
+      "recent": "Recently added"
+    },
+    "empty": "No books match your filters yet."
+  },
+  "detail": {
+    "by": "by {{name}}",
+    "about": "About this book",
+    "details": "Details",
+    "isbn": "ISBN",
+    "publisher": "Publisher",
+    "year": "Published",
+    "pages": "Pages",
+    "language": "Language",
+    "writeReview": "Write a review",
+    "reviewsTitle": "Reader reviews",
+    "authorRemoved": "This author's profile was removed."
+  },
+  "form": {
+    "newTitle": "Register a book",
+    "editTitle": "Edit book",
+    "titleEn": "Title (English)",
+    "titleSi": "Title (Sinhala)",
+    "descriptionEn": "Description (English)",
+    "descriptionSi": "Description (Sinhala)",
+    "cover": "Cover image",
+    "genres": "Genres",
+    "language": "Language",
+    "year": "Published year",
+    "publisher": "Publisher",
+    "pageCount": "Page count",
+    "isbn": "ISBN",
+    "submitNew": "Publish book",
+    "submitEdit": "Save changes",
+    "deleteConfirm": "Delete this book? This can't be undone.",
+    "needAuthorProfile": "Create your author profile before registering a book.",
+    "atLeastOneTitle": "Enter the title in at least one language."
+  },
+  "language": {
+    "si": "Sinhala",
+    "en": "English",
+    "bilingual": "Bilingual"
+  },
+  "card": {
+    "ratingsCount": "{{count}} rating",
+    "ratingsCount_other": "{{count}} ratings",
+    "noRatings": "No ratings yet"
+  }
+}

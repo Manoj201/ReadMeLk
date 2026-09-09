@@ -1,0 +1,49 @@
+{
+  "browse": {
+    "title": "Authors",
+    "searchPlaceholder": "Search by name…",
+    "empty": "No authors match your search yet."
+  },
+  "profile": {
+    "about": "About",
+    "booksTitle": "Books",
+    "reviewsTitle": "Reviews of this author",
+    "verified": "Verified author",
+    "featured": "Featured",
+    "noBooks": "No books registered yet.",
+    "noReviews": "No reviews yet. Be the first.",
+    "location": "Location",
+    "born": "Born",
+    "website": "Website",
+    "writeReview": "Review this author",
+    "reportProfile": "Report this profile"
+  },
+  "form": {
+    "registerTitle": "Create your author profile",
+    "editTitle": "Edit author profile",
+    "nameEn": "Name (English)",
+    "nameSi": "Name (Sinhala)",
+    "bioEn": "Biography (English)",
+    "bioSi": "Biography (Sinhala)",
+    "photo": "Profile photo",
+    "cover": "Cover image",
+    "birthYear": "Birth year",
+    "location": "Location",
+    "website": "Website",
+    "genres": "Genres you write",
+    "socialLinks": "Links",
+    "addLink": "Add link",
+    "linkLabel": "Label",
+    "linkUrl": "URL",
+    "submitRegister": "Create profile",
+    "submitEdit": "Save changes",
+    "alreadyAuthor": "You already have an author profile.",
+    "atLeastOneName": "Enter your name in at least one language.",
+    "deleteConfirm": "Delete this author profile?"
+  },
+  "become": {
+    "title": "Become an author on ReadMe",
+    "body": "Publish a bilingual profile and register your books so readers can find and review your work.",
+    "cta": "Create my author profile"
+  }
+}

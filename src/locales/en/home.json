@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title": "Discover Sri Lanka's best-reviewed books",
+    "subtitle": "Ratings and reviews from readers, in Sinhala and English.",
+    "browseCta": "Browse books",
+    "becomeAuthorCta": "I'm an author"
+  },
+  "bestReviewed": {
+    "title": "Best reviewed books",
+    "subtitle": "Ranked by readers across the platform",
+    "empty": "No rated books yet — be the first to review one."
+  },
+  "topAuthors": {
+    "title": "Top rated authors",
+    "empty": "No rated authors yet."
+  },
+  "recentlyReviewed": {
+    "title": "Recently reviewed",
+    "empty": "No reviews yet.",
+    "reviewedBook": "reviewed a book",
+    "reviewedAuthor": "reviewed an author"
+  },
+  "featured": {
+    "title": "Featured"
+  },
+  "genres": {
+    "title": "Browse by genre"
+  }
+}

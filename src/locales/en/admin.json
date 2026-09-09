@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "reports": "Reports",
+    "reviews": "Reviews",
+    "authors": "Authors",
+    "books": "Books",
+    "users": "Users"
+  },
+  "guard": {
+    "denied": "Admins only."
+  },
+  "dashboard": {
+    "title": "Admin dashboard",
+    "counts": {
+      "users": "Users",
+      "authors": "Authors",
+      "books": "Books",
+      "reviews": "Reviews",
+      "openReports": "Open reports"
+    },
+    "recentActions": "Recent admin actions",
+    "noActions": "No admin actions logged yet."
+  },
+  "reports": {
+    "title": "Open reports",
+    "empty": "No open reports. ",
+    "reason": "Reason",
+    "note": "Note",
+    "reportedBy": "Reported by",
+    "guest": "a guest",
+    "viewTarget": "View target",
+    "removeReview": "Remove review",
+    "dismiss": "Dismiss",
+    "actioned": "Actioned"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "searchPlaceholder": "Search review text or reviewer…",
+    "filter": {
+      "all": "All",
+      "published": "Published",
+      "removed": "Removed"
+    },
+    "remove": "Remove",
+    "restore": "Restore",
+    "status": {
+      "published": "Published",
+      "removed": "Removed",
+      "reported": "Reported"
+    }
+  },
+  "authors": {
+    "title": "Authors",
+    "searchPlaceholder": "Search authors…",
+    "verify": "Verify",
+    "unverify": "Remove badge",
+    "feature": "Feature",
+    "unfeature": "Unfeature",
+    "editProfile": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this author profile? Their books remain."
+  },
+  "books": {
+    "title": "Books",
+    "searchPlaceholder": "Search books…",
+    "feature": "Feature",
+    "unfeature": "Unfeature",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this book? This can't be undone."
+  },
+  "users": {
+    "title": "Users",
+    "searchPlaceholder": "Search by name or email…",
+    "grantAuthor": "Grant author role",
+    "revokeAuthor": "Revoke author role",
+    "roles": "Roles",
+    "isAdmin": "Admin",
+    "adminNote": "The admin role is granted only via the set-admin CLI script."
+  },
+  "log": {
+    "action": "Action",
+    "target": "Target",
+    "when": "When",
+    "by": "By"
+  }
+}
