@@ -4,18 +4,28 @@ import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { BadgeCheck, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
-import { adminDeleteAuthor, setAuthorFeatured, setAuthorVerified } from './api'
+import {
+  adminDeleteAuthor,
+  setAuthorApproval,
+  setAuthorFeatured,
+  setAuthorVerified,
+} from './api'
 import { useActor, useAdminAuthors } from './hooks'
+
+type Filter = 'pending' | 'approved' | 'rejected' | 'all'
 
 export function AuthorsAdminPage() {
   const { t } = useTranslation('admin')
   const actor = useActor()
   const qc = useQueryClient()
   const [q, setQ] = useState('')
-  const { data, isLoading } = useAdminAuthors()
+  const [filter, setFilter] = useState<Filter>('pending')
+  const { data, isLoading } = useAdminAuthors(filter === 'all' ? undefined : filter)
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase()
@@ -29,15 +39,31 @@ export function AuthorsAdminPage() {
     await qc.invalidateQueries({ queryKey: ['admin'] })
   }
 
+  async function approval(id: string, status: 'approved' | 'rejected') {
+    await setAuthorApproval(actor, id, status)
+    toast({ description: t(`authors.${status}`), variant: 'success' })
+    await refresh()
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="font-serif text-xl font-semibold">{t('authors.title')}</h1>
-      <Input
-        className="max-w-xs"
-        placeholder={t('authors.searchPlaceholder')}
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
+          <TabsList>
+            <TabsTrigger value="pending">{t('authors.filter.pending')}</TabsTrigger>
+            <TabsTrigger value="approved">{t('authors.filter.approved')}</TabsTrigger>
+            <TabsTrigger value="rejected">{t('authors.filter.rejected')}</TabsTrigger>
+            <TabsTrigger value="all">{t('authors.filter.all')}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Input
+          className="max-w-xs"
+          placeholder={t('authors.searchPlaceholder')}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+      </div>
       {isLoading ? (
         <LoadingBlock rows={4} />
       ) : rows.length === 0 ? (
@@ -55,10 +81,27 @@ export function AuthorsAdminPage() {
               >
                 {a.nameEn || a.nameSi || a.id}
               </Link>
+              <Badge variant={a.status === 'approved' ? 'success' : 'muted'}>
+                {t(`authors.status.${a.status ?? 'pending'}`)}
+              </Badge>
               {a.verified ? <BadgeCheck className="h-4 w-4 text-primary" /> : null}
               {a.featured ? <Star className="h-4 w-4 text-rating" /> : null}
               <span className="text-muted-foreground">· {a.bookCount} books</span>
-              <div className="ml-auto flex gap-2">
+              <div className="ml-auto flex flex-wrap gap-2">
+                {a.status !== 'approved' ? (
+                  <Button size="sm" onClick={() => approval(a.id, 'approved')}>
+                    {t('authors.approve')}
+                  </Button>
+                ) : null}
+                {a.status !== 'rejected' ? (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => approval(a.id, 'rejected')}
+                  >
+                    {t('authors.reject')}
+                  </Button>
+                ) : null}
                 <Button
                   size="sm"
                   variant="outline"

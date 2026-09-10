@@ -42,6 +42,9 @@ interface Author {
   genres: string[];                // controlled vocab, see below
   website: string | null;
   socialLinks: { label: string; url: string }[];
+  status: 'pending' | 'approved' | 'rejected'; // admin approval gate; created 'pending',
+                                   // only 'approved' profiles are public; an owner edit
+                                   // resets it to 'pending'
   verified: boolean;               // admin-granted badge, default false
   featured: boolean;               // admin-curated, surfaces on home, default false
 
@@ -78,6 +81,9 @@ interface Book {
   publishedYear: number | null;
   publisher: string | null;
   pageCount: number | null;
+  status: 'pending' | 'approved' | 'rejected'; // admin approval gate; created 'pending',
+                                   // only 'approved' books are public; an owner edit
+                                   // resets it to 'pending'
   featured: boolean;               // admin-curated, surfaces on home, default false
 
   // aggregates — mutated ONLY by the review transaction
@@ -118,7 +124,10 @@ interface Review {
   authorUid: string | null;        // reviewer's uid; null for guests
   reviewerName: string;            // user displayName, or guestName for guests
   guestName: string | null;
-  status: 'published' | 'reported' | 'removed';
+  status: 'pending' | 'published' | 'removed'; // created 'pending' (verified AND guest);
+                                   // an admin approves it to 'published' (folding its
+                                   // rating into the target aggregates); editing a
+                                   // 'published' review sends it back to 'pending'
   helpfulCount: number;            // optional in MVP; default 0
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -175,8 +184,14 @@ Rules: `create` by admins only, with `actorUid == request.auth.uid`; `read` admi
 
 ## Aggregate maintenance (no Cloud Functions)
 
-Every review **create / edit / delete** runs one `runTransaction` in `submitReview()` /
-`deleteReview()` (`src/features/reviews/`). Steps:
+Because every review is created `pending`, aggregates do **not** move on create. They move
+when an admin **approves** a review (`approveReview()` in `src/features/admin/api.ts`, an
+`isCreate` delta), when a published review is **removed** or **edited** (an `isDelete`
+unwind — an edit then re-enters the queue as `pending`), and on **delete** of a published
+review. In every case the maths below is the same `applyReviewDelta()` call, run inside one
+`runTransaction` that also writes the review/target docs.
+
+Historically this ran in `submitReview()` / `deleteReview()` on create. Steps:
 
 1. `get` the target doc (`books/{targetId}` or `authors/{targetId}`).
 2. `get` the existing review doc (for edit/delete) to know `oldRating`.
@@ -220,6 +235,8 @@ post-v1 in [09-roadmap.md](09-roadmap.md). See rule sketch in
 | `books` | `authorId` ==, `createdAt` desc | Author profile book grid |
 | `books` | `createdAt` desc | "Recently added" |
 | `authors` | `bayesianScore` desc, `ratingCount` desc | Home "Top Rated Authors" |
+| `books` / `authors` | `status` ==, then each of the ranking/browse sorts above | Public lists — all now filter `status == 'approved'` (one composite per sort/filter combo) |
+| `books` / `authors` | `status` ==, `updatedAt` desc | `/admin/books` · `/admin/authors` moderation queue |
 | `reviews` | `targetId` ==, `status` ==, `createdAt` desc | Book/author review list |
 | `reviews` | `authorUid` ==, `createdAt` desc | `/me` — my reviews |
 | `reviews` | `status` ==, `updatedAt` desc | "Recently Reviewed" on home / `/admin/reviews` |

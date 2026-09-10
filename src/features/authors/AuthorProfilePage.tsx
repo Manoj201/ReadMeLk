@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BadgeCheck, Globe, MapPin, Pencil, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
@@ -25,9 +26,11 @@ export function AuthorProfilePage() {
   const { t: tc } = useTranslation('common')
   const { pick } = useLocalizedField()
   const uid = useAuthStore((s) => s.user?.uid ?? null)
+  const isAdminClaim = useAuthStore((s) => s.isAdminClaim)
 
   const authorQ = useAuthor(authorId)
-  const booksQ = useBooksByAuthor(authorId)
+  const canSeeAllBooks = !!authorQ.data && (authorQ.data.ownerUid === uid || isAdminClaim)
+  const booksQ = useBooksByAuthor(authorId, canSeeAllBooks)
   const reviewsQ = useReviews('author', authorId)
 
   if (authorQ.isLoading) return <LoadingBlock className="container py-12" />
@@ -39,6 +42,7 @@ export function AuthorProfilePage() {
   const bio = pick(author.bioEn, author.bioSi)
   const isOwner = uid === author.ownerUid
   const reviews = reviewsQ.data ?? []
+  const showModerationBanner = (isOwner || isAdminClaim) && author.status !== 'approved'
 
   return (
     <div>
@@ -108,6 +112,15 @@ export function AuthorProfilePage() {
 
       <div className="container grid gap-8 py-8 lg:grid-cols-[1fr_320px]">
         <div className="space-y-8">
+          {showModerationBanner ? (
+            <p className="rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+              {t(
+                author.status === 'rejected'
+                  ? 'profile.rejectedBanner'
+                  : 'profile.pendingBanner',
+              )}
+            </p>
+          ) : null}
           <section>
             <h2 className="mb-2 font-serif text-lg font-semibold">
               {t('profile.about')} {bio.isFallback ? <BilingualChip shown={bio.lang!} /> : null}
@@ -136,7 +149,12 @@ export function AuthorProfilePage() {
             ) : booksQ.data && booksQ.data.length > 0 ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {booksQ.data.map((b) => (
-                  <BookCard key={b.id} book={b} />
+                  <div key={b.id} className="space-y-1">
+                    <BookCard book={b} />
+                    {b.status !== 'approved' ? (
+                      <Badge variant="muted">{t(`profile.bookStatus.${b.status}`)}</Badge>
+                    ) : null}
+                  </div>
                 ))}
               </div>
             ) : (
@@ -170,16 +188,18 @@ export function AuthorProfilePage() {
               distribution={buildDistribution(reviews)}
             />
           </div>
-          <Tabs defaultValue="write">
-            <TabsList className="w-full">
-              <TabsTrigger value="write" className="flex-1">
-                {t('profile.writeReview')}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="write">
-              <ReviewForm targetType="author" targetId={author.id} />
-            </TabsContent>
-          </Tabs>
+          {author.status === 'approved' ? (
+            <Tabs defaultValue="write">
+              <TabsList className="w-full">
+                <TabsTrigger value="write" className="flex-1">
+                  {t('profile.writeReview')}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="write">
+                <ReviewForm targetType="author" targetId={author.id} />
+              </TabsContent>
+            </Tabs>
+          ) : null}
         </aside>
       </div>
     </div>

@@ -77,6 +77,45 @@ describe('applyReviewDelta', () => {
     expect(afterDelete.reviewCount).toBe(1)
   })
 
+  // moderation gate: a review contributes nothing until an admin approves it,
+  // at which point it is folded in exactly once (isCreate).
+  it('approving a pending verified review folds it in once', () => {
+    const approved = applyReviewDelta(ZERO_AGGREGATE, {
+      newRating: 4,
+      isCreate: true,
+      isGuest: false,
+    })
+    expect(approved.ratingCount).toBe(1)
+    expect(approved.reviewCount).toBe(1)
+    expect(approved.ratingSum).toBe(4)
+  })
+
+  it('approving a pending guest review moves the average but not reviewCount', () => {
+    const approved = applyReviewDelta(ZERO_AGGREGATE, {
+      newRating: 5,
+      isCreate: true,
+      isGuest: true,
+    })
+    expect(approved.ratingCount).toBe(1)
+    expect(approved.reviewCount).toBe(0)
+  })
+
+  // editing a published review drops it back to the queue — its old contribution
+  // is unwound first (isDelete), leaving the aggregates as if it were never there.
+  it('unwinds a published review when it re-enters moderation on edit', () => {
+    const published = applyReviewDelta(ZERO_AGGREGATE, {
+      newRating: 3,
+      isCreate: true,
+      isGuest: false,
+    })
+    const backToPending = applyReviewDelta(published, {
+      oldRating: 3,
+      isDelete: true,
+      isGuest: false,
+    })
+    expect(backToPending).toEqual(ZERO_AGGREGATE)
+  })
+
   it('never goes negative', () => {
     const next = applyReviewDelta(ZERO_AGGREGATE, {
       oldRating: 5,

@@ -17,7 +17,10 @@
       "authors": "Authors",
       "books": "Books",
       "reviews": "Reviews",
-      "openReports": "Open reports"
+      "openReports": "Open reports",
+      "pendingReviews": "Reviews awaiting approval",
+      "pendingAuthors": "Authors awaiting approval",
+      "pendingBooks": "Books awaiting approval"
     },
     "recentActions": "Recent admin actions",
     "noActions": "No admin actions logged yet."
@@ -39,20 +42,37 @@
     "searchPlaceholder": "Search review text or reviewer…",
     "filter": {
       "all": "All",
+      "pending": "Pending",
       "published": "Published",
       "removed": "Removed"
     },
+    "approve": "Approve",
     "remove": "Remove",
-    "restore": "Restore",
+    "restore": "Restore to queue",
     "status": {
+      "pending": "Pending",
       "published": "Published",
-      "removed": "Removed",
-      "reported": "Reported"
+      "removed": "Removed"
     }
   },
   "authors": {
     "title": "Authors",
     "searchPlaceholder": "Search authors…",
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "approve": "Approve",
+    "approved": "Author profile approved.",
+    "reject": "Reject",
+    "rejected": "Author profile rejected.",
     "verify": "Verify",
     "unverify": "Remove badge",
     "feature": "Feature",
@@ -64,6 +84,21 @@
   "books": {
     "title": "Books",
     "searchPlaceholder": "Search books…",
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "approve": "Approve",
+    "approved": "Book approved.",
+    "reject": "Reject",
+    "rejected": "Book rejected.",
     "feature": "Feature",
     "unfeature": "Unfeature",
     "edit": "Edit",

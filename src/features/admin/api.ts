@@ -38,6 +38,7 @@ import type {
   AppUser,
   Author,
   Book,
+  ModerationStatus,
   Rating,
   Report,
   Review,
@@ -84,15 +85,21 @@ export interface AdminStats {
   books: number
   reviews: number
   openReports: number
+  pendingReviews: number
+  pendingAuthors: number
+  pendingBooks: number
 }
 
 export async function fetchAdminStats(): Promise<AdminStats> {
-  const [u, a, b, r, o] = await Promise.all([
+  const [u, a, b, r, o, pr, pa, pb] = await Promise.all([
     getCountFromServer(usersCol),
     getCountFromServer(authorsCol),
     getCountFromServer(booksCol),
     getCountFromServer(reviewsCol),
     getCountFromServer(query(reportsCol, where('status', '==', 'open'))),
+    getCountFromServer(query(reviewsCol, where('status', '==', 'pending'))),
+    getCountFromServer(query(authorsCol, where('status', '==', 'pending'))),
+    getCountFromServer(query(booksCol, where('status', '==', 'pending'))),
   ])
   return {
     users: u.data().count,
@@ -100,6 +107,9 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     books: b.data().count,
     reviews: r.data().count,
     openReports: o.data().count,
+    pendingReviews: pr.data().count,
+    pendingAuthors: pa.data().count,
+    pendingBooks: pb.data().count,
   }
 }
 
@@ -125,7 +135,33 @@ export async function fetchReviewsForAdmin(status?: Review['status']): Promise<R
   return listData<Review>(snap)
 }
 
-/** Remove or restore a review, unwinding / re-applying its aggregate contribution. */
+/**
+ * Approve a pending review: publish it and fold its rating into the target's
+ * aggregates. Only ever called on a `pending` review.
+ */
+export async function approveReview(actor: Actor, review: Review): Promise<void> {
+  const tRef = doc(db, review.targetType === 'book' ? 'books' : 'authors', review.targetId)
+  await runTransaction(db, async (tx) => {
+    const tSnap = await tx.get(tRef)
+    if (tSnap.exists()) {
+      const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
+        newRating: review.rating as Rating,
+        isCreate: true,
+        isGuest: review.isGuest,
+      })
+      tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
+    }
+    tx.update(reviewDoc(review.id), { status: 'published', updatedAt: serverTimestamp() })
+  })
+  await writeLog(actor, 'review.approve', 'review', review.id)
+}
+
+/**
+ * Remove a review (→ `removed`) or send it back to the queue (→ `pending`).
+ * A published review's aggregate contribution is unwound on removal; pending and
+ * removed reviews never contributed, so nothing to unwind there. Restore never
+ * re-publishes directly — an admin must approve it again.
+ */
 export async function setReviewRemoved(
   actor: Actor,
   review: Review,
@@ -134,19 +170,19 @@ export async function setReviewRemoved(
 ): Promise<void> {
   const tRef = doc(db, review.targetType === 'book' ? 'books' : 'authors', review.targetId)
   await runTransaction(db, async (tx) => {
-    const tSnap = await tx.get(tRef)
-    if (tSnap.exists()) {
-      const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
-        oldRating: removed ? (review.rating as Rating) : null,
-        newRating: removed ? null : (review.rating as Rating),
-        isDelete: removed,
-        isCreate: !removed,
-        isGuest: review.isGuest,
-      })
-      tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
+    if (removed && review.status === 'published') {
+      const tSnap = await tx.get(tRef)
+      if (tSnap.exists()) {
+        const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
+          oldRating: review.rating as Rating,
+          isDelete: true,
+          isGuest: review.isGuest,
+        })
+        tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
+      }
     }
     tx.update(reviewDoc(review.id), {
-      status: removed ? 'removed' : 'published',
+      status: removed ? 'removed' : 'pending',
       updatedAt: serverTimestamp(),
     })
     if (reportId) {
@@ -177,9 +213,27 @@ export async function dismissReport(actor: Actor, reportId: string): Promise<voi
 
 /* ---------------- authors ---------------- */
 
-export async function listAuthorsForAdmin(): Promise<Author[]> {
-  const snap = await getDocs(query(authorsCol, orderBy('updatedAt', 'desc'), qlimit(100)))
+export async function listAuthorsForAdmin(status?: ModerationStatus): Promise<Author[]> {
+  const clauses = status ? [where('status', '==', status)] : []
+  const snap = await getDocs(
+    query(authorsCol, ...clauses, orderBy('updatedAt', 'desc'), qlimit(100)),
+  )
   return listData<Author>(snap)
+}
+
+/** Approve or reject a pending author profile. */
+export async function setAuthorApproval(
+  actor: Actor,
+  id: string,
+  status: 'approved' | 'rejected',
+) {
+  await updateDoc(authorDoc(id), { status, updatedAt: serverTimestamp() })
+  await writeLog(
+    actor,
+    status === 'approved' ? 'author.approve' : 'author.reject',
+    'author',
+    id,
+  )
 }
 
 export async function setAuthorVerified(actor: Actor, id: string, verified: boolean) {
@@ -199,9 +253,22 @@ export async function adminDeleteAuthor(actor: Actor, author: Author) {
 
 /* ---------------- books ---------------- */
 
-export async function listBooksForAdmin(): Promise<Book[]> {
-  const snap = await getDocs(query(booksCol, orderBy('updatedAt', 'desc'), qlimit(100)))
+export async function listBooksForAdmin(status?: ModerationStatus): Promise<Book[]> {
+  const clauses = status ? [where('status', '==', status)] : []
+  const snap = await getDocs(
+    query(booksCol, ...clauses, orderBy('updatedAt', 'desc'), qlimit(100)),
+  )
   return listData<Book>(snap)
+}
+
+/** Approve or reject a pending book. */
+export async function setBookApproval(
+  actor: Actor,
+  id: string,
+  status: 'approved' | 'rejected',
+) {
+  await updateDoc(bookDoc(id), { status, updatedAt: serverTimestamp() })
+  await writeLog(actor, status === 'approved' ? 'book.approve' : 'book.reject', 'book', id)
 }
 
 export async function setBookFeatured(actor: Actor, id: string, featured: boolean) {

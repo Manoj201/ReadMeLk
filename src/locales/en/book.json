@@ -29,7 +29,9 @@
     "writeReview": "Write a review",
     "reviewsTitle": "Reader reviews",
     "authorRemoved": "This author's profile was removed.",
-    "notFound": "That book doesn't exist or was removed."
+    "notFound": "That book doesn't exist or was removed.",
+    "pendingBanner": "This book is awaiting admin approval. Only you and the moderators can see it until then.",
+    "rejectedBanner": "A moderator did not approve this book. Edit it to resubmit for review."
   },
   "form": {
     "newTitle": "Register a book",

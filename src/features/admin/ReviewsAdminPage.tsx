@@ -10,16 +10,16 @@ import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { RatingStars } from '@/components/RatingStars'
 import { toast } from '@/hooks/use-toast'
 import type { Review } from '@/types'
-import { setReviewRemoved } from './api'
+import { approveReview, setReviewRemoved } from './api'
 import { useActor, useAdminReviews } from './hooks'
 
-type Filter = 'all' | 'published' | 'removed'
+type Filter = 'pending' | 'published' | 'removed' | 'all'
 
 export function ReviewsAdminPage() {
   const { t } = useTranslation('admin')
   const actor = useActor()
   const qc = useQueryClient()
-  const [filter, setFilter] = useState<Filter>('all')
+  const [filter, setFilter] = useState<Filter>('pending')
   const [q, setQ] = useState('')
   const { data, isLoading } = useAdminReviews(filter === 'all' ? undefined : filter)
 
@@ -41,15 +41,22 @@ export function ReviewsAdminPage() {
     await qc.invalidateQueries({ queryKey: ['admin'] })
   }
 
+  async function approve(review: Review) {
+    await approveReview(actor, review)
+    toast({ description: t('reviews.approve'), variant: 'success' })
+    await qc.invalidateQueries({ queryKey: ['admin'] })
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="font-serif text-xl font-semibold">{t('reviews.title')}</h1>
       <div className="flex flex-wrap items-center gap-3">
         <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
           <TabsList>
-            <TabsTrigger value="all">{t('reviews.filter.all')}</TabsTrigger>
+            <TabsTrigger value="pending">{t('reviews.filter.pending')}</TabsTrigger>
             <TabsTrigger value="published">{t('reviews.filter.published')}</TabsTrigger>
             <TabsTrigger value="removed">{t('reviews.filter.removed')}</TabsTrigger>
+            <TabsTrigger value="all">{t('reviews.filter.all')}</TabsTrigger>
           </TabsList>
         </Tabs>
         <Input
@@ -87,7 +94,12 @@ export function ReviewsAdminPage() {
               <p className="mt-1 line-clamp-3 whitespace-pre-line text-foreground/90">
                 {r.body}
               </p>
-              <div className="mt-2">
+              <div className="mt-2 flex flex-wrap gap-2">
+                {r.status === 'pending' ? (
+                  <Button size="sm" onClick={() => approve(r)}>
+                    {t('reviews.approve')}
+                  </Button>
+                ) : null}
                 {r.status === 'removed' ? (
                   <Button size="sm" variant="outline" onClick={() => act(r, false)}>
                     {t('reviews.restore')}

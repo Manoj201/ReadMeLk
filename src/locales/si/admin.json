@@ -17,7 +17,10 @@
       "authors": "කතුවරුන්",
       "books": "පොත්",
       "reviews": "විචාර",
-      "openReports": "විවෘත වාර්තා"
+      "openReports": "විවෘත වාර්තා",
+      "pendingReviews": "අනුමැතිය බලාපොරොත්තුවෙන් සිටින විචාර",
+      "pendingAuthors": "අනුමැතිය බලාපොරොත්තුවෙන් සිටින කතුවරුන්",
+      "pendingBooks": "අනුමැතිය බලාපොරොත්තුවෙන් සිටින පොත්"
     },
     "recentActions": "මෑත පරිපාලක ක්‍රියා",
     "noActions": "තවම පරිපාලක ක්‍රියා සටහන් කර නැත."
@@ -39,20 +42,37 @@
     "searchPlaceholder": "විචාර පෙළ හෝ විචාරකයා සොයන්න…",
     "filter": {
       "all": "සියල්ල",
+      "pending": "අපේක්ෂිත",
       "published": "ප්‍රකාශිත",
       "removed": "ඉවත් කළ"
     },
+    "approve": "අනුමත කරන්න",
     "remove": "ඉවත් කරන්න",
-    "restore": "යළි පිහිටුවන්න",
+    "restore": "පෝලිමට යළි යවන්න",
     "status": {
+      "pending": "අපේක්ෂිත",
       "published": "ප්‍රකාශිත",
-      "removed": "ඉවත් කළ",
-      "reported": "වාර්තා කළ"
+      "removed": "ඉවත් කළ"
     }
   },
   "authors": {
     "title": "කතුවරුන්",
     "searchPlaceholder": "කතුවරුන් සොයන්න…",
+    "filter": {
+      "all": "සියල්ල",
+      "pending": "අපේක්ෂිත",
+      "approved": "අනුමත කළ",
+      "rejected": "ප්‍රතික්ෂේප කළ"
+    },
+    "status": {
+      "pending": "අපේක්ෂිත",
+      "approved": "අනුමත කළ",
+      "rejected": "ප්‍රතික්ෂේප කළ"
+    },
+    "approve": "අනුමත කරන්න",
+    "approved": "කතුවර පැතිකඩ අනුමත කරන ලදී.",
+    "reject": "ප්‍රතික්ෂේප කරන්න",
+    "rejected": "කතුවර පැතිකඩ ප්‍රතික්ෂේප කරන ලදී.",
     "verify": "සත්‍යාපනය කරන්න",
     "unverify": "ලාංඡනය ඉවත් කරන්න",
     "feature": "විශේෂාංගගත කරන්න",
@@ -64,6 +84,21 @@
   "books": {
     "title": "පොත්",
     "searchPlaceholder": "පොත් සොයන්න…",
+    "filter": {
+      "all": "සියල්ල",
+      "pending": "අපේක්ෂිත",
+      "approved": "අනුමත කළ",
+      "rejected": "ප්‍රතික්ෂේප කළ"
+    },
+    "status": {
+      "pending": "අපේක්ෂිත",
+      "approved": "අනුමත කළ",
+      "rejected": "ප්‍රතික්ෂේප කළ"
+    },
+    "approve": "අනුමත කරන්න",
+    "approved": "පොත අනුමත කරන ලදී.",
+    "reject": "ප්‍රතික්ෂේප කරන්න",
+    "rejected": "පොත ප්‍රතික්ෂේප කරන ලදී.",
     "feature": "විශේෂාංගගත කරන්න",
     "unfeature": "ඉවත් කරන්න",
     "edit": "සංස්කරණය",

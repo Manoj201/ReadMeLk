@@ -28,11 +28,24 @@ export interface AuthorInput {
 }
 
 export async function fetchAuthor(id: string): Promise<Author | null> {
-  return docData<Author>(await getDoc(authorDoc(id)))
+  try {
+    return docData<Author>(await getDoc(authorDoc(id)))
+  } catch (err) {
+    // rules deny reads of non-approved profiles to non-owners — treat as "not found"
+    if ((err as { code?: string })?.code === 'permission-denied') return null
+    throw err
+  }
 }
 
 export async function fetchAuthors(max = 48): Promise<Author[]> {
-  const snap = await getDocs(query(authorsCol, orderBy('bayesianScore', 'desc'), qlimit(max)))
+  const snap = await getDocs(
+    query(
+      authorsCol,
+      where('status', '==', 'approved'),
+      orderBy('bayesianScore', 'desc'),
+      qlimit(max),
+    ),
+  )
   return listData<Author>(snap)
 }
 
@@ -40,6 +53,7 @@ export async function fetchTopAuthors(max = 6): Promise<Author[]> {
   const snap = await getDocs(
     query(
       authorsCol,
+      where('status', '==', 'approved'),
       where('ratingCount', '>', 0),
       orderBy('ratingCount', 'desc'),
       orderBy('bayesianScore', 'desc'),
@@ -56,6 +70,7 @@ export async function createAuthorProfile(uid: string, input: AuthorInput): Prom
     ownerUid: uid,
     photoURL: null,
     coverURL: null,
+    status: 'pending',
     verified: false,
     featured: false,
     ...ZERO_AGGREGATE,
@@ -76,11 +91,12 @@ export async function createAuthorProfile(uid: string, input: AuthorInput): Prom
   return ref.id
 }
 
+/** An owner edit sends the profile back through admin approval. */
 export async function updateAuthorProfile(
   id: string,
   input: Partial<AuthorInput>,
 ): Promise<void> {
-  await updateDoc(authorDoc(id), { ...input, updatedAt: serverTimestamp() })
+  await updateDoc(authorDoc(id), { ...input, status: 'pending', updatedAt: serverTimestamp() })
 }
 
 export async function deleteAuthorProfile(id: string): Promise<void> {

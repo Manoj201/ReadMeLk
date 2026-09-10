@@ -8,6 +8,7 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  setDoc,
   where,
   type DocumentData,
   type DocumentReference,
@@ -111,30 +112,60 @@ export interface SubmitReviewInput {
   guestName?: string
 }
 
+/**
+ * Create or update a review. Every submission lands as `status: 'pending'` and is
+ * invisible publicly until an admin approves it (see `approveReview`). Rating
+ * aggregates therefore never move here on create — the one exception is a
+ * previously *published* review being edited, which must first unwind its old
+ * contribution as it drops back to the moderation queue.
+ */
 export async function submitReview(input: SubmitReviewInput): Promise<void> {
-  const isGuest = !input.user
-  if (isGuest && guestCooldownRemaining(input.targetId) > 0) {
-    throw new Error('cooldown')
+  // Guest path — create-only, random id, never touches the parent aggregates.
+  if (!input.user) {
+    if (guestCooldownRemaining(input.targetId) > 0) throw new Error('cooldown')
+    await setDoc(reviewDoc(doc(reviewsCol).id), {
+      targetType: input.targetType,
+      targetId: input.targetId,
+      bookId: input.targetType === 'book' ? input.targetId : null,
+      authorId: input.targetType === 'author' ? input.targetId : null,
+      rating: input.rating,
+      titleEn: input.titleEn,
+      titleSi: input.titleSi,
+      body: input.body,
+      bodyLang: input.bodyLang,
+      isGuest: true,
+      authorUid: null,
+      reviewerName: input.guestName ?? 'Guest',
+      guestName: input.guestName ?? null,
+      status: 'pending',
+      helpfulCount: 0,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+    markGuestReview(input.targetId)
+    return
   }
 
-  const reviewId = input.user
-    ? verifiedReviewId(input.targetId, input.user.uid)
-    : doc(reviewsCol).id
-  const rRef = reviewDoc(reviewId)
+  const user = input.user
+  const rRef = reviewDoc(verifiedReviewId(input.targetId, user.uid))
   const tRef = targetRef(input.targetType, input.targetId)
 
   await runTransaction(db, async (tx) => {
-    const tSnap = await tx.get(tRef)
-    if (!tSnap.exists()) throw new Error('target-missing')
-    const prev = input.user ? docData<Review>(await tx.get(rRef)) : null
-    const oldRating = prev ? (prev.rating as Rating) : null
+    const prev = docData<Review>(await tx.get(rRef))
 
-    const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
-      oldRating,
-      newRating: input.rating,
-      isCreate: !oldRating,
-      isGuest,
-    })
+    // A published review being edited must give back its aggregate contribution
+    // before it re-enters the queue as pending.
+    if (prev?.status === 'published') {
+      const tSnap = await tx.get(tRef)
+      if (tSnap.exists()) {
+        const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
+          oldRating: prev.rating as Rating,
+          isDelete: true,
+          isGuest: prev.isGuest,
+        })
+        tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
+      }
+    }
 
     tx.set(rRef, {
       targetType: input.targetType,
@@ -146,33 +177,35 @@ export async function submitReview(input: SubmitReviewInput): Promise<void> {
       titleSi: input.titleSi,
       body: input.body,
       bodyLang: input.bodyLang,
-      isGuest,
-      authorUid: input.user?.uid ?? null,
-      reviewerName: input.user?.displayName ?? input.guestName ?? 'Guest',
-      guestName: input.guestName ?? null,
-      status: 'published',
+      isGuest: false,
+      authorUid: user.uid,
+      reviewerName: user.displayName,
+      guestName: null,
+      status: 'pending',
       helpfulCount: prev?.helpfulCount ?? 0,
       createdAt: prev?.createdAt ?? serverTimestamp(),
       updatedAt: serverTimestamp(),
     })
-    tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
   })
-
-  if (isGuest) markGuestReview(input.targetId)
 }
 
-/** Delete a review and unwind its aggregate contribution. */
+/**
+ * Delete a review, unwinding its aggregate contribution only if it was actually
+ * counted (i.e. `published`). Pending / removed reviews never moved the aggregates.
+ */
 export async function deleteReview(review: Review): Promise<void> {
   const tRef = targetRef(review.targetType, review.targetId)
   await runTransaction(db, async (tx) => {
-    const tSnap = await tx.get(tRef)
-    if (tSnap.exists()) {
-      const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
-        oldRating: review.rating,
-        isDelete: true,
-        isGuest: review.isGuest,
-      })
-      tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
+    if (review.status === 'published') {
+      const tSnap = await tx.get(tRef)
+      if (tSnap.exists()) {
+        const next = applyReviewDelta(aggregatesOf(tSnap.data() ?? {}), {
+          oldRating: review.rating,
+          isDelete: true,
+          isGuest: review.isGuest,
+        })
+        tx.update(tRef, { ...next, updatedAt: serverTimestamp() })
+      }
     }
     tx.delete(reviewDoc(review.id))
   })

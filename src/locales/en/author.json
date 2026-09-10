@@ -7,6 +7,12 @@
   "profile": {
     "about": "About",
     "notFound": "That author profile doesn't exist or was removed.",
+    "pendingBanner": "This profile is awaiting admin approval. Only you and the moderators can see it until then.",
+    "rejectedBanner": "A moderator did not approve this profile. Edit it to resubmit for review.",
+    "bookStatus": {
+      "pending": "Awaiting approval",
+      "rejected": "Not approved"
+    },
     "booksTitle": "Books",
     "reviewsTitle": "Reviews of this author",
     "verified": "Verified author",

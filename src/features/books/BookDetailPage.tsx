@@ -20,6 +20,7 @@ export function BookDetailPage() {
   const { t } = useTranslation('book')
   const { pick } = useLocalizedField()
   const uid = useAuthStore((s) => s.user?.uid ?? null)
+  const isAdminClaim = useAuthStore((s) => s.isAdminClaim)
 
   const bookQ = useBook(bookId)
   const reviewsQ = useReviews('book', bookId)
@@ -34,10 +35,16 @@ export function BookDetailPage() {
   const authorName = pick(book.authorNameEn, book.authorNameSi).value
   const isOwner = uid === book.ownerUid
   const reviews = reviewsQ.data ?? []
+  const canModeratePreview = isOwner || isAdminClaim
 
   return (
     <div className="container grid gap-8 py-8 lg:grid-cols-[1fr_340px]">
       <div className="space-y-8">
+        {canModeratePreview && book.status !== 'approved' ? (
+          <p className="rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+            {t(book.status === 'rejected' ? 'detail.rejectedBanner' : 'detail.pendingBanner')}
+          </p>
+        ) : null}
         <div className="flex flex-col gap-6 sm:flex-row">
           <div className="mx-auto aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:mx-0">
             {book.coverURL ? (
@@ -135,7 +142,9 @@ export function BookDetailPage() {
             distribution={buildDistribution(reviews)}
           />
         </div>
-        <ReviewForm targetType="book" targetId={book.id} />
+        {book.status === 'approved' ? (
+          <ReviewForm targetType="book" targetId={book.id} />
+        ) : null}
       </aside>
     </div>
   )

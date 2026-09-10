@@ -6,8 +6,10 @@ export type Role = 'reader' | 'author' | 'admin'
 export type ContentLang = 'si' | 'en'
 export type BookLang = 'si' | 'en' | 'bilingual'
 export type TargetType = 'book' | 'author'
-export type ReviewStatus = 'published' | 'reported' | 'removed'
+export type ReviewStatus = 'pending' | 'published' | 'removed'
 export type ReportStatus = 'open' | 'actioned' | 'dismissed'
+/** Admin approval gate for books and author profiles. */
+export type ModerationStatus = 'pending' | 'approved' | 'rejected'
 
 export interface AppUser {
   /** synthetic doc id — equals `uid` for users */
@@ -41,6 +43,8 @@ export interface Author {
   genres: string[]
   website: string | null
   socialLinks: SocialLink[]
+  /** admin approval gate — only `approved` profiles are publicly visible */
+  status: ModerationStatus
   verified: boolean
   featured: boolean
   bookCount: number
@@ -70,6 +74,8 @@ export interface Book {
   publishedYear: number | null
   publisher: string | null
   pageCount: number | null
+  /** admin approval gate — only `approved` books are publicly visible */
+  status: ModerationStatus
   featured: boolean
   ratingSum: number
   ratingCount: number
@@ -120,13 +126,18 @@ export interface Report {
 }
 
 export type AdminActionType =
+  | 'review.approve'
   | 'review.remove'
   | 'review.restore'
   | 'report.dismiss'
+  | 'author.approve'
+  | 'author.reject'
   | 'author.verify'
   | 'author.unverify'
   | 'author.edit'
   | 'author.delete'
+  | 'book.approve'
+  | 'book.reject'
   | 'book.edit'
   | 'book.delete'
   | 'author.feature'

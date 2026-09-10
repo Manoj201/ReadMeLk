@@ -22,10 +22,10 @@ export function useBook(id: string | undefined) {
   })
 }
 
-export function useBooksByAuthor(authorId: string | undefined) {
+export function useBooksByAuthor(authorId: string | undefined, includeAll = false) {
   return useQuery({
-    queryKey: ['books', 'byAuthor', authorId],
-    queryFn: () => fetchBooksByAuthor(authorId as string),
+    queryKey: ['books', 'byAuthor', authorId, includeAll],
+    queryFn: () => fetchBooksByAuthor(authorId as string, includeAll),
     enabled: !!authorId,
   })
 }

@@ -59,16 +59,22 @@ service cloud.firestore {
 
     // ---- authors -------------------------------------------------------
     match /authors/{authorId} {
-      allow read: if true;
+      // only approved profiles are public; owner + admin always see their own
+      allow read: if resource.data.status == 'approved'
+        || isAdmin()
+        || (isSignedIn() && resource.data.ownerUid == uid());
       allow create: if isSignedIn()
         && request.resource.data.ownerUid == uid()
+        && request.resource.data.status == 'pending'
         && request.resource.data.verified == false
         && request.resource.data.featured == false
         && request.resource.data.ratingCount == 0
         && request.resource.data.bookCount == 0;
       allow update: if isAdmin()
-        // owner edits profile fields, never verified / featured / aggregates
+        // owner edits profile fields — never verified / featured / aggregates, and
+        // the edit always re-enters the moderation queue (status -> pending)
         || (resource.data.ownerUid == uid()
+            && request.resource.data.status == 'pending'
             && request.resource.data.verified == resource.data.verified
             && request.resource.data.featured == resource.data.featured
             && !changed(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount']))
@@ -81,13 +87,19 @@ service cloud.firestore {
 
     // ---- books --------------------------------------------------------
     match /books/{bookId} {
-      allow read: if true;
+      // only approved books are public; owner + admin always see their own
+      allow read: if resource.data.status == 'approved'
+        || isAdmin()
+        || (isSignedIn() && resource.data.ownerUid == uid());
       allow create: if isAuthor()
         && request.resource.data.ownerUid == uid()
+        && request.resource.data.status == 'pending'
         && request.resource.data.featured == false
         && request.resource.data.ratingCount == 0;
       allow update: if isAdmin()
+        // owner edits always re-enter the moderation queue (status -> pending)
         || (resource.data.ownerUid == uid()
+            && request.resource.data.status == 'pending'
             && request.resource.data.featured == resource.data.featured
             && !changed(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount']))
         || (isSignedIn()
@@ -102,6 +114,7 @@ service cloud.firestore {
         || isAdmin()
         || (isSignedIn() && resource.data.authorUid == uid());
 
+      // every new review lands as 'pending' — an admin publishes it later
       allow create: if
         // verified: deterministic id, tied to the caller
         (isSignedIn()
@@ -110,7 +123,7 @@ service cloud.firestore {
           && reviewId == request.resource.data.targetId + '_' + uid()
           && request.resource.data.rating is int
           && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
-          && request.resource.data.status == 'published')
+          && request.resource.data.status == 'pending')
         ||
         // guest: no auth, name required, not attributable
         (request.resource.data.isGuest == true
@@ -119,10 +132,13 @@ service cloud.firestore {
           && request.resource.data.guestName.size() >= 2
           && request.resource.data.rating is int
           && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
-          && request.resource.data.status == 'published');
+          && request.resource.data.status == 'pending');
 
       allow update: if isAdmin()
+        // the owner may edit their own review, but it always drops back to 'pending'
+        // (never a self-publish) and its attribution can't change
         || (isSignedIn() && resource.data.authorUid == uid()
+            && request.resource.data.status == 'pending'
             && request.resource.data.authorUid == resource.data.authorUid
             && request.resource.data.isGuest == resource.data.isGuest);
       allow delete: if isAdmin() || (isSignedIn() && resource.data.authorUid == uid());

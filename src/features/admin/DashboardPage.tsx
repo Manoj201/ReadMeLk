@@ -17,13 +17,16 @@ export function DashboardPage() {
     { key: 'counts.books', value: stats.data?.books },
     { key: 'counts.reviews', value: stats.data?.reviews },
     { key: 'counts.openReports', value: stats.data?.openReports },
+    { key: 'counts.pendingReviews', value: stats.data?.pendingReviews },
+    { key: 'counts.pendingAuthors', value: stats.data?.pendingAuthors },
+    { key: 'counts.pendingBooks', value: stats.data?.pendingBooks },
   ]
 
   return (
     <div className="space-y-8">
       <h1 className="font-serif text-2xl font-semibold">{t('dashboard.title')}</h1>
 
-      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {cards.map((c) => (
           <Card key={c.key}>
             <CardContent className="pt-6">

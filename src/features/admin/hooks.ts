@@ -9,7 +9,7 @@ import {
   listBooksForAdmin,
   listUsers,
 } from './api'
-import type { Review } from '@/types'
+import type { ModerationStatus, Review } from '@/types'
 
 export function useActor() {
   const user = useAuthStore((s) => s.user)
@@ -33,11 +33,17 @@ export const useAdminReviews = (status?: Review['status']) =>
     queryFn: () => fetchReviewsForAdmin(status),
   })
 
-export const useAdminAuthors = () =>
-  useQuery({ queryKey: ['admin', 'authors'], queryFn: listAuthorsForAdmin })
+export const useAdminAuthors = (status?: ModerationStatus) =>
+  useQuery({
+    queryKey: ['admin', 'authors', status ?? 'all'],
+    queryFn: () => listAuthorsForAdmin(status),
+  })
 
-export const useAdminBooks = () =>
-  useQuery({ queryKey: ['admin', 'books'], queryFn: listBooksForAdmin })
+export const useAdminBooks = (status?: ModerationStatus) =>
+  useQuery({
+    queryKey: ['admin', 'books', status ?? 'all'],
+    queryFn: () => listBooksForAdmin(status),
+  })
 
 export const useAdminUsers = () =>
   useQuery({ queryKey: ['admin', 'users'], queryFn: listUsers })

@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  type QueryConstraint,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { authorDoc, bookDoc, booksCol, docData, listData } from '@/lib/firestore'
@@ -38,7 +39,7 @@ export interface BookInput {
 }
 
 export async function fetchBooks(filters: BookFilters, max = 24): Promise<Book[]> {
-  const clauses = []
+  const clauses: QueryConstraint[] = [where('status', '==', 'approved')]
   if (filters.genre) clauses.push(where('genres', 'array-contains', filters.genre))
   if (filters.language) clauses.push(where('language', '==', filters.language))
   if (filters.minRating && filters.minRating > 0) {
@@ -54,13 +55,26 @@ export async function fetchBooks(filters: BookFilters, max = 24): Promise<Book[]
 }
 
 export async function fetchBook(id: string): Promise<Book | null> {
-  return docData<Book>(await getDoc(bookDoc(id)))
+  try {
+    return docData<Book>(await getDoc(bookDoc(id)))
+  } catch (err) {
+    // rules deny reads of non-approved books to non-owners — treat as "not found"
+    if ((err as { code?: string })?.code === 'permission-denied') return null
+    throw err
+  }
 }
 
-export async function fetchBooksByAuthor(authorId: string): Promise<Book[]> {
-  const snap = await getDocs(
-    query(booksCol, where('authorId', '==', authorId), orderBy('createdAt', 'desc')),
-  )
+/**
+ * Books by an author. Public callers get approved books only; pass
+ * `includeAll` when the viewer owns the profile or is an admin.
+ */
+export async function fetchBooksByAuthor(
+  authorId: string,
+  includeAll = false,
+): Promise<Book[]> {
+  const clauses = [where('authorId', '==', authorId)]
+  if (!includeAll) clauses.push(where('status', '==', 'approved'))
+  const snap = await getDocs(query(booksCol, ...clauses, orderBy('createdAt', 'desc')))
   return listData<Book>(snap)
 }
 
@@ -68,6 +82,7 @@ export async function fetchBestBooks(max = 8): Promise<Book[]> {
   const snap = await getDocs(
     query(
       booksCol,
+      where('status', '==', 'approved'),
       where('ratingCount', '>', 0),
       orderBy('ratingCount', 'desc'),
       orderBy('bayesianScore', 'desc'),
@@ -98,6 +113,7 @@ export async function createBook(
     authorNameSi: author.nameSi,
     ownerUid,
     coverURL: null,
+    status: 'pending',
     featured: false,
     ...ZERO_AGGREGATE,
     ...input,
@@ -116,8 +132,9 @@ export async function createBook(
   return ref.id
 }
 
+/** An owner edit sends the book back through admin approval. */
 export async function updateBook(id: string, input: Partial<BookInput>): Promise<void> {
-  await updateDoc(bookDoc(id), { ...input, updatedAt: serverTimestamp() })
+  await updateDoc(bookDoc(id), { ...input, status: 'pending', updatedAt: serverTimestamp() })
 }
 
 export async function deleteBook(

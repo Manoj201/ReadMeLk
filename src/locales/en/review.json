@@ -15,6 +15,9 @@
     "update": "Update review",
     "signInPrompt": "Sign in to post as a verified reader, or continue as a guest.",
     "cooldown": "You just posted a guest review here. Try again in a few minutes.",
+    "pendingNotice": "Thanks! Your review will appear once a moderator approves it.",
+    "awaitingApproval": "Your review is awaiting moderator approval.",
+    "reviewRemovedNote": "A moderator removed your earlier review. You can write a new one below.",
     "editYours": "You've reviewed this. Edit your review below.",
     "delete": "Delete my review",
     "deleteConfirm": "Delete your review?"

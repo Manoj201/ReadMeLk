@@ -99,7 +99,7 @@ export function ReviewForm({ targetType, targetId }: Props) {
         guestName: user ? undefined : guestName.trim(),
       })
       clearDraft(draftKey)
-      toast({ description: t(mine ? 'form.update' : 'form.submit'), variant: 'success' })
+      toast({ description: t('form.pendingNotice'), variant: 'success' })
       await qc.invalidateQueries({ queryKey: ['reviews', targetType, targetId] })
       await qc.invalidateQueries({ queryKey: ['reviews', 'mine', targetId] })
       await qc.invalidateQueries({ queryKey: [targetType, targetId] })
@@ -121,6 +121,11 @@ export function ReviewForm({ targetType, targetId }: Props) {
         <CardTitle>{mine ? t('form.editYours') : t('form.title')}</CardTitle>
       </CardHeader>
       <CardContent>
+        {mine && mine.status !== 'published' ? (
+          <p className="mb-4 rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+            {t(mine.status === 'removed' ? 'form.reviewRemovedNote' : 'form.awaitingApproval')}
+          </p>
+        ) : null}
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="rating">{t('form.ratingLabel')}</Label>

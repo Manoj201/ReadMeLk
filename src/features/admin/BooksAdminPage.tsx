@@ -4,18 +4,23 @@ import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
-import { adminDeleteBook, setBookFeatured } from './api'
+import { adminDeleteBook, setBookApproval, setBookFeatured } from './api'
 import { useActor, useAdminBooks } from './hooks'
+
+type Filter = 'pending' | 'approved' | 'rejected' | 'all'
 
 export function BooksAdminPage() {
   const { t } = useTranslation('admin')
   const actor = useActor()
   const qc = useQueryClient()
   const [q, setQ] = useState('')
-  const { data, isLoading } = useAdminBooks()
+  const [filter, setFilter] = useState<Filter>('pending')
+  const { data, isLoading } = useAdminBooks(filter === 'all' ? undefined : filter)
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase()
@@ -26,15 +31,35 @@ export function BooksAdminPage() {
     )
   }, [data, q])
 
+  async function refresh() {
+    await qc.invalidateQueries({ queryKey: ['admin'] })
+  }
+
+  async function approval(id: string, status: 'approved' | 'rejected') {
+    await setBookApproval(actor, id, status)
+    toast({ description: t(`books.${status}`), variant: 'success' })
+    await refresh()
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="font-serif text-xl font-semibold">{t('books.title')}</h1>
-      <Input
-        className="max-w-xs"
-        placeholder={t('books.searchPlaceholder')}
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
+          <TabsList>
+            <TabsTrigger value="pending">{t('books.filter.pending')}</TabsTrigger>
+            <TabsTrigger value="approved">{t('books.filter.approved')}</TabsTrigger>
+            <TabsTrigger value="rejected">{t('books.filter.rejected')}</TabsTrigger>
+            <TabsTrigger value="all">{t('books.filter.all')}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Input
+          className="max-w-xs"
+          placeholder={t('books.searchPlaceholder')}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+      </div>
       {isLoading ? (
         <LoadingBlock rows={4} />
       ) : rows.length === 0 ? (
@@ -49,11 +74,28 @@ export function BooksAdminPage() {
               <Link to={`/books/${b.id}`} className="font-medium underline underline-offset-2">
                 {b.titleEn || b.titleSi || b.id}
               </Link>
+              <Badge variant={b.status === 'approved' ? 'success' : 'muted'}>
+                {t(`books.status.${b.status ?? 'pending'}`)}
+              </Badge>
               {b.featured ? <Star className="h-4 w-4 text-rating" /> : null}
               <span className="text-muted-foreground">
                 · {b.ratingAvg.toFixed(1)} ({b.ratingCount})
               </span>
-              <div className="ml-auto flex gap-2">
+              <div className="ml-auto flex flex-wrap gap-2">
+                {b.status !== 'approved' ? (
+                  <Button size="sm" onClick={() => approval(b.id, 'approved')}>
+                    {t('books.approve')}
+                  </Button>
+                ) : null}
+                {b.status !== 'rejected' ? (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => approval(b.id, 'rejected')}
+                  >
+                    {t('books.reject')}
+                  </Button>
+                ) : null}
                 <Button
                   size="sm"
                   variant="outline"
@@ -63,7 +105,7 @@ export function BooksAdminPage() {
                       description: t(b.featured ? 'books.unfeature' : 'books.feature'),
                       variant: 'success',
                     })
-                    await qc.invalidateQueries({ queryKey: ['admin'] })
+                    await refresh()
                   }}
                 >
                   {b.featured ? t('books.unfeature') : t('books.feature')}
@@ -79,7 +121,7 @@ export function BooksAdminPage() {
                     if (!window.confirm(t('books.deleteConfirm'))) return
                     await adminDeleteBook(actor, b)
                     toast({ description: t('books.delete'), variant: 'success' })
-                    await qc.invalidateQueries({ queryKey: ['admin'] })
+                    await refresh()
                   }}
                 >
                   {t('books.delete')}
