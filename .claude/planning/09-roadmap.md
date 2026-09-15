@@ -7,7 +7,7 @@ Milestones are ordered so each depends only on earlier ones. Every **[MVP]** sto
 
 **M0–M6 implemented.** The app is built, typechecks, lint-clean, unit-tested, and
 deploys via GitHub Actions + Vercel; Firestore/Storage rules + indexes are in the repo.
-Includes: heritage design system with **self-hosted** Sinhala/Latin fonts, auth
+Includes: a modern professional design system with **self-hosted** Sinhala/Latin fonts, auth
 (email + Google), author profiles + book registration with in-browser image
 downscaling, guest vs verified reviews with client-side aggregate transactions,
 Bayesian home ranking, the full `/admin` area (moderation queue, review/author/book
@@ -43,7 +43,7 @@ loads; language toggle persists across reload.
 ---
 
 ## M1 — Design system
-**Goal:** the Sri Lankan heritage theme is real and reusable.
+**Goal:** the modern professional theme is real and reusable.
 
 - Implement tokens from [06-design-system.md](06-design-system.md): `tailwind.config.ts`
   colors/fonts/radius; `src/index.css` `:root` + `.dark` shadcn vars + custom vars.
@@ -51,7 +51,7 @@ loads; language toggle persists across reload.
   `body.lang-si` line-heights.
 - Theme the first-wave shadcn components; build `RatingStars`, `LanguageToggle`,
   `NavBar`, `Footer`, `EmptyState`/`ErrorState`/`LoadingBlock`.
-- Motif SVG components: `MotifDivider`, `LotusMark`, footer weave, hero ola-leaf texture.
+- Motif SVG components: `MotifDivider`, `BrandMark`, footer weave, hero book scene.
 - `AppShell` (nav + footer) wraps all routes. Light/dark toggle in `uiStore`.
 
 **DoD:** a Storybook-less "kitchen sink" route shows every themed component in both themes

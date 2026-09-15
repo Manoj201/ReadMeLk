@@ -3,8 +3,12 @@
 ReadMe is a bilingual (සිංහල / English) book review platform for Sri Lanka. Authors publish
 a full author profile and register their books; readers — registered or guest — leave star
 ratings and written reviews for both books and authors. The home page surfaces the
-best-reviewed books using a Bayesian ranking. The visual design is rooted in Sri Lankan
-heritage (flag palette, ola-leaf manuscript motifs, warm parchment neutrals).
+best-reviewed books using a Bayesian ranking, and prominently features admin-curated
+picks — the platform's goal is to get people reading, so books lead the page over authors.
+The visual design is a clean, modern, professional theme — cool neutral slate/white
+surfaces, a single ink-blue brand color, warm amber reserved for ratings/small highlights.
+No themed/cultural motifs; the bilingual Sinhala/English identity lives in the product
+(fonts, i18n, content), not the color palette.
 
 ## Status
 

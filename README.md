@@ -2,8 +2,8 @@
 
 Bilingual (සිංහල / English) platform where authors publish profiles and register books,
 and readers — registered or guest — rate and review both books and authors. The home page
-ranks the best-reviewed books with a Bayesian score. Visual design draws on Sri Lankan
-heritage (flag palette, ola-leaf motifs, warm parchment neutrals).
+promotes admin-curated and best-reviewed books with a Bayesian score. Visual design is a
+clean, modern, professional theme — books lead, not decoration.
 
 > **Setting this up for real?** Follow [`SETUP.md`](SETUP.md) — every manual step
 > (Firebase, database, Storage/App Check, GitHub, Vercel) in order.

@@ -2,12 +2,14 @@ import { cn } from '@/lib/utils'
 
 /**
  * Decorative, theme-aware vector artwork. No photographs / external assets — every
- * scene is drawn with the heritage palette (see .claude/planning/06-design-system.md)
- * so it adapts to light and dark and scales cleanly on any screen.
+ * scene is drawn with the current theme tokens (see .claude/planning/06-design-system.md)
+ * so it adapts to light and dark and scales cleanly on any screen. Deliberately
+ * book-focused rather than any cultural iconography — the platform's identity is
+ * "a great place to find your next book," not a themed backdrop.
  * All are aria-hidden; they never carry meaning.
  */
 
-/** Full hero scene: dagoba, coconut palms, hills, a flock of birds, a stack of books. */
+/** Hero illustration: an open book, a small stack beside it, soft brand-color glow. */
 export function HeroScene({ className }: { className?: string }) {
   return (
     <svg
@@ -17,144 +19,75 @@ export function HeroScene({ className }: { className?: string }) {
       className={cn('h-full w-full', className)}
     >
       <defs>
-        <linearGradient id="hero-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" style={{ stopColor: 'hsl(var(--brand-gold) / 0.28)' }} />
-          <stop offset="55%" style={{ stopColor: 'hsl(var(--brand-orange) / 0.14)' }} />
+        <linearGradient id="hero-glow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" style={{ stopColor: 'hsl(var(--brand-primary) / 0.12)' }} />
+          <stop offset="55%" style={{ stopColor: 'hsl(var(--brand-accent) / 0.08)' }} />
           <stop offset="100%" style={{ stopColor: 'hsl(var(--background) / 0)' }} />
         </linearGradient>
-        <pattern id="hero-ola" width="46" height="13" patternUnits="userSpaceOnUse">
-          <path d="M0 6.5h46" className="stroke-foreground" strokeWidth="1" opacity="0.12" />
-          <path
-            d="M15 2v9M31 2v9"
-            className="stroke-foreground"
-            strokeWidth="0.6"
-            opacity="0.08"
-          />
+        <pattern id="hero-grid" width="42" height="42" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="1" className="fill-foreground" opacity="0.1" />
         </pattern>
       </defs>
 
-      <rect width="800" height="520" fill="url(#hero-sky)" />
-      <rect width="800" height="520" fill="url(#hero-ola)" />
+      <rect width="800" height="520" fill="url(#hero-glow)" />
+      <rect width="800" height="520" fill="url(#hero-grid)" />
 
-      {/* sun */}
-      <circle cx="620" cy="150" r="64" className="fill-secondary" opacity="0.55" />
-      <circle
-        cx="620"
-        cy="150"
-        r="64"
-        className="fill-none stroke-secondary"
-        strokeWidth="2"
-        opacity="0.5"
-      />
+      {/* soft depth blobs */}
+      <circle cx="640" cy="140" r="150" className="fill-primary" opacity="0.05" />
+      <circle cx="520" cy="360" r="120" className="fill-brand-accent" opacity="0.08" />
 
-      {/* birds */}
-      <g
-        className="stroke-foreground"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.5"
-      >
-        <path d="M120 90c8-9 16-9 24 0M150 104c6-7 12-7 18 0M96 118c6-7 12-7 18 0" />
+      {/* rating sparkles, drifting above the book */}
+      <g className="fill-brand-accent" opacity="0.8">
+        <Star x={470} y={110} s={14} />
+        <Star x={520} y={70} s={10} />
+        <Star x={430} y={60} s={8} />
       </g>
 
-      {/* far hills */}
-      <path
-        d="M0 360c120-46 220-40 340 0s260 46 460-6v166H0Z"
-        className="fill-muted"
-        opacity="0.8"
-      />
-      <path
-        d="M0 400c160-40 300-24 470 10s220 20 330-8v108H0Z"
-        className="fill-primary"
-        opacity="0.12"
-      />
-
-      {/* dagoba (stupa) */}
-      <g>
-        <rect
-          x="352"
-          y="330"
-          width="96"
-          height="14"
-          rx="3"
-          className="fill-card"
-          stroke="currentColor"
-          strokeOpacity="0.15"
+      {/* open book */}
+      <g transform="translate(430 330)">
+        <path
+          d="M0 -6C-64-24-118-18-156 0L-156 96C-118 78-64 84 0 100Z"
+          className="fill-card stroke-border"
+          strokeWidth="1.5"
         />
         <path
-          d="M360 330c0-46 18-78 40-78s40 32 40 78Z"
-          className="fill-card"
-          stroke="currentColor"
-          strokeOpacity="0.15"
+          d="M0 -6C64-24 118-18 156 0L156 96C118 78 64 84 0 100Z"
+          className="fill-card stroke-border"
+          strokeWidth="1.5"
         />
-        <rect x="392" y="214" width="16" height="30" className="fill-secondary" />
-        <path d="M400 196l9 20h-18Z" className="fill-secondary" />
+        <path d="M0 -6V100" className="stroke-border" strokeWidth="1.5" />
+        <g
+          className="stroke-muted-foreground"
+          strokeWidth="2"
+          strokeLinecap="round"
+          opacity="0.4"
+        >
+          <path d="M-128 18h86M-128 34h70M-128 50h78M-128 66h56" />
+          <path d="M42 18h86M42 34h70M42 50h78M42 66h56" />
+        </g>
       </g>
 
-      {/* coconut palms */}
-      <PalmTree x={130} y={352} scale={1.15} />
-      <PalmTree x={690} y={356} scale={0.95} flip />
-      <PalmTree x={230} y={360} scale={0.8} />
-
-      {/* ground */}
-      <path d="M0 452c200-26 420-26 800 0v68H0Z" className="fill-[hsl(var(--paper-sunk))]" />
-
-      {/* foreground stack of books */}
-      <g transform="translate(300 396)">
-        <rect x="0" y="60" width="210" height="24" rx="4" className="fill-primary" />
-        <rect x="8" y="64" width="194" height="4" className="fill-background" opacity="0.4" />
-        <rect
-          x="14"
-          y="36"
-          width="188"
-          height="24"
-          rx="4"
-          className="fill-[hsl(var(--brand-green))]"
-        />
-        <rect x="22" y="40" width="172" height="4" className="fill-background" opacity="0.4" />
-        <rect x="4" y="12" width="176" height="24" rx="4" className="fill-secondary" />
-        <rect
-          x="12"
-          y="16"
-          width="160"
-          height="4"
-          className="fill-[hsl(var(--ink))]"
-          opacity="0.25"
-        />
+      {/* small stack of books beside it */}
+      <g transform="translate(560 372)">
+        <rect y="46" width="166" height="22" rx="4" className="fill-primary" />
+        <rect x="8" y="50" width="150" height="4" className="fill-background" opacity="0.35" />
+        <rect y="22" width="146" height="22" rx="4" className="fill-brand-accent" />
+        <rect x="8" y="26" width="130" height="4" className="fill-background" opacity="0.35" />
+        <rect y="0" width="122" height="20" rx="4" className="fill-secondary stroke-border" />
       </g>
+
+      {/* ground line */}
+      <path d="M0 452c200-14 420-14 800 0v68H0Z" className="fill-[hsl(var(--paper-sunk))]" />
     </svg>
   )
 }
 
-function PalmTree({
-  x,
-  y,
-  scale = 1,
-  flip = false,
-}: {
-  x: number
-  y: number
-  scale?: number
-  flip?: boolean
-}) {
+function Star({ x, y, s }: { x: number; y: number; s: number }) {
+  const p = s * 0.42
   return (
-    <g transform={`translate(${x} ${y}) scale(${(flip ? -1 : 1) * scale} ${scale})`}>
-      <path
-        d="M0 0C-6 -40 -4 -78 4 -112"
-        className="stroke-[hsl(var(--brand-gold-deep))]"
-        strokeWidth="7"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <g className="fill-[hsl(var(--brand-green))]">
-        <path d="M4 -112c-30 -6 -52 8 -64 30 26 -8 46 -8 64 -4Z" />
-        <path d="M4 -112c30 -6 52 8 64 30 -26 -8 -46 -8 -64 -4Z" />
-        <path d="M4 -112c-14 -26 -8 -52 6 -70 -2 26 -4 46 -6 66Z" />
-        <path d="M4 -112c14 -24 34 -34 56 -34 -22 12 -38 22 -54 34Z" />
-        <path d="M4 -112c-16 -22 -40 -30 -62 -26 24 10 42 16 58 28Z" />
-      </g>
-    </g>
+    <path
+      d={`M${x} ${y - s}L${x + p} ${y - p}L${x + s} ${y}L${x + p} ${y + p}L${x} ${y + s}L${x - p} ${y + p}L${x - s} ${y}L${x - p} ${y - p}Z`}
+    />
   )
 }
 
@@ -162,12 +95,12 @@ function PalmTree({
 export function ShelfBanner({ className }: { className?: string }) {
   const spines = [
     'fill-primary',
+    'fill-brand-accent',
     'fill-secondary',
-    'fill-[hsl(var(--brand-green))]',
-    'fill-[hsl(var(--brand-orange))]',
     'fill-primary',
+    'fill-brand-accent',
     'fill-secondary',
-    'fill-[hsl(var(--brand-green))]',
+    'fill-primary',
   ]
   return (
     <svg
@@ -202,10 +135,10 @@ export function ShelfBanner({ className }: { className?: string }) {
 /** Themed stand-in for a missing book cover (keeps the grid looking designed). */
 export function CoverFallback({ seed = 0, className }: { seed?: number; className?: string }) {
   const tints = [
-    ['hsl(var(--primary))', 'hsl(var(--brand-crimson-deep))'],
-    ['hsl(var(--brand-green))', 'hsl(var(--brand-gold-deep))'],
-    ['hsl(var(--secondary))', 'hsl(var(--brand-orange))'],
-    ['hsl(var(--brand-orange))', 'hsl(var(--primary))'],
+    ['hsl(var(--primary))', 'hsl(var(--brand-primary-deep))'],
+    ['hsl(var(--brand-accent))', 'hsl(var(--brand-accent-deep))'],
+    ['hsl(var(--info))', 'hsl(var(--primary))'],
+    ['hsl(var(--brand-accent))', 'hsl(var(--primary))'],
   ]
   const [a, b] = tints[Math.abs(seed) % tints.length]
   const gid = `cf-${Math.abs(seed) % tints.length}`
@@ -237,7 +170,7 @@ export function CoverFallback({ seed = 0, className }: { seed?: number; classNam
   )
 }
 
-/** An open book whose pages lift into a flock of birds. */
+/** An open book whose pages lift into rating sparkles. */
 export function OpenBookBanner({ className }: { className?: string }) {
   return (
     <svg

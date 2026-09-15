@@ -32,7 +32,8 @@ proper public presence: a full profile page plus a catalogue of their registered
 - An **admin dashboard** (`/admin`) for moderators: platform counts, review removal /
   restore, author verification + featuring, editing/deleting any author or book, granting
   the `author` role to users, and an immutable audit log of every admin action.
-- Light and dark theme, both carrying the Sri Lankan heritage design.
+- Light and dark theme, both carrying the modern professional design (see
+  [06-design-system.md](06-design-system.md)).
 
 ## Out of scope (v1)
 

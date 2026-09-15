@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LanguageToggle } from '@/components/LanguageToggle'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { LotusMark, MotifDivider, WovenStrip } from '@/components/motifs'
+import { BrandMark, MotifDivider, WovenStrip } from '@/components/motifs'
 import { cn } from '@/lib/utils'
 import { useAuthStore, hasRole } from '@/stores/authStore'
 import { signOut } from '@/features/auth/authApi'
@@ -132,7 +132,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
         <div className="container flex h-16 items-center gap-4">
           <Link to="/" className="flex items-center gap-2 font-serif text-lg font-semibold">
-            <LotusMark />
+            <BrandMark />
             <span>{t('app.name')}</span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
@@ -174,7 +174,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <footer className="mt-16 border-t border-border bg-card">
         <WovenStrip className="text-border" />
         <div className="container flex flex-col items-center gap-3 py-10 text-center">
-          <LotusMark className="h-6 w-6" />
+          <BrandMark className="h-6 w-6" />
           <MotifDivider className="max-w-xs" />
           <p className="text-sm text-muted-foreground">{t('footer.heritage')}</p>
           <p className="text-xs text-muted-foreground">

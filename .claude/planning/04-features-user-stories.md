@@ -108,7 +108,7 @@ Collections: `reviews`, aggregates on `books`/`authors` · Routes: book & author
 ## Epic 6 — Home page
 Collections: `books`, `authors`, `reviews` · Route: `/`
 
-- **[MVP]** As anyone I see a hero with a Sri Lankan heritage motif and a prominent
+- **[MVP]** As anyone I see a hero with a book-focused illustration and a prominent
   language toggle.
 - **[MVP]** "Best Reviewed Books": top N `books` by `bayesianScore` (tie-break
   `ratingCount`), shown as cards with cover, title, author, avg stars, rating count.

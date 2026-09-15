@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss'
 import animate from 'tailwindcss-animate'
 
 /**
- * ReadMe — Sri Lankan heritage theme.
+ * ReadMe — modern professional theme.
  * Tokens are defined as HSL CSS variables in src/index.css (:root and .dark).
  * See .claude/planning/06-design-system.md for the source palette and rationale.
  */
@@ -50,13 +50,15 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // heritage extras
+        // functional / brand extras
         rating: 'hsl(var(--rating))',
         success: 'hsl(var(--success))',
         warning: 'hsl(var(--warning))',
         info: 'hsl(var(--info))',
-        'brand-green': 'hsl(var(--brand-green))',
-        'brand-orange': 'hsl(var(--brand-orange))',
+        'brand-primary': 'hsl(var(--brand-primary))',
+        'brand-primary-deep': 'hsl(var(--brand-primary-deep))',
+        'brand-accent': 'hsl(var(--brand-accent))',
+        'brand-accent-deep': 'hsl(var(--brand-accent-deep))',
       },
       borderRadius: {
         lg: 'var(--radius)',

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
 import { GenreBadges, BilingualChip } from '@/components/forms'
 import { RatingSummary } from '@/components/RatingSummary'
-import { OlaLeafTexture } from '@/components/motifs'
+import { SubtleTexture } from '@/components/motifs'
 import { ReviewForm } from '@/features/reviews/ReviewForm'
 import { ReviewList } from '@/features/reviews/ReviewList'
 import { BookCard } from '@/features/books/BookCard'
@@ -54,7 +54,7 @@ export function AuthorProfilePage() {
           <img src={author.coverURL} alt="" className="h-40 w-full object-cover sm:h-56" />
         ) : (
           <div className="relative h-28 w-full overflow-hidden bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/10 sm:h-40">
-            <OlaLeafTexture className="text-foreground opacity-[0.06]" />
+            <SubtleTexture className="text-foreground opacity-[0.06]" />
           </div>
         )}
         <div className="container relative -mt-12 flex flex-col gap-4 pb-6 sm:flex-row sm:items-end">
