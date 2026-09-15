@@ -9,8 +9,10 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore'
-import { authorDoc, authorsCol, docData, listData, userDoc } from '@/lib/firestore'
+import { db } from '@/lib/firebase'
+import { authorDoc, authorsCol, booksCol, docData, listData, userDoc } from '@/lib/firestore'
 import { deleteImageByUrl } from '@/lib/storage'
 import { ZERO_AGGREGATE } from '@/lib/rating'
 import type { Author, SocialLink } from '@/types'
@@ -68,6 +70,7 @@ export async function fetchTopAuthors(max = 6): Promise<Author[]> {
 export async function createAuthorProfile(uid: string, input: AuthorInput): Promise<string> {
   const ref = await addDoc(authorsCol, {
     ownerUid: uid,
+    claimEmail: null,
     photoURL: null,
     coverURL: null,
     status: 'pending',
@@ -97,6 +100,41 @@ export async function updateAuthorProfile(
   input: Partial<AuthorInput>,
 ): Promise<void> {
   await updateDoc(authorDoc(id), { ...input, status: 'pending', updatedAt: serverTimestamp() })
+}
+
+/**
+ * Move an author profile — and every book under it — to a real user's uid, and grant
+ * that user the `author` role. Shared by the admin "Assign" action and auto-claim on
+ * signup. Three sequential writes rather than one transaction: the books update's
+ * security rule checks the *already-committed* author doc, so the author must land first.
+ */
+export async function transferAuthorOwnership(
+  authorId: string,
+  targetUid: string,
+): Promise<void> {
+  await updateDoc(authorDoc(authorId), {
+    ownerUid: targetUid,
+    claimEmail: null,
+    updatedAt: serverTimestamp(),
+  })
+
+  const booksSnap = await getDocs(query(booksCol, where('authorId', '==', authorId)))
+  if (!booksSnap.empty) {
+    const batch = writeBatch(db)
+    for (const bookSnap of booksSnap.docs) {
+      batch.update(bookSnap.ref, { ownerUid: targetUid, updatedAt: serverTimestamp() })
+    }
+    await batch.commit()
+  }
+
+  const uSnap = await getDoc(userDoc(targetUid))
+  const roles = new Set(uSnap.data()?.roles ?? ['reader'])
+  roles.add('author')
+  await updateDoc(userDoc(targetUid), {
+    roles: [...roles].filter((r) => r === 'reader' || r === 'author'),
+    authorProfileId: authorId,
+    updatedAt: serverTimestamp(),
+  })
 }
 
 export async function deleteAuthorProfile(id: string): Promise<void> {

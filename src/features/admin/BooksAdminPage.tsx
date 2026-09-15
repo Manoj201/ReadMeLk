@@ -43,7 +43,12 @@ export function BooksAdminPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-serif text-xl font-semibold">{t('books.title')}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="font-serif text-xl font-semibold">{t('books.title')}</h1>
+        <Button asChild size="sm">
+          <Link to="/admin/books/new">{t('books.new')}</Link>
+        </Button>
+      </div>
       <div className="flex flex-wrap items-center gap-3">
         <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
           <TabsList>
@@ -77,6 +82,7 @@ export function BooksAdminPage() {
               <Badge variant={b.status === 'approved' ? 'success' : 'muted'}>
                 {t(`books.status.${b.status ?? 'pending'}`)}
               </Badge>
+              {!b.ownerUid ? <Badge variant="outline">{t('authors.unclaimed')}</Badge> : null}
               {b.featured ? <Star className="h-4 w-4 text-rating" /> : null}
               <span className="text-muted-foreground">
                 · {b.ratingAvg.toFixed(1)} ({b.ratingCount})

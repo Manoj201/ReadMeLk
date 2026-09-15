@@ -21,7 +21,8 @@
     "reviewedAuthor": "reviewed an author"
   },
   "featured": {
-    "title": "Featured"
+    "title": "Featured books",
+    "subtitle": "Handpicked by our editors"
   },
   "genres": {
     "title": "Browse by genre"

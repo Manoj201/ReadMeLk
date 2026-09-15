@@ -4,6 +4,7 @@ import {
   fetchBook,
   fetchBooks,
   fetchBooksByAuthor,
+  fetchFeaturedBooks,
   type BookFilters,
 } from './api'
 
@@ -32,4 +33,11 @@ export function useBooksByAuthor(authorId: string | undefined, includeAll = fals
 
 export function useBestBooks(max = 8) {
   return useQuery({ queryKey: ['home', 'bestBooks', max], queryFn: () => fetchBestBooks(max) })
+}
+
+export function useFeaturedBooks(max = 3) {
+  return useQuery({
+    queryKey: ['home', 'featuredBooks', max],
+    queryFn: () => fetchFeaturedBooks(max),
+  })
 }

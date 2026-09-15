@@ -36,6 +36,8 @@ export interface BookInput {
   publishedYear: number | null
   publisher: string | null
   pageCount: number | null
+  /** Sinhala-only promotional excerpt — teased on the home page, full text on the book page */
+  highlightSi: string | null
 }
 
 export async function fetchBooks(filters: BookFilters, max = 24): Promise<Book[]> {
@@ -87,6 +89,24 @@ export async function fetchBestBooks(max = 8): Promise<Book[]> {
       orderBy('ratingCount', 'desc'),
       orderBy('bayesianScore', 'desc'),
       qlimit(max),
+    ),
+  )
+  return listData<Book>(snap)
+    .sort((a, b) => b.bayesianScore - a.bayesianScore)
+    .slice(0, max)
+}
+
+/**
+ * Admin-curated picks for the home page "Featured Books" spotlight — approved books
+ * with `featured: true` (toggled in `/admin/books`), ranked by bayesianScore.
+ */
+export async function fetchFeaturedBooks(max = 3): Promise<Book[]> {
+  const snap = await getDocs(
+    query(
+      booksCol,
+      where('status', '==', 'approved'),
+      where('featured', '==', true),
+      qlimit(24),
     ),
   )
   return listData<Book>(snap)

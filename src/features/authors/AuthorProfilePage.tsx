@@ -29,7 +29,10 @@ export function AuthorProfilePage() {
   const isAdminClaim = useAuthStore((s) => s.isAdminClaim)
 
   const authorQ = useAuthor(authorId)
-  const canSeeAllBooks = !!authorQ.data && (authorQ.data.ownerUid === uid || isAdminClaim)
+  // !!uid guards against a signed-out visitor (uid === null) matching an unclaimed
+  // author's ownerUid (also null) and triggering an unfiltered — and rule-rejected — query
+  const canSeeAllBooks =
+    !!authorQ.data && (isAdminClaim || (!!uid && authorQ.data.ownerUid === uid))
   const booksQ = useBooksByAuthor(authorId, canSeeAllBooks)
   const reviewsQ = useReviews('author', authorId)
 
@@ -40,7 +43,7 @@ export function AuthorProfilePage() {
 
   const name = pick(author.nameEn, author.nameSi)
   const bio = pick(author.bioEn, author.bioSi)
-  const isOwner = uid === author.ownerUid
+  const isOwner = !!uid && uid === author.ownerUid
   const reviews = reviewsQ.data ?? []
   const showModerationBanner = (isOwner || isAdminClaim) && author.status !== 'approved'
 

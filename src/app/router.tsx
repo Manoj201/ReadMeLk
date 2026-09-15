@@ -16,7 +16,9 @@ import { DashboardPage } from '@/features/admin/DashboardPage'
 import { ReportsPage } from '@/features/admin/ReportsPage'
 import { ReviewsAdminPage } from '@/features/admin/ReviewsAdminPage'
 import { AuthorsAdminPage } from '@/features/admin/AuthorsAdminPage'
+import { AdminAuthorCreatePage } from '@/features/admin/AdminAuthorCreatePage'
 import { BooksAdminPage } from '@/features/admin/BooksAdminPage'
+import { AdminBookCreatePage } from '@/features/admin/AdminBookCreatePage'
 import { UsersAdminPage } from '@/features/admin/UsersAdminPage'
 
 function ShellLayout() {
@@ -90,7 +92,9 @@ export const router = createBrowserRouter([
           { path: 'reports', element: <ReportsPage /> },
           { path: 'reviews', element: <ReviewsAdminPage /> },
           { path: 'authors', element: <AuthorsAdminPage /> },
+          { path: 'authors/new', element: <AdminAuthorCreatePage /> },
           { path: 'books', element: <BooksAdminPage /> },
+          { path: 'books/new', element: <AdminBookCreatePage /> },
           { path: 'users', element: <UsersAdminPage /> },
         ],
       },

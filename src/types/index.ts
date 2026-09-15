@@ -31,7 +31,10 @@ export interface SocialLink {
 
 export interface Author {
   id: string
-  ownerUid: string
+  /** null while the profile is unclaimed (admin-created, no linked user yet) */
+  ownerUid: string | null
+  /** email an admin earmarked this profile for; cleared once claimed */
+  claimEmail: string | null
   nameEn: string
   nameSi: string
   bioEn: string
@@ -62,7 +65,8 @@ export interface Book {
   authorId: string
   authorNameEn: string
   authorNameSi: string
-  ownerUid: string
+  /** mirrors the author's ownerUid — null while the author is unclaimed */
+  ownerUid: string | null
   titleEn: string
   titleSi: string
   descriptionEn: string
@@ -74,6 +78,8 @@ export interface Book {
   publishedYear: number | null
   publisher: string | null
   pageCount: number | null
+  /** Sinhala-only promotional excerpt — teased on the home page, full text on the book page */
+  highlightSi: string | null
   /** admin approval gate — only `approved` books are publicly visible */
   status: ModerationStatus
   featured: boolean
@@ -132,6 +138,9 @@ export type AdminActionType =
   | 'report.dismiss'
   | 'author.approve'
   | 'author.reject'
+  | 'author.create'
+  | 'author.claim'
+  | 'book.create'
   | 'author.verify'
   | 'author.unverify'
   | 'author.edit'

@@ -63,13 +63,23 @@ service cloud.firestore {
       allow read: if resource.data.status == 'approved'
         || isAdmin()
         || (isSignedIn() && resource.data.ownerUid == uid());
-      allow create: if isSignedIn()
-        && request.resource.data.ownerUid == uid()
-        && request.resource.data.status == 'pending'
-        && request.resource.data.verified == false
-        && request.resource.data.featured == false
-        && request.resource.data.ratingCount == 0
-        && request.resource.data.bookCount == 0;
+      allow create: if
+        (isSignedIn()
+          && request.resource.data.ownerUid == uid()
+          && request.resource.data.status == 'pending'
+          && request.resource.data.verified == false
+          && request.resource.data.featured == false
+          && request.resource.data.ratingCount == 0
+          && request.resource.data.bookCount == 0)
+        ||
+        // admin: create an unclaimed, pre-approved profile (no linked user yet)
+        (isAdmin()
+          && request.resource.data.ownerUid == null
+          && request.resource.data.status == 'approved'
+          && request.resource.data.verified == false
+          && request.resource.data.featured == false
+          && request.resource.data.ratingCount == 0
+          && request.resource.data.bookCount == 0);
       allow update: if isAdmin()
         // owner edits profile fields — never verified / featured / aggregates, and
         // the edit always re-enters the moderation queue (status -> pending)
@@ -81,7 +91,16 @@ service cloud.firestore {
         // an aggregate-only bump from the review transaction
         || (isSignedIn()
             && onlyChanged(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount','bookCount','updatedAt'])
-            && aggregateDeltaOk());
+            && aggregateDeltaOk())
+        // self-claim: a signed-in user with a *verified* email matching this unclaimed
+        // profile's earmark may take ownership — nothing else about the doc changes
+        || (isSignedIn()
+            && resource.data.ownerUid == null
+            && resource.data.claimEmail == request.auth.token.email
+            && request.auth.token.email_verified == true
+            && request.resource.data.ownerUid == uid()
+            && request.resource.data.claimEmail == null
+            && onlyChanged(['ownerUid','claimEmail','updatedAt']));
       allow delete: if isAdmin() || resource.data.ownerUid == uid();
     }
 
@@ -91,11 +110,21 @@ service cloud.firestore {
       allow read: if resource.data.status == 'approved'
         || isAdmin()
         || (isSignedIn() && resource.data.ownerUid == uid());
-      allow create: if isAuthor()
-        && request.resource.data.ownerUid == uid()
-        && request.resource.data.status == 'pending'
-        && request.resource.data.featured == false
-        && request.resource.data.ratingCount == 0;
+      allow create: if
+        (isAuthor()
+          && request.resource.data.ownerUid == uid()
+          && request.resource.data.status == 'pending'
+          && request.resource.data.featured == false
+          && request.resource.data.ratingCount == 0)
+        ||
+        // admin: register a book for any author, claimed or not — ownerUid must match
+        // that author's *current* owner (null while unclaimed) so it transfers with them
+        (isAdmin()
+          && request.resource.data.status == 'approved'
+          && request.resource.data.featured == false
+          && request.resource.data.ratingCount == 0
+          && request.resource.data.ownerUid ==
+             get(/databases/$(database)/documents/authors/$(request.resource.data.authorId)).data.ownerUid);
       allow update: if isAdmin()
         // owner edits always re-enter the moderation queue (status -> pending)
         || (resource.data.ownerUid == uid()
@@ -104,7 +133,15 @@ service cloud.firestore {
             && !changed(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount']))
         || (isSignedIn()
             && onlyChanged(['ratingSum','ratingCount','ratingAvg','bayesianScore','reviewCount','updatedAt'])
-            && aggregateDeltaOk());
+            && aggregateDeltaOk())
+        // self-claim: a signed-in user who just claimed this book's author may take
+        // ownership of the book too (the author doc is updated first — see
+        // transferAuthorOwnership — so this reads its already-committed owner)
+        || (isSignedIn()
+            && resource.data.ownerUid == null
+            && get(/databases/$(database)/documents/authors/$(resource.data.authorId)).data.ownerUid == uid()
+            && request.resource.data.ownerUid == uid()
+            && onlyChanged(['ownerUid','updatedAt']));
       allow delete: if isAdmin() || resource.data.ownerUid == uid();
     }
 

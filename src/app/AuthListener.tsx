@@ -3,6 +3,7 @@ import { onAuthStateChanged, onIdTokenChanged, type User } from 'firebase/auth'
 import { getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { auth } from '@/lib/firebase'
 import { docData, userDoc } from '@/lib/firestore'
+import { tryAutoClaimAuthorProfile } from '@/features/authors/claim'
 import { useAuthStore } from '@/stores/authStore'
 import type { AppUser } from '@/types'
 
@@ -46,7 +47,7 @@ export function AuthListener() {
       }
       try {
         const appUser = await ensureUserDoc(fbUser)
-        setUser(appUser)
+        setUser(await tryAutoClaimAuthorProfile(fbUser, appUser))
         setStatus('authed')
       } catch (err) {
         console.error('[auth] failed to load user doc', err)

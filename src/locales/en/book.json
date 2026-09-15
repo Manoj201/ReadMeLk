@@ -33,6 +33,10 @@
     "pendingBanner": "This book is awaiting admin approval. Only you and the moderators can see it until then.",
     "rejectedBanner": "A moderator did not approve this book. Edit it to resubmit for review."
   },
+  "highlight": {
+    "badge": "Featured excerpt",
+    "readMore": "Read more"
+  },
   "form": {
     "newTitle": "Register a book",
     "editTitle": "Edit book",
@@ -40,6 +44,8 @@
     "titleSi": "Title (Sinhala)",
     "descriptionEn": "Description (English)",
     "descriptionSi": "Description (Sinhala)",
+    "highlightSi": "Special excerpt (Sinhala only)",
+    "highlightSiHint": "A short, evocative paragraph in Sinhala for the home page spotlight — not a translation of the description above.",
     "cover": "Cover image",
     "genres": "Genres",
     "language": "Language",

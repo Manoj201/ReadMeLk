@@ -29,9 +29,13 @@ import {
   userDoc,
   usersCol,
 } from '@/lib/firestore'
-import { applyReviewDelta, type AggregateFields } from '@/lib/rating'
-import { deleteBook } from '@/features/books/api'
-import { deleteAuthorProfile } from '@/features/authors/api'
+import { applyReviewDelta, ZERO_AGGREGATE, type AggregateFields } from '@/lib/rating'
+import { deleteBook, type BookInput } from '@/features/books/api'
+import {
+  deleteAuthorProfile,
+  transferAuthorOwnership,
+  type AuthorInput,
+} from '@/features/authors/api'
 import type {
   AdminAction,
   AdminActionType,
@@ -221,6 +225,46 @@ export async function listAuthorsForAdmin(status?: ModerationStatus): Promise<Au
   return listData<Author>(snap)
 }
 
+/**
+ * Create an author profile with no linked user yet (`ownerUid: null`), auto-approved.
+ * Optionally earmark it with an email — that user auto-claims it on their next
+ * verified sign-in (see `src/features/authors/claim.ts`), or an admin can assign it
+ * manually via `claimAuthorProfile` once the account exists.
+ */
+export async function adminCreateAuthor(
+  actor: Actor,
+  input: AuthorInput,
+  claimEmail: string | null,
+): Promise<string> {
+  const ref = await addDoc(authorsCol, {
+    ownerUid: null,
+    claimEmail: claimEmail || null,
+    photoURL: null,
+    coverURL: null,
+    status: 'approved',
+    verified: false,
+    featured: false,
+    ...ZERO_AGGREGATE,
+    bookCount: 0,
+    ...input,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  })
+  await writeLog(actor, 'author.create', 'author', ref.id, input.nameEn || input.nameSi)
+  return ref.id
+}
+
+/** Assign an unclaimed author profile to a real user's account. */
+export async function claimAuthorProfile(
+  actor: Actor,
+  authorId: string,
+  target: AppUser,
+): Promise<void> {
+  if (target.authorProfileId) throw new Error('already-author')
+  await transferAuthorOwnership(authorId, target.uid)
+  await writeLog(actor, 'author.claim', 'author', authorId, target.email)
+}
+
 /** Approve or reject a pending author profile. */
 export async function setAuthorApproval(
   actor: Actor,
@@ -261,6 +305,43 @@ export async function listBooksForAdmin(status?: ModerationStatus): Promise<Book
   return listData<Book>(snap)
 }
 
+/**
+ * Register a book on behalf of an author (claimed or not), auto-approved. The book's
+ * `ownerUid` mirrors the author's current owner — `null` while the author is still
+ * unclaimed, so it transfers along with the profile at claim time.
+ */
+export async function adminCreateBook(
+  actor: Actor,
+  authorId: string,
+  input: BookInput,
+): Promise<string> {
+  const author = docData<Author>(await getDoc(authorDoc(authorId)))
+  if (!author) throw new Error('author-missing')
+  const ref = await addDoc(booksCol, {
+    authorId: author.id,
+    authorNameEn: author.nameEn,
+    authorNameSi: author.nameSi,
+    ownerUid: author.ownerUid,
+    coverURL: null,
+    status: 'approved',
+    featured: false,
+    ...ZERO_AGGREGATE,
+    ...input,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  })
+  await runTransaction(db, async (tx) => {
+    const a = await tx.get(authorDoc(author.id))
+    if (!a.exists()) return
+    tx.update(authorDoc(author.id), {
+      bookCount: (a.data().bookCount ?? 0) + 1,
+      updatedAt: serverTimestamp(),
+    })
+  })
+  await writeLog(actor, 'book.create', 'book', ref.id, input.titleEn || input.titleSi)
+  return ref.id
+}
+
 /** Approve or reject a pending book. */
 export async function setBookApproval(
   actor: Actor,
@@ -286,6 +367,12 @@ export async function adminDeleteBook(actor: Actor, book: Book) {
 export async function listUsers(): Promise<AppUser[]> {
   const snap = await getDocs(query(usersCol, orderBy('createdAt', 'desc'), qlimit(100)))
   return listData<AppUser>(snap)
+}
+
+/** Look up a registered user by their exact email — used by the "Assign" dialog. */
+export async function findUserByEmail(email: string): Promise<AppUser | null> {
+  const snap = await getDocs(query(usersCol, where('email', '==', email), qlimit(1)))
+  return listData<AppUser>(snap)[0] ?? null
 }
 
 export async function setUserAuthorRole(actor: Actor, target: AppUser, grant: boolean) {

@@ -27,10 +27,19 @@ interface AppUser {
 `authorId` is auto-generated. One author profile per user (`ownerUid` unique by
 convention; enforced client-side + one-profile check before create).
 
+An admin may also create a profile with **no linked user** (`ownerUid: null`) — e.g. to
+seed a well-known author who hasn't signed up yet — optionally earmarking it with
+`claimEmail`. It becomes real when that email signs up with a *verified* address
+(auto-claim, `src/features/authors/claim.ts`) or an admin manually assigns it
+(`claimAuthorProfile`, `src/features/admin/api.ts`) once the account exists. Claiming
+transfers the profile **and every book under it** (`Book.ownerUid` mirrors the author's
+current owner) to the real uid in one operation and grants that user the `author` role.
+
 ```ts
 interface Author {
   id: string;
-  ownerUid: string;
+  ownerUid: string | null;         // null while unclaimed (admin-created, no user yet)
+  claimEmail: string | null;       // email an admin earmarked this profile for
   nameEn: string;
   nameSi: string;
   bioEn: string;
@@ -69,7 +78,7 @@ interface Book {
   authorId: string;
   authorNameEn: string;            // denormalized for cards/lists
   authorNameSi: string;
-  ownerUid: string;                // == the author's ownerUid; used by rules
+  ownerUid: string | null;         // mirrors the author's ownerUid; null while unclaimed
   titleEn: string;
   titleSi: string;
   descriptionEn: string;
@@ -166,10 +175,11 @@ interface AdminAction {
   actorUid: string;                // the admin
   actorName: string;               // denormalized displayName
   action:
-    | 'review.remove' | 'review.restore'
+    | 'review.approve' | 'review.remove' | 'review.restore'
     | 'report.dismiss'
+    | 'author.approve' | 'author.reject' | 'author.create' | 'author.claim'
     | 'author.verify' | 'author.unverify' | 'author.edit' | 'author.delete'
-    | 'book.edit' | 'book.delete'
+    | 'book.approve' | 'book.reject' | 'book.create' | 'book.edit' | 'book.delete'
     | 'author.feature' | 'author.unfeature' | 'book.feature' | 'book.unfeature'
     | 'user.grantAuthor' | 'user.revokeAuthor';
   targetType: 'review' | 'report' | 'author' | 'book' | 'user';

@@ -1,5 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useMemo, useState, type FormEvent } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { serverTimestamp, updateDoc } from 'firebase/firestore'
@@ -20,10 +20,10 @@ import { LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
 import { bookDoc } from '@/lib/firestore'
 import { bookCoverDir, COVER_IMAGE, uploadImage } from '@/lib/storage'
-import { useAuthStore } from '@/stores/authStore'
+import type { BookInput } from '@/features/books/api'
 import type { BookLang } from '@/types'
-import { createBook, deleteBook, updateBook, type BookInput } from './api'
-import { useBook } from './hooks'
+import { adminCreateBook } from './api'
+import { useActor, useAdminAuthors } from './hooks'
 
 const empty: BookInput = {
   titleEn: '',
@@ -39,56 +39,26 @@ const empty: BookInput = {
   highlightSi: null,
 }
 
-export function BookFormPage() {
-  const { bookId } = useParams()
-  const editing = !!bookId
+/** Admin-only: register a book for any author (claimed or not), auto-approved. */
+export function AdminBookCreatePage() {
   const { t } = useTranslation('book')
+  const { t: ta } = useTranslation('admin')
   const navigate = useNavigate()
   const qc = useQueryClient()
-  const user = useAuthStore((s) => s.user)
-  const isAdminClaim = useAuthStore((s) => s.isAdminClaim)
-  const { data: existing, isLoading } = useBook(bookId)
+  const actor = useActor()
+  const [searchParams] = useSearchParams()
 
+  const { data: authors, isLoading: authorsLoading } = useAdminAuthors()
+  const [authorId, setAuthorId] = useState(searchParams.get('authorId') ?? '')
   const [form, setForm] = useState<BookInput>(empty)
   const [cover, setCover] = useState<File | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (existing) {
-      setForm({
-        titleEn: existing.titleEn,
-        titleSi: existing.titleSi,
-        descriptionEn: existing.descriptionEn,
-        descriptionSi: existing.descriptionSi,
-        isbn: existing.isbn,
-        language: existing.language,
-        genres: existing.genres,
-        publishedYear: existing.publishedYear,
-        publisher: existing.publisher,
-        pageCount: existing.pageCount,
-        highlightSi: existing.highlightSi,
-      })
-    }
-  }, [existing])
-
-  if (editing && isLoading) return <LoadingBlock className="container py-12" />
-  if (!user) return null
-
-  if (!editing && !user.authorProfileId) {
-    return (
-      <div className="container max-w-xl py-12">
-        <p className="text-muted-foreground">{t('form.needAuthorProfile')}</p>
-        <Button asChild className="mt-4">
-          <Link to="/register/author">{t('form.needAuthorProfile')}</Link>
-        </Button>
-      </div>
-    )
-  }
-  if (editing && existing && existing.ownerUid !== user.uid && !isAdminClaim) {
-    navigate(`/books/${bookId}`, { replace: true })
-    return null
-  }
+  const authorOptions = useMemo(
+    () => (authors ?? []).map((a) => ({ id: a.id, name: a.nameEn || a.nameSi || a.id })),
+    [authors],
+  )
 
   const set = <K extends keyof BookInput>(key: K, value: BookInput[K]) =>
     setForm((f) => ({ ...f, [key]: value }))
@@ -96,6 +66,10 @@ export function BookFormPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    if (!authorId) {
+      setError(ta('books.selectAuthor'))
+      return
+    }
     if (!form.titleEn.trim() && !form.titleSi.trim()) {
       setError(t('form.atLeastOneTitle'))
       return
@@ -108,47 +82,50 @@ export function BookFormPage() {
         publisher: form.publisher?.trim() || null,
         highlightSi: form.highlightSi?.trim() || null,
       }
-      let id = bookId as string
-      if (editing) await updateBook(id, clean)
-      else id = await createBook(user!.uid, user!.authorProfileId, clean)
+      const id = await adminCreateBook(actor, authorId, clean)
       if (cover) {
         const coverURL = await uploadImage(bookCoverDir(id), 'cover', cover, COVER_IMAGE)
         await updateDoc(bookDoc(id), { coverURL, updatedAt: serverTimestamp() })
       }
-      await qc.invalidateQueries({ queryKey: ['book', id] })
-      await qc.invalidateQueries({ queryKey: ['books'] })
-      toast({
-        description: t(editing ? 'form.submitEdit' : 'form.submitNew'),
-        variant: 'success',
-      })
-      navigate(`/books/${id}`)
+      await qc.invalidateQueries({ queryKey: ['admin'] })
+      toast({ description: ta('books.created'), variant: 'success' })
+      navigate('/admin/books')
     } catch (err) {
-      const msg =
-        err instanceof Error && err.message === 'needAuthorProfile'
-          ? t('form.needAuthorProfile')
-          : t('form.atLeastOneTitle')
-      setError(msg)
+      console.error(err)
+      setError(t('form.atLeastOneTitle'))
     } finally {
       setBusy(false)
     }
   }
 
-  async function onDelete() {
-    if (!existing || !window.confirm(t('form.deleteConfirm'))) return
-    await deleteBook(existing)
-    await qc.invalidateQueries({ queryKey: ['books'] })
-    toast({ description: t('form.deleteConfirm'), variant: 'success' })
-    navigate(`/authors/${existing.authorId}`)
-  }
-
   return (
-    <div className="container max-w-2xl py-10">
+    <div className="max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle>{editing ? t('form.editTitle') : t('form.newTitle')}</CardTitle>
+          <CardTitle>{ta('books.new')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <Label htmlFor="author">{ta('books.selectAuthor')}</Label>
+              {authorsLoading ? (
+                <LoadingBlock rows={1} />
+              ) : (
+                <Select value={authorId} onValueChange={setAuthorId}>
+                  <SelectTrigger id="author">
+                    <SelectValue placeholder={ta('books.selectAuthor')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {authorOptions.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="titleEn">{t('form.titleEn')}</Label>
@@ -201,11 +178,7 @@ export function BookFormPage() {
               <p className="text-xs text-muted-foreground">{t('form.highlightSiHint')}</p>
             </div>
 
-            <ImageField
-              label={t('form.cover')}
-              currentUrl={existing?.coverURL}
-              onSelect={setCover}
-            />
+            <ImageField label={t('form.cover')} onSelect={setCover} />
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -274,16 +247,9 @@ export function BookFormPage() {
             />
 
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
-            <div className="flex items-center gap-2">
-              <Button type="submit" disabled={busy}>
-                {editing ? t('form.submitEdit') : t('form.submitNew')}
-              </Button>
-              {editing ? (
-                <Button type="button" variant="destructive" onClick={onDelete}>
-                  {t('form.deleteConfirm')}
-                </Button>
-              ) : null}
-            </div>
+            <Button type="submit" disabled={busy}>
+              {ta('books.new')}
+            </Button>
           </form>
         </CardContent>
       </Card>

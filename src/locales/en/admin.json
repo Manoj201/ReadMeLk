@@ -79,7 +79,21 @@
     "unfeature": "Unfeature",
     "editProfile": "Edit",
     "delete": "Delete",
-    "deleteConfirm": "Delete this author profile? Their books remain."
+    "deleteConfirm": "Delete this author profile? Their books remain.",
+    "new": "New author",
+    "created": "Author profile created.",
+    "unclaimed": "Unclaimed",
+    "claimEmail": "Reserve for author's email (optional)",
+    "claimEmailHint": "When someone signs up with this exact, verified email, this profile and its books become theirs automatically. You can also assign it manually below once they've registered.",
+    "assign": "Assign",
+    "assignDialog": {
+      "title": "Assign this profile to a user",
+      "emailLabel": "Their account email",
+      "submit": "Assign",
+      "notFound": "No account with that email yet. It'll link automatically once they sign up and verify it — or try assigning again after they register.",
+      "alreadyAuthor": "That user already has their own author profile.",
+      "success": "Profile assigned."
+    }
   },
   "books": {
     "title": "Books",
@@ -103,7 +117,10 @@
     "unfeature": "Unfeature",
     "edit": "Edit",
     "delete": "Delete",
-    "deleteConfirm": "Delete this book? This can't be undone."
+    "deleteConfirm": "Delete this book? This can't be undone.",
+    "new": "New book",
+    "created": "Book created.",
+    "selectAuthor": "Select author"
   },
   "users": {
     "title": "Users",

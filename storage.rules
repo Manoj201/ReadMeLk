@@ -12,14 +12,19 @@ service firebase.storage {
   match /b/{bucket}/o {
 
     function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && request.auth.token.admin == true; }
 
+    // admins can always write — needed for unclaimed (ownerUid == null) authors/books,
+    // which have no matching uid to own them yet
     function ownsAuthor(authorId) {
-      return isSignedIn()
-        && firestore.get(/databases/(default)/documents/authors/$(authorId)).data.ownerUid == request.auth.uid;
+      return isAdmin()
+        || (isSignedIn()
+            && firestore.get(/databases/(default)/documents/authors/$(authorId)).data.ownerUid == request.auth.uid);
     }
     function ownsBook(bookId) {
-      return isSignedIn()
-        && firestore.get(/databases/(default)/documents/books/$(bookId)).data.ownerUid == request.auth.uid;
+      return isAdmin()
+        || (isSignedIn()
+            && firestore.get(/databases/(default)/documents/books/$(bookId)).data.ownerUid == request.auth.uid);
     }
     function okImage() {
       return request.resource.size < 4 * 1024 * 1024

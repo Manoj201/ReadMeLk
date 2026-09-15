@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
+import { AssignAuthorDialog } from './AssignAuthorDialog'
 import {
   adminDeleteAuthor,
   setAuthorApproval,
@@ -47,7 +48,12 @@ export function AuthorsAdminPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-serif text-xl font-semibold">{t('authors.title')}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="font-serif text-xl font-semibold">{t('authors.title')}</h1>
+        <Button asChild size="sm">
+          <Link to="/admin/authors/new">{t('authors.new')}</Link>
+        </Button>
+      </div>
       <div className="flex flex-wrap items-center gap-3">
         <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
           <TabsList>
@@ -84,10 +90,20 @@ export function AuthorsAdminPage() {
               <Badge variant={a.status === 'approved' ? 'success' : 'muted'}>
                 {t(`authors.status.${a.status ?? 'pending'}`)}
               </Badge>
+              {!a.ownerUid ? (
+                <Badge variant="outline">
+                  {t('authors.unclaimed')}
+                  {a.claimEmail ? ` · ${a.claimEmail}` : ''}
+                </Badge>
+              ) : null}
               {a.verified ? <BadgeCheck className="h-4 w-4 text-primary" /> : null}
               {a.featured ? <Star className="h-4 w-4 text-rating" /> : null}
               <span className="text-muted-foreground">· {a.bookCount} books</span>
               <div className="ml-auto flex flex-wrap gap-2">
+                {!a.ownerUid ? <AssignAuthorDialog author={a} /> : null}
+                <Button asChild size="sm" variant="outline">
+                  <Link to={`/admin/books/new?authorId=${a.id}`}>{t('books.new')}</Link>
+                </Button>
                 {a.status !== 'approved' ? (
                   <Button size="sm" onClick={() => approval(a.id, 'approved')}>
                     {t('authors.approve')}

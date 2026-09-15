@@ -33,7 +33,9 @@ export function BookDetailPage() {
   const title = pick(book.titleEn, book.titleSi)
   const desc = pick(book.descriptionEn, book.descriptionSi)
   const authorName = pick(book.authorNameEn, book.authorNameSi).value
-  const isOwner = uid === book.ownerUid
+  // !!uid guards against a signed-out visitor (uid === null) matching an unclaimed
+  // book's ownerUid (also null)
+  const isOwner = !!uid && uid === book.ownerUid
   const reviews = reviewsQ.data ?? []
   const canModeratePreview = isOwner || isAdminClaim
 
@@ -91,6 +93,20 @@ export function BookDetailPage() {
           </h2>
           <p className="whitespace-pre-line text-foreground/90">{desc.value || '—'}</p>
         </section>
+
+        {book.highlightSi ? (
+          <section
+            id="highlight"
+            className="rounded-lg border-l-4 border-secondary bg-accent/60 p-5"
+          >
+            <span className="text-xs font-medium uppercase tracking-wide text-accent-foreground">
+              {t('highlight.badge')}
+            </span>
+            <p className="mt-2 whitespace-pre-line font-sinhala text-base leading-relaxed text-foreground/90">
+              {book.highlightSi}
+            </p>
+          </section>
+        ) : null}
 
         <section>
           <h2 className="mb-2 font-serif text-lg font-semibold">{t('detail.details')}</h2>

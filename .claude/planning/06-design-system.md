@@ -1,16 +1,54 @@
-# 06 — Design system (Sri Lankan heritage)
+# 06 — Design system (refined Sri Lankan heritage)
 
 The look should feel like a well-made Sri Lankan book: warm parchment paper, gold and
 crimson of the national flag and temple murals, restrained *liyavel* vine ornament, and
 the texture of *ola-leaf* (palm-leaf) manuscripts. Tasteful and literary — not a tourist
 poster.
 
+**v2 (current):** the same brand hues, desaturated and confined to accents (buttons,
+badges, stars, illustration) over much calmer, lower-chroma neutrals, so the site reads as
+a polished publishing product rather than a festival poster. The v1 palette below the line
+was the original, brighter take — kept here for history; `src/index.css` implements v2.
+
 Everything below is expressed as **design tokens → Tailwind theme → shadcn CSS variables**
 so all shadcn/ui components inherit the theme automatically.
 
-## Palette
+## Palette (v2 — current)
 
-Hex values are the design intent; adjust for contrast during M1 (see Accessibility).
+### Brand
+
+| Token | Name & source | Hex (light) | Hex (dark) |
+|---|---|---|---|
+| `brand-gold` | Turmeric / robe saffron, desaturated to an ochre accent | `#BE892D` | `#D3AC69` |
+| `brand-gold-deep` | Darker gold for text/borders on light bg | `#8B6123` | `#C49145` |
+| `brand-crimson` | Flag maroon / kurakkan red, deepened rather than bright | `#74252F` | `#BE606C` |
+| `brand-crimson-deep` | Hover / active crimson | `#571923` | `#A74451` |
+| `brand-green` | Flag green — sparingly, tags & illustration | `#23574A` | `#54AB94` |
+| `brand-orange` | Flag orange, muted to a terracotta | `#BC602F` | `#C9845E` |
+
+### Neutrals (warm, low-chroma — never pure white/black, never bright parchment)
+
+| Token | Role | Hex (light) | Hex (dark) |
+|---|---|---|---|
+| `paper` | app background | `#F9F8F6` | `#1E1915` |
+| `paper-raised` | cards, popovers | `#FDFDFC` | `#29231E` |
+| `paper-sunk` | muted panels, table stripes | `#F0EEEA` | `#15120E` |
+| `ink` | primary text | `#27201B` | `#EDE7DE` |
+| `ink-soft` | secondary text | `#655A53` | `#BAAFA0` |
+| `line` | borders / dividers | `#E0DCD6` | `#403830` |
+
+### Functional
+
+| Token | Hex (light) | Hex (dark) |
+|---|---|---|
+| `rating` (stars) | `#C6922A` | `#D5B26D` |
+| `success` | `#265E50` | `#62B29C` |
+| `warning` | `#9D6F25` | `#D1AA61` |
+| `destructive` | `#962C34` | `#CC666E` |
+| `info` | `#385E75` | `#7BA9C1` |
+
+<details>
+<summary>v1 — original brighter palette (superseded)</summary>
 
 ### Brand
 
@@ -56,6 +94,8 @@ Hex values are the design intent; adjust for contrast during M1 (see Accessibili
 | `danger` | `#B4232F` / `#E5636E` |
 | `info` | `#3A6B8A` / `#6FA8C7` |
 
+</details>
+
 ## Token → shadcn variable mapping
 
 Set in `src/index.css` as HSL triples on `:root` and `.dark` (shadcn convention).
@@ -68,9 +108,9 @@ shadcn/ui components read these; do not restyle components individually.
 | `--card` / `--popover` | `paper-raised` | `paper-raised` (dark) |
 | `--card-foreground` / `--popover-foreground` | `ink` | `ink` (dark) |
 | `--primary` | `brand-crimson` | `brand-crimson` (dark) |
-| `--primary-foreground` | `#FFFDF7` | `#1E1813` |
+| `--primary-foreground` | `#FDFDFC` | `#1E1915` |
 | `--secondary` | `brand-gold` | `brand-gold` (dark) |
-| `--secondary-foreground` | `ink` | `#1E1813` |
+| `--secondary-foreground` | `ink` | `#1E1915` |
 | `--muted` | `paper-sunk` | `paper-sunk` (dark) |
 | `--muted-foreground` | `ink-soft` | `ink-soft` (dark) |
 | `--accent` | `brand-gold` @ 18% over paper | `brand-gold` @ 22% over paper |
@@ -124,7 +164,7 @@ Dialog (report + review forms), Tooltip, Skeleton, plus the app-specific
 ## Accessibility
 
 - Verify every text/background pair at ≥ 4.5:1 (AA), ≥ 3:1 for large text and UI borders.
-  Gold on parchment fails as body text — use `brand-gold-deep` (`#B9781F`) for gold text
+  Gold on parchment fails as body text — use `brand-gold-deep` (`#8B6123`) for gold text
   on light, reserve bright `brand-gold` for fills and dark-mode text.
 - `--ring` (`brand-gold-deep` / `brand-gold`) must be clearly visible on `paper`,
   `paper-raised`, and `brand-crimson` surfaces — 2px offset ring.

@@ -1,22 +1,21 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
+import { serverTimestamp, updateDoc } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { GenreCheckboxes, ImageField } from '@/components/forms'
-import { LoadingBlock } from '@/components/StateBlocks'
 import { toast } from '@/hooks/use-toast'
-import { uploadImage, authorPhotoDir, AVATAR_IMAGE, COVER_IMAGE } from '@/lib/storage'
-import { updateDoc, serverTimestamp } from 'firebase/firestore'
 import { authorDoc } from '@/lib/firestore'
-import { useAuthStore } from '@/stores/authStore'
+import { authorPhotoDir, AVATAR_IMAGE, COVER_IMAGE, uploadImage } from '@/lib/storage'
+import type { AuthorInput } from '@/features/authors/api'
 import type { SocialLink } from '@/types'
-import { createAuthorProfile, updateAuthorProfile, type AuthorInput } from './api'
-import { useAuthor } from './hooks'
+import { adminCreateAuthor } from './api'
+import { useActor } from './hooks'
 
 const empty: AuthorInput = {
   nameEn: '',
@@ -30,54 +29,20 @@ const empty: AuthorInput = {
   socialLinks: [],
 }
 
-export function AuthorFormPage() {
-  const { authorId } = useParams()
-  const editing = !!authorId
+/** Admin-only: create an author profile with no linked user yet (auto-approved). */
+export function AdminAuthorCreatePage() {
   const { t } = useTranslation('author')
+  const { t: ta } = useTranslation('admin')
   const navigate = useNavigate()
   const qc = useQueryClient()
-  const user = useAuthStore((s) => s.user)
-  const isAdminClaim = useAuthStore((s) => s.isAdminClaim)
-  const { data: existing, isLoading } = useAuthor(authorId)
+  const actor = useActor()
 
   const [form, setForm] = useState<AuthorInput>(empty)
+  const [claimEmail, setClaimEmail] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [cover, setCover] = useState<File | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (existing) {
-      setForm({
-        nameEn: existing.nameEn,
-        nameSi: existing.nameSi,
-        bioEn: existing.bioEn,
-        bioSi: existing.bioSi,
-        birthYear: existing.birthYear,
-        location: existing.location,
-        website: existing.website,
-        genres: existing.genres,
-        socialLinks: existing.socialLinks ?? [],
-      })
-    }
-  }, [existing])
-
-  if (editing && isLoading) return <LoadingBlock className="container py-12" />
-  if (!user) return null
-  if (!editing && user.authorProfileId) {
-    return (
-      <div className="container max-w-xl py-12">
-        <p className="text-muted-foreground">{t('form.alreadyAuthor')}</p>
-        <Button className="mt-4" onClick={() => navigate(`/authors/${user.authorProfileId}`)}>
-          {t('profile.booksTitle')}
-        </Button>
-      </div>
-    )
-  }
-  if (editing && existing && existing.ownerUid !== user.uid && !isAdminClaim) {
-    navigate(`/authors/${authorId}`, { replace: true })
-    return null
-  }
 
   const set = <K extends keyof AuthorInput>(key: K, value: AuthorInput[K]) =>
     setForm((f) => ({ ...f, [key]: value }))
@@ -103,26 +68,20 @@ export function AuthorFormPage() {
         website: form.website?.trim() || null,
         socialLinks: form.socialLinks.filter((l) => l.label.trim() && l.url.trim()),
       }
-      let id = authorId as string
-      if (editing) {
-        await updateAuthorProfile(id, clean)
-      } else {
-        id = await createAuthorProfile(user!.uid, clean)
-      }
+      const id = await adminCreateAuthor(actor, clean, claimEmail.trim() || null)
       const patch: Record<string, unknown> = {}
-      if (photo)
+      if (photo) {
         patch.photoURL = await uploadImage(authorPhotoDir(id), 'profile', photo, AVATAR_IMAGE)
-      if (cover)
+      }
+      if (cover) {
         patch.coverURL = await uploadImage(authorPhotoDir(id), 'cover', cover, COVER_IMAGE)
+      }
       if (Object.keys(patch).length) {
         await updateDoc(authorDoc(id), { ...patch, updatedAt: serverTimestamp() })
       }
-      await qc.invalidateQueries({ queryKey: ['author', id] })
-      toast({
-        description: t(editing ? 'form.submitEdit' : 'form.submitRegister'),
-        variant: 'success',
-      })
-      navigate(`/authors/${id}`)
+      await qc.invalidateQueries({ queryKey: ['admin'] })
+      toast({ description: ta('authors.created'), variant: 'success' })
+      navigate('/admin/authors')
     } catch (err) {
       console.error(err)
       setError(t('form.atLeastOneName'))
@@ -132,10 +91,10 @@ export function AuthorFormPage() {
   }
 
   return (
-    <div className="container max-w-2xl py-10">
+    <div className="max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle>{editing ? t('form.editTitle') : t('form.registerTitle')}</CardTitle>
+          <CardTitle>{ta('authors.new')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-5">
@@ -180,16 +139,8 @@ export function AuthorFormPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <ImageField
-                label={t('form.photo')}
-                currentUrl={existing?.photoURL}
-                onSelect={setPhoto}
-              />
-              <ImageField
-                label={t('form.cover')}
-                currentUrl={existing?.coverURL}
-                onSelect={setCover}
-              />
+              <ImageField label={t('form.photo')} onSelect={setPhoto} />
+              <ImageField label={t('form.cover')} onSelect={setCover} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
@@ -257,9 +208,21 @@ export function AuthorFormPage() {
               </Button>
             </div>
 
+            <div className="space-y-1.5 border-t border-border pt-4">
+              <Label htmlFor="claimEmail">{ta('authors.claimEmail')}</Label>
+              <Input
+                id="claimEmail"
+                type="email"
+                value={claimEmail}
+                onChange={(e) => setClaimEmail(e.target.value)}
+                placeholder="author@example.com"
+              />
+              <p className="text-xs text-muted-foreground">{ta('authors.claimEmailHint')}</p>
+            </div>
+
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <Button type="submit" disabled={busy}>
-              {editing ? t('form.submitEdit') : t('form.submitRegister')}
+              {ta('authors.new')}
             </Button>
           </form>
         </CardContent>

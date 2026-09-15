@@ -8,8 +8,9 @@ import { HeroScene, ShelfBanner } from '@/components/artwork'
 import { GENRES, genreLabel } from '@/lib/genres'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import { BookCard } from '@/features/books/BookCard'
+import { BookHighlightCard } from '@/features/books/BookHighlightCard'
 import { AuthorCard } from '@/features/authors/AuthorCard'
-import { useBestBooks } from '@/features/books/hooks'
+import { useBestBooks, useFeaturedBooks } from '@/features/books/hooks'
 import { useTopAuthors } from '@/features/authors/hooks'
 import { useRecentReviews } from '@/features/reviews/hooks'
 import { formatRelative } from '@/lib/format'
@@ -35,6 +36,7 @@ function SectionHeading({
 export function HomePage() {
   const { t } = useTranslation('home')
   const { active } = useLocalizedField()
+  const featuredBooks = useFeaturedBooks(3)
   const bestBooks = useBestBooks(10)
   const topAuthors = useTopAuthors(6)
   const recent = useRecentReviews(6)
@@ -72,6 +74,25 @@ export function HomePage() {
       </section>
 
       <div className="container space-y-14 py-12">
+        {featuredBooks.isLoading || (featuredBooks.data && featuredBooks.data.length > 0) ? (
+          <section>
+            <SectionHeading
+              title={t('featured.title')}
+              subtitle={t('featured.subtitle')}
+              shelf
+            />
+            {featuredBooks.isLoading ? (
+              <LoadingBlock rows={2} />
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {(featuredBooks.data ?? []).map((b) => (
+                  <BookHighlightCard key={b.id} book={b} />
+                ))}
+              </div>
+            )}
+          </section>
+        ) : null}
+
         <section>
           <SectionHeading
             title={t('bestReviewed.title')}
@@ -88,21 +109,6 @@ export function HomePage() {
             </div>
           ) : (
             <EmptyState title={t('bestReviewed.empty')} />
-          )}
-        </section>
-
-        <section>
-          <SectionHeading title={t('topAuthors.title')} />
-          {topAuthors.isLoading ? (
-            <LoadingBlock rows={2} />
-          ) : topAuthors.data && topAuthors.data.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {topAuthors.data.map((a) => (
-                <AuthorCard key={a.id} author={a} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState title={t('topAuthors.empty')} />
           )}
         </section>
 
@@ -148,6 +154,22 @@ export function HomePage() {
               </Button>
             ))}
           </div>
+        </section>
+
+        {/* de-emphasized on purpose — books, not authors, are the platform's focus */}
+        <section>
+          <SectionHeading title={t('topAuthors.title')} />
+          {topAuthors.isLoading ? (
+            <LoadingBlock rows={2} />
+          ) : topAuthors.data && topAuthors.data.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {topAuthors.data.map((a) => (
+                <AuthorCard key={a.id} author={a} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState title={t('topAuthors.empty')} />
+          )}
         </section>
       </div>
     </div>
