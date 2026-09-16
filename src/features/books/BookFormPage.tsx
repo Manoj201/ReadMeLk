@@ -275,7 +275,7 @@ export function BookFormPage() {
 
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <div className="flex items-center gap-2">
-              <Button type="submit" disabled={busy}>
+              <Button type="submit" loading={busy}>
                 {editing ? t('form.submitEdit') : t('form.submitNew')}
               </Button>
               {editing ? (

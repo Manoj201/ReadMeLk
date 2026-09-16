@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { LanguageToggle } from '@/components/LanguageToggle'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { BrandMark, MotifDivider, WovenStrip } from '@/components/motifs'
 import { cn } from '@/lib/utils'
@@ -46,8 +45,8 @@ function MainNav({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
           className={({ isActive }) =>
             cn(
-              'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',
-              isActive && 'text-primary',
+              'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 hover:text-white',
+              isActive && 'bg-white/10 font-semibold text-brand-accent',
             )
           }
         >
@@ -67,14 +66,9 @@ function UserMenu() {
   if (status === 'loading') return null
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
-        <Button asChild variant="ghost" size="sm">
-          <Link to="/signin">{t('nav.signIn')}</Link>
-        </Button>
-        <Button asChild size="sm">
-          <Link to="/signup">{t('nav.signUp')}</Link>
-        </Button>
-      </div>
+      <Button asChild variant="ghost" size="sm">
+        <Link to="/signin">{t('nav.signIn')}</Link>
+      </Button>
     )
   }
 
@@ -129,17 +123,22 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+      <header
+        className={cn(
+          'sticky top-0 z-40 text-white shadow-[0_2px_24px_-4px_hsl(var(--header-glow)/0.45)]',
+          'bg-[linear-gradient(115deg,hsl(var(--header-gradient-1))_0%,hsl(var(--header-gradient-2))_45%,hsl(var(--header-gradient-3))_100%)]',
+          'relative after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-brand-accent/70 after:to-transparent',
+        )}
+      >
         <div className="container flex h-16 items-center gap-4">
           <Link to="/" className="flex items-center gap-2 font-serif text-lg font-semibold">
-            <BrandMark />
+            <BrandMark className="text-white" />
             <span>{t('app.name')}</span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
             <MainNav />
           </nav>
           <div className="ml-auto flex items-center gap-1">
-            <LanguageToggle className="hidden sm:inline-flex" />
             <ThemeToggle />
             <div className="hidden md:block">
               <UserMenu />
@@ -157,11 +156,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         {open ? (
-          <div className="border-t border-border bg-background md:hidden">
+          <div className="border-t border-white/10 bg-[hsl(var(--header-gradient-1))] text-white md:hidden">
             <div className="container flex flex-col gap-1 py-3">
               <MainNav onNavigate={() => setOpen(false)} />
-              <div className="mt-2 flex items-center justify-between">
-                <LanguageToggle />
+              <div className="mt-2 flex items-center justify-end">
                 <UserMenu />
               </div>
             </div>

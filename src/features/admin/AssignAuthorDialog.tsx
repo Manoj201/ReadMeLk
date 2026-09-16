@@ -81,7 +81,7 @@ export function AssignAuthorDialog({ author }: { author: Author }) {
             />
           </div>
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          <Button type="submit" disabled={busy}>
+          <Button type="submit" loading={busy}>
             {t('authors.assignDialog.submit')}
           </Button>
         </form>

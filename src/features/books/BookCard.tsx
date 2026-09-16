@@ -4,6 +4,7 @@ import { CoverFallback } from '@/components/artwork'
 import { RatingStars } from '@/components/RatingStars'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import { formatRating } from '@/lib/format'
+import { genreLabel } from '@/lib/genres'
 import type { Book } from '@/types'
 
 export function BookCard({ book }: { book: Book }) {
@@ -11,13 +12,14 @@ export function BookCard({ book }: { book: Book }) {
   const { active, pick } = useLocalizedField()
   const title = pick(book.titleEn, book.titleSi).value || '—'
   const author = pick(book.authorNameEn, book.authorNameSi).value
+  const primaryGenre = book.genres[0]
 
   return (
     <Link
       to={`/books/${book.id}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-primary/40"
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/40"
     >
-      <div className="aspect-[3/4] w-full overflow-hidden bg-muted">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
         {book.coverURL ? (
           <img
             src={book.coverURL}
@@ -31,8 +33,18 @@ export function BookCard({ book }: { book: Book }) {
             className="transition-transform group-hover:scale-105"
           />
         )}
+        {book.featured ? (
+          <span className="absolute left-2 top-2 rounded-full border border-brand-accent/60 bg-black/30 px-2.5 py-0.5 text-[11px] font-medium text-brand-accent backdrop-blur">
+            {t('card.featured')}
+          </span>
+        ) : null}
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
+        {primaryGenre ? (
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {genreLabel(primaryGenre, active)}
+          </p>
+        ) : null}
         <p className="line-clamp-2 font-serif font-medium leading-tight">{title}</p>
         {author ? (
           <p className="text-xs text-muted-foreground">{t('detail.by', { name: author })}</p>

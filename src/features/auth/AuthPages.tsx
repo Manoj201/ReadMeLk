@@ -26,7 +26,7 @@ function GoogleButton({ label, onError }: { label: string; onError: (k: string) 
       type="button"
       variant="outline"
       className="w-full"
-      disabled={busy}
+      loading={busy}
       onClick={async () => {
         setBusy(true)
         try {
@@ -99,7 +99,7 @@ export function SignInPage() {
               />
             </div>
             {errorKey ? <p className="text-sm text-destructive">{t(errorKey)}</p> : null}
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" className="w-full" loading={busy}>
               {t('signIn.submit')}
             </Button>
           </form>
@@ -185,7 +185,7 @@ export function SignUpPage() {
               />
             </div>
             {errorKey ? <p className="text-sm text-destructive">{t(errorKey)}</p> : null}
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" className="w-full" loading={busy}>
               {t('signUp.submit')}
             </Button>
           </form>

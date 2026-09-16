@@ -5,10 +5,12 @@ a full author profile and register their books; readers — registered or guest 
 ratings and written reviews for both books and authors. The home page surfaces the
 best-reviewed books using a Bayesian ranking, and prominently features admin-curated
 picks — the platform's goal is to get people reading, so books lead the page over authors.
-The visual design is a clean, modern, professional theme — cool neutral slate/white
-surfaces, a single ink-blue brand color, warm amber reserved for ratings/small highlights.
-No themed/cultural motifs; the bilingual Sinhala/English identity lives in the product
-(fonts, i18n, content), not the color palette.
+The visual design is a fantasy-novel-inspired theme ("Enchanted Ink & Gilt") — a deep
+wine/maroon brand color evoking a book's leather cover, antique gilt gold reserved for
+ratings/featured highlights, warm parchment-tinted neutral surfaces in light mode and a
+near-black maroon backdrop in dark mode, with jewel-tone functional colors (emerald
+success, sapphire info, garnet-red destructive). The bilingual Sinhala/English identity
+lives in the product (fonts, i18n, content), not the color palette.
 
 ## Status
 

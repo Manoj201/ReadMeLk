@@ -1,59 +1,101 @@
-# 06 — Design system (modern professional)
+# 06 — Design system (fantasy — "Enchanted Ink & Gilt")
 
-**v3 (current):** a clean, modern, professional theme — cool neutral slate/white surfaces,
-a single confident ink-blue brand color for actions and links, and a warm amber accent
-reserved for ratings and small highlights (a "Featured" ribbon, a divider dot). No themed
-or cultural motifs. The platform's bilingual Sinhala/English identity lives in the
-*product* (fonts, i18n, content) — see [05-i18n.md](05-i18n.md) — not in the color palette
-or decorative illustration.
+**v4 (current):** a deep, jewel-toned fantasy-novel-cover theme — a deep wine/maroon
+brand color for actions and links, evoking a book's leather cover, and an antique gilt
+gold accent reserved for ratings and small highlights (a "Featured" ribbon, a divider
+dot), evoking foil lettering. Warm parchment-tinted neutrals in light mode, a near-black
+maroon backdrop in dark mode, and jewel-tone functional colors (emerald success, sapphire
+info, garnet-red destructive) replace the flatter corporate hues of v3. (An earlier pass
+at v4 used indigo/violet as the primary hue instead of maroon — corrected after review,
+"dark and brownish" rather than purple; see git history if the violet values are ever
+needed.) The platform's bilingual Sinhala/English identity lives in the *product* (fonts,
+i18n, content) — see [05-i18n.md](05-i18n.md) — not in the color palette or decorative
+illustration.
 
-Earlier versions used a Sri Lankan heritage palette (flag gold/crimson on warm parchment);
-that direction was tried and explicitly dropped. History is kept in the collapsed section
-below for context, not as a reference for new work.
+Earlier versions are kept in the collapsed section below for context, not as a reference
+for new work: v3 was a deliberately neutral "modern professional" slate theme; v1/v2 used a
+Sri Lankan heritage palette (flag gold/crimson on warm parchment). Both were tried and
+explicitly superseded.
 
 Everything below is expressed as **design tokens → Tailwind theme → shadcn CSS variables**
 so all shadcn/ui components inherit the theme automatically.
 
-## Palette (v3 — current)
+## Palette (v4 — current)
 
 ### Brand
 
 | Token | Role | Hex (light) | Hex (dark) |
 |---|---|---|---|
-| `brand-primary` | primary actions, links, focus ring | `#20396F` | `#5F8FDD` |
-| `brand-primary-deep` | hover/active primary, `accent-foreground` | `#142852` | `#3B73CE` |
-| `brand-accent` | ratings, "Featured" highlights — used sparingly | `#CE9127` | `#E0B152` |
-| `brand-accent-deep` | hover/active accent | `#A06D22` | `#D2962D` |
+| `brand-primary` | primary actions, links, focus ring | `#891A2B` | `#DD4B66` |
+| `brand-primary-deep` | hover/active primary, `accent-foreground` | `#5D1420` | `#CC244B` |
+| `brand-accent` | ratings, "Featured" highlights — used sparingly | `#C99A2C` | `#E7C055` |
+| `brand-accent-deep` | hover/active accent | `#936725` | `#CF9530` |
 
-### Neutrals (cool slate — never warm parchment)
+### Neutrals (warm parchment-tinted in light mode; near-black maroon in dark — not cool slate, not violet)
 
 | Token | Role | Hex (light) | Hex (dark) |
 |---|---|---|---|
-| `paper` | app background | `#FCFCFD` | `#101219` |
-| `paper-raised` | cards, popovers | `#FFFFFF` | `#181C25` |
-| `paper-sunk` | muted panels, table stripes | `#F0F2F4` | `#0C0E13` |
-| `ink` | primary text | `#171C26` | `#E7EBEF` |
-| `ink-soft` | secondary text | `#5D636F` | `#9BA4B0` |
-| `line` | borders / dividers | `#DFE2E7` | `#2B313B` |
+| `paper` | app background | `#FAF7F1` | `#160407` |
+| `paper-raised` | cards, popovers | `#FFFDFB` | `#240A0E` |
+| `paper-sunk` | muted panels, table stripes | `#F0EAE0` | `#0C0306` |
+| `ink` | primary text | `#291E20` | `#F1EFEE` |
+| `ink-soft` | secondary text | `#69595C` | `#A69C96` |
+| `line` | borders / dividers | `#E1D9CB` | `#341D21` |
 
 ### shadcn extras derived from the above
 
-`secondary` (neutral button surface, not brand-colored) → `#EBECF0` light / `#272B35`
-dark. `accent` (hover panel tint) → `#EEF1F6` light / `#222B39` dark, with
-`accent-foreground` = `brand-primary-deep` / `brand-primary`.
+`secondary` (neutral button surface, not brand-colored) → warm-neutral gray-beige light /
+maroon-tinted charcoal dark, same role as before. `accent` (hover panel tint) →
+maroon-tinted light / dark, with `accent-foreground` = `brand-primary-deep` /
+`brand-primary`.
 
-### Functional
+### Functional (jewel tones)
 
 | Token | Hex (light) | Hex (dark) |
 |---|---|---|
-| `rating` (stars) | `#D99D26` | `#DDB35F` |
-| `success` | `#2A6F4F` | `#56B388` |
-| `warning` | `#C18825` | `#DBAD57` |
-| `destructive` | `#AE292D` | `#D3696C` |
-| `info` | `#3668A1` | `#709BCD` |
+| `rating` (stars) | `#D9A23B` | `#E3BE6C` |
+| `success` (emerald) | `#226C4C` | `#4FAE82` |
+| `warning` (bronze-amber) | `#B87A22` | `#D6A355` |
+| `destructive` (red) | `#A83524` | `#D87364` |
+| `info` (sapphire) | `#2E5C99` | `#7099D6` |
+
+`destructive` was nudged off the garnet family (previously `#912836`/`#D3707E`, very close
+to `brand-primary`'s hue) to a distinct red-orange — now that `brand-primary` itself sits
+in the maroon/wine hue range, keeping `destructive` in that same neighborhood would make
+delete actions look too similar to primary actions.
+
+### Accessibility note
+
+`brand-accent` gold is a mid-tone and fails AA as body text on light `paper` — use
+`brand-accent-deep` for gold text on light backgrounds, reserve bright `brand-accent` for
+fills, star icons, and dark-mode text (same caution that applied to v3's amber).
 
 <details>
-<summary>v1 / v2 — Sri Lankan heritage palette (superseded, dropped)</summary>
+<summary>v1 / v2 / v3 — superseded palettes</summary>
+
+**v3 — "modern professional"**, dropped in favor of v4 above: a clean, neutral theme —
+cool slate/white surfaces, a single ink-blue brand color, warm amber for ratings only. No
+themed motifs.
+
+| Token | Role | Hex (light) | Hex (dark) |
+|---|---|---|---|
+| `brand-primary` | primary actions, links, focus ring | `#20396F` | `#5F8FDD` |
+| `brand-primary-deep` | hover/active primary | `#142852` | `#3B73CE` |
+| `brand-accent` | ratings, highlights | `#CE9127` | `#E0B152` |
+| `brand-accent-deep` | hover/active accent | `#A06D22` | `#D2962D` |
+| `paper` | app background | `#FCFCFD` | `#101219` |
+| `paper-raised` | cards, popovers | `#FFFFFF` | `#181C25` |
+| `paper-sunk` | muted panels | `#F0F2F4` | `#0C0E13` |
+| `ink` | primary text | `#171C26` | `#E7EBEF` |
+| `ink-soft` | secondary text | `#5D636F` | `#9BA4B0` |
+| `line` | borders / dividers | `#DFE2E7` | `#2B313B` |
+| `rating` | stars | `#D99D26` | `#DDB35F` |
+| `success` | | `#2A6F4F` | `#56B388` |
+| `warning` | | `#C18825` | `#DBAD57` |
+| `destructive` | | `#AE292D` | `#D3696C` |
+| `info` | | `#3668A1` | `#709BCD` |
+
+**v1 / v2 — Sri Lankan heritage palette (superseded, dropped)**
 
 The original brief: "feel like a well-made Sri Lankan book — warm parchment paper, gold
 and crimson of the national flag and temple murals, ola-leaf manuscript texture."
@@ -119,7 +161,7 @@ shadcn/ui components read these; do not restyle components individually.
 | `--secondary-foreground` | `ink` | `ink` (dark) |
 | `--muted` | `paper-sunk` | `paper-sunk` (dark) |
 | `--muted-foreground` | `ink-soft` | `ink-soft` (dark) |
-| `--accent` | light blue-tinted neutral | dark blue-tinted neutral |
+| `--accent` | light maroon-tinted neutral | dark maroon-tinted neutral |
 | `--accent-foreground` | `brand-primary-deep` | `brand-primary` (dark) |
 | `--destructive` | `destructive` | `destructive` (dark) |
 | `--border` / `--input` | `line` | `line` (dark) |
@@ -141,10 +183,10 @@ Custom (non-shadcn) vars also defined: `--rating`, `--success`, `--warning`, `--
 | Small / meta | sans | 0.875rem / 1.5 | 1.65 |
 
 `body.lang-si` applies the wider line-heights and the Sinhala-first font stacks (see
-[05-i18n.md](05-i18n.md)). Weights: body 400/500, headings 600/700. Unchanged by the v3
-color refresh — this was never heritage-specific.
+[05-i18n.md](05-i18n.md)). Weights: body 400/500, headings 600/700. Unchanged by the v4
+color refresh — this was never palette-specific.
 
-## Motifs (v3 — book-focused, not themed)
+## Motifs (v4 — book-focused fantasy accents)
 
 Ship as inline React SVG components in `src/components/artwork.tsx` and `motifs.tsx`,
 using `currentColor`/theme tokens, marked `aria-hidden="true"`, honoring
@@ -176,8 +218,8 @@ Dialog (report + review forms), Tooltip, Skeleton, plus the app-specific
 ## Accessibility
 
 - Verify every text/background pair at ≥ 4.5:1 (AA), ≥ 3:1 for large text and UI borders.
-  `brand-accent` (amber) fails as body text on light `paper` — use `brand-accent-deep`
-  for amber text on light, reserve bright `brand-accent` for fills and dark-mode text.
+  `brand-accent` (gilt gold) fails as body text on light `paper` — use `brand-accent-deep`
+  for gold text on light, reserve bright `brand-accent` for fills and dark-mode text.
 - `--ring` (`brand-primary`) must be clearly visible on `paper`, `paper-raised`, and
   `brand-primary` surfaces — 2px offset ring.
 - Provide reduced-motion variants; motif textures respect `prefers-reduced-motion` and can

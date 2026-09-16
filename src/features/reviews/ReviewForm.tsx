@@ -215,7 +215,7 @@ export function ReviewForm({ targetType, targetId }: Props) {
             <p className="text-sm text-destructive">{t('form.cooldown')}</p>
           ) : null}
 
-          <Button type="submit" disabled={disabled || cooldownLeft > 0}>
+          <Button type="submit" disabled={disabled || cooldownLeft > 0} loading={busy}>
             {mine ? t('form.update') : t('form.submit')}
           </Button>
         </form>

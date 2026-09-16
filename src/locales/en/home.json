@@ -1,9 +1,27 @@
 {
   "hero": {
-    "title": "Discover Sri Lanka's best-reviewed books",
-    "subtitle": "Ratings and reviews from readers, in Sinhala and English.",
+    "title": "Uncover Sri Lanka's best-reviewed books",
+    "subtitle": "Honest ratings and reviews from real readers — discover your next unforgettable read.",
     "browseCta": "Browse books",
-    "becomeAuthorCta": "I'm an author"
+    "authorsCta": "Authors",
+    "becomeAuthorCta": "I'm an author",
+    "features": {
+      "reviewBooks": "Review Books",
+      "rateAuthors": "Rate Authors"
+    }
+  },
+  "spotlight": {
+    "title": "This Week's Top Picks",
+    "book": {
+      "eyebrow": "This Week's Top Book"
+    },
+    "author": {
+      "eyebrow": "This Week's Top Author"
+    },
+    "ratingLabel": "Rating",
+    "pagesLabel": "Pages",
+    "booksLabel": "Books",
+    "viewDetails": "View Details"
   },
   "bestReviewed": {
     "title": "Best reviewed books",

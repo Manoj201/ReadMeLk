@@ -47,6 +47,10 @@ void i18n
   .use(initReactI18next)
   .init({
     resources,
+    // phase 1 has no LanguageToggle in the UI, so the UI language is locked to
+    // English — without this, i18next-browser-languagedetector can still pick
+    // 'si' from the browser's navigator locale with no way for the user to switch back.
+    lng: 'en',
     ns: [...NS],
     defaultNS: 'common',
     fallbackLng: { si: ['en'], default: ['en'] },

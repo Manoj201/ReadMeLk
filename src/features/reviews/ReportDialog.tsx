@@ -105,7 +105,7 @@ export function ReportDialog({ review }: { review: Review }) {
               onChange={(e) => setNote(e.target.value)}
             />
           </div>
-          <Button type="submit" disabled={busy}>
+          <Button type="submit" loading={busy}>
             {t('report.submit')}
           </Button>
         </form>

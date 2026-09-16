@@ -67,6 +67,11 @@
   "card": {
     "ratingsCount": "ශ්‍රේණිගත කිරීම් {{count}}",
     "ratingsCount_other": "ශ්‍රේණිගත කිරීම් {{count}}",
-    "noRatings": "තවම ශ්‍රේණිගත කිරීම් නැත"
+    "noRatings": "තවම ශ්‍රේණිගත කිරීම් නැත",
+    "verified": "සත්‍යාපිත",
+    "featured": "විශේෂාංගගත",
+    "bookCount": "පොත් {{count}}ක්",
+    "bookCount_other": "පොත් {{count}}ක්",
+    "viewProfile": "පැතිකඩ බලන්න"
   }
 }

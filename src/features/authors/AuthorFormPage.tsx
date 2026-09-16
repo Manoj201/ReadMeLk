@@ -258,7 +258,7 @@ export function AuthorFormPage() {
             </div>
 
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
-            <Button type="submit" disabled={busy}>
+            <Button type="submit" loading={busy}>
               {editing ? t('form.submitEdit') : t('form.submitRegister')}
             </Button>
           </form>

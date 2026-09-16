@@ -67,6 +67,11 @@
   "card": {
     "ratingsCount": "{{count}} rating",
     "ratingsCount_other": "{{count}} ratings",
-    "noRatings": "No ratings yet"
+    "noRatings": "No ratings yet",
+    "verified": "Verified",
+    "featured": "Featured",
+    "bookCount": "{{count}} book",
+    "bookCount_other": "{{count}} books",
+    "viewProfile": "View Profile"
   }
 }

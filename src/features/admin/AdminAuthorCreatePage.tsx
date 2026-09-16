@@ -221,7 +221,7 @@ export function AdminAuthorCreatePage() {
             </div>
 
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
-            <Button type="submit" disabled={busy}>
+            <Button type="submit" loading={busy}>
               {ta('authors.new')}
             </Button>
           </form>

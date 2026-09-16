@@ -140,7 +140,7 @@ export function BooksBrowsePage() {
       ) : shown.length === 0 ? (
         <EmptyState title={t('browse.empty')} />
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {shown.map((b) => (
             <BookCard key={b.id} book={b} />
           ))}

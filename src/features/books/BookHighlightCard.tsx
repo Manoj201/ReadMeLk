@@ -20,7 +20,7 @@ export function BookHighlightCard({ book }: { book: Book }) {
   const author = pick(book.authorNameEn, book.authorNameSi).value
 
   return (
-    <div className="group flex gap-4 overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40 sm:gap-5">
+    <div className="group flex gap-4 overflow-hidden rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 sm:gap-5">
       <Link
         to={`/books/${book.id}`}
         className="aspect-[3/4] w-24 shrink-0 overflow-hidden rounded-md bg-muted sm:w-32"

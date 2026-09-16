@@ -247,7 +247,7 @@ export function AdminBookCreatePage() {
             />
 
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
-            <Button type="submit" disabled={busy}>
+            <Button type="submit" loading={busy}>
               {ta('books.new')}
             </Button>
           </form>
