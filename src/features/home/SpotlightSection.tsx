@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Globe, Link2 } from 'lucide-react'
+import { ArrowRight, Crown, Globe, Link2 } from 'lucide-react'
 import { CoverFallback } from '@/components/artwork'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { RatingStars } from '@/components/RatingStars'
@@ -38,6 +38,7 @@ function PillLink({
 
 function SpotlightBlock({
   eyebrow,
+  to,
   image,
   imageFallback,
   avatar,
@@ -50,6 +51,7 @@ function SpotlightBlock({
   actions,
 }: {
   eyebrow: string
+  to: string
   image: string | null
   imageFallback: ReactNode
   avatar?: { src: string | null; fallback: string }
@@ -62,54 +64,71 @@ function SpotlightBlock({
   actions: ReactNode
 }) {
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,220px)_1fr] xl:items-start">
-      <div className="relative mx-auto w-full max-w-sm">
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-white/10">
-          {image ? (
-            <img src={image} alt="" loading="lazy" className="h-full w-full object-cover" />
-          ) : (
-            imageFallback
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--header-gradient-2))]/90 via-transparent to-transparent" />
-          {/* badge stays inset within the cover so it never overlaps the text column beside it */}
-          <div className="absolute right-3 top-3 flex flex-col items-center gap-0.5 rounded-xl border border-white/10 bg-[hsl(var(--header-gradient-1))]/95 px-3 py-2 text-center shadow-lg backdrop-blur">
-            <span className="font-serif text-lg font-bold text-brand-accent">{badgeValue}</span>
-            <span className="text-[10px] text-white/60">{badgeCaption}</span>
-          </div>
-          <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-4">
-            {avatar ? (
-              <Avatar className="h-12 w-12 shrink-0 border-2 border-white/80 shadow-md">
-                {avatar.src ? <AvatarImage src={avatar.src} alt="" /> : null}
-                <AvatarFallback className="font-serif text-sm">{avatar.fallback}</AvatarFallback>
-              </Avatar>
-            ) : null}
-            <div className="min-w-0">
-              {overlayLabel ? (
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/70">
-                  {overlayLabel}
-                </p>
-              ) : null}
-              <p className="truncate font-serif text-xl font-semibold text-white">
-                {overlayTitle}
-              </p>
+    <div className="group relative h-full">
+      {/* ambient gold glow that lifts the card off the section background, brightening on hover */}
+      <div className="pointer-events-none absolute -inset-3 rounded-[2rem] bg-brand-accent/15 opacity-60 blur-2xl transition-opacity duration-300 group-hover:opacity-100" />
+
+      <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-brand-accent/25 bg-white/[0.05] p-5 shadow-2xl shadow-black/30 backdrop-blur-sm sm:p-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-accent/70 to-transparent" />
+
+        <span className="mb-5 inline-flex items-center gap-1.5 self-start rounded-full bg-brand-accent px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[hsl(var(--header-gradient-2))] shadow-sm">
+          <Crown className="h-3.5 w-3.5" />
+          {eyebrow}
+        </span>
+
+        <div className="grid flex-1 gap-6 xl:grid-cols-[minmax(0,240px)_minmax(0,1fr)]">
+          <Link to={to} className="relative mx-auto block w-full max-w-sm">
+            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl ring-1 ring-brand-accent/40 transition-transform duration-300 group-hover:scale-[1.02]">
+              {image ? (
+                <img src={image} alt="" loading="lazy" className="h-full w-full object-cover" />
+              ) : (
+                imageFallback
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--header-gradient-2))]/90 via-transparent to-transparent" />
+              {/* badge stays inset within the cover so it never overlaps the text column beside it */}
+              <div className="absolute right-3 top-3 flex flex-col items-center gap-0.5 rounded-xl border border-white/10 bg-[hsl(var(--header-gradient-1))]/95 px-3 py-2 text-center shadow-lg backdrop-blur">
+                <span className="font-serif text-lg font-bold text-brand-accent">{badgeValue}</span>
+                <span className="text-[10px] text-white/60">{badgeCaption}</span>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-4">
+                {avatar ? (
+                  <Avatar className="h-12 w-12 shrink-0 border-2 border-white/80 shadow-md">
+                    {avatar.src ? <AvatarImage src={avatar.src} alt="" /> : null}
+                    <AvatarFallback className="font-serif text-sm">{avatar.fallback}</AvatarFallback>
+                  </Avatar>
+                ) : null}
+                <div className="min-w-0">
+                  {overlayLabel ? (
+                    <p className="text-xs font-semibold uppercase tracking-wider text-white/70">
+                      {overlayLabel}
+                    </p>
+                  ) : null}
+                  <p className="truncate font-serif text-xl font-semibold text-white">
+                    {overlayTitle}
+                  </p>
+                </div>
+              </div>
             </div>
+          </Link>
+
+          <div className="flex h-full min-w-0 flex-col gap-3 xl:pt-1">
+            <Link
+              to={to}
+              className="truncate font-serif text-2xl font-semibold text-white transition-colors hover:text-brand-accent"
+            >
+              {overlayTitle}
+            </Link>
+            <p className="break-words text-base leading-relaxed text-white/75">{description}</p>
+
+            {quote ? (
+              <blockquote className="break-words border-l-2 border-brand-accent/60 pl-4 font-serif text-base italic leading-relaxed text-white/85">
+                {quote}
+              </blockquote>
+            ) : null}
+
+            <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">{actions}</div>
           </div>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">
-          {eyebrow}
-        </p>
-        <p className="text-base leading-relaxed text-white/75">{description}</p>
-
-        {quote ? (
-          <blockquote className="border-l-2 border-brand-accent/60 pl-4 font-serif text-base italic leading-relaxed text-white/85">
-            {quote}
-          </blockquote>
-        ) : null}
-
-        <div className="flex flex-wrap items-center gap-2 pt-2">{actions}</div>
       </div>
     </div>
   )
@@ -151,12 +170,13 @@ export function SpotlightSection({
         <div className="mx-auto h-0.5 w-16 rounded-full bg-brand-accent" />
       </div>
 
-      <div className="container relative mt-12 grid gap-12 lg:grid-cols-2 lg:items-start lg:gap-10">
+      <div className="container relative mt-12 grid gap-12 lg:grid-cols-2 lg:items-stretch lg:gap-10">
         {bookLoading ? (
           <LoadingBlock rows={3} />
         ) : book ? (
           <SpotlightBlock
             eyebrow={t('spotlight.book.eyebrow')}
+            to={`/books/${book.id}`}
             image={book.coverURL}
             imageFallback={
               <CoverFallback seed={book.id.charCodeAt(0) + book.id.length} className="h-full w-full" />
@@ -202,6 +222,7 @@ export function SpotlightSection({
         ) : author ? (
           <SpotlightBlock
             eyebrow={t('spotlight.author.eyebrow')}
+            to={`/authors/${author.id}`}
             image={author.coverURL ?? author.photoURL}
             imageFallback={
               <div
