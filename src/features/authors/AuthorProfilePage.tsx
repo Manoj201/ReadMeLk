@@ -1,15 +1,15 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BadgeCheck, Globe, MapPin, Pencil, Plus } from 'lucide-react'
+import { BadgeCheck, Globe, Link2, MapPin, Pencil, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
 import { GenreBadges, BilingualChip } from '@/components/forms'
+import { RatingStars } from '@/components/RatingStars'
 import { RatingSummary } from '@/components/RatingSummary'
-import { SubtleTexture } from '@/components/motifs'
+import { MotifDivider, SubtleTexture } from '@/components/motifs'
 import { ReviewForm } from '@/features/reviews/ReviewForm'
 import { ReviewList } from '@/features/reviews/ReviewList'
 import { BookCard } from '@/features/books/BookCard'
@@ -18,13 +18,15 @@ import { buildDistribution } from '@/features/reviews/api'
 import { useBooksByAuthor } from '@/features/books/hooks'
 import { useAuthStore } from '@/stores/authStore'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
+import { formatRating } from '@/lib/format'
 import { useAuthor } from './hooks'
 
 export function AuthorProfilePage() {
   const { authorId } = useParams()
   const { t } = useTranslation('author')
   const { t: tc } = useTranslation('common')
-  const { pick } = useLocalizedField()
+  const { t: tBook } = useTranslation('book')
+  const { pick, active } = useLocalizedField()
   const uid = useAuthStore((s) => s.user?.uid ?? null)
   const isAdminClaim = useAuthStore((s) => s.isAdminClaim)
 
@@ -65,7 +67,7 @@ export function AuthorProfilePage() {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h1 className="flex items-center gap-2 font-serif text-2xl font-semibold">
+            <h1 className="flex items-center gap-2 font-serif text-2xl font-semibold sm:text-3xl">
               {name.value || '—'}
               {author.verified ? (
                 <span className="inline-flex items-center gap-1 text-sm font-normal text-primary">
@@ -74,32 +76,19 @@ export function AuthorProfilePage() {
                 </span>
               ) : null}
             </h1>
-            <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              {author.location ? (
-                <span className="inline-flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {author.location}
-                </span>
-              ) : null}
-              {author.birthYear ? (
-                <span>
-                  {t('profile.born')} {author.birthYear}
-                </span>
-              ) : null}
-              {author.website ? (
-                <a
-                  href={author.website}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center gap-1 underline underline-offset-2"
-                >
-                  <Globe className="h-3.5 w-3.5" />
-                  {t('profile.website')}
-                </a>
-              ) : null}
-            </div>
-            <div className="mt-2">
+            <div className="mt-2 flex flex-wrap items-center gap-3">
               <GenreBadges genres={author.genres} />
+              {author.ratingCount > 0 ? (
+                <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <RatingStars value={author.ratingAvg} size="sm" />
+                  <span className="font-medium text-foreground">
+                    {formatRating(author.ratingAvg, active)}
+                  </span>
+                  <span>{tBook('card.ratingsCount', { count: author.ratingCount })}</span>
+                </span>
+              ) : (
+                <span className="text-sm text-muted-foreground">{tBook('card.noRatings')}</span>
+              )}
             </div>
           </div>
           {isOwner ? (
@@ -124,8 +113,8 @@ export function AuthorProfilePage() {
               )}
             </p>
           ) : null}
-          <section>
-            <h2 className="mb-2 font-serif text-lg font-semibold">
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="mb-3 font-serif text-lg font-semibold">
               {t('profile.about')} {bio.isFallback ? <BilingualChip shown={bio.lang!} /> : null}
             </h2>
             {bio.value ? (
@@ -178,12 +167,18 @@ export function AuthorProfilePage() {
             <h2 className="mb-3 font-serif text-lg font-semibold">
               {t('profile.reviewsTitle')}
             </h2>
+            <MotifDivider className="mb-4 max-w-xs" />
+            {author.status === 'approved' ? (
+              <div className="mb-6">
+                <ReviewForm targetType="author" targetId={author.id} />
+              </div>
+            ) : null}
             {reviewsQ.isLoading ? <LoadingBlock /> : <ReviewList reviews={reviews} />}
           </section>
         </div>
 
-        <aside className="space-y-6">
-          <div className="rounded-lg border border-border bg-card p-5">
+        <aside className="space-y-6 lg:sticky lg:top-20 lg:h-fit">
+          <div className="rounded-xl border border-border bg-card p-5">
             <RatingSummary
               ratingAvg={author.ratingAvg}
               ratingCount={author.ratingCount}
@@ -191,17 +186,70 @@ export function AuthorProfilePage() {
               distribution={buildDistribution(reviews)}
             />
           </div>
-          {author.status === 'approved' ? (
-            <Tabs defaultValue="write">
-              <TabsList className="w-full">
-                <TabsTrigger value="write" className="flex-1">
-                  {t('profile.writeReview')}
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="write">
-                <ReviewForm targetType="author" targetId={author.id} />
-              </TabsContent>
-            </Tabs>
+
+          {author.location ||
+          author.birthYear ||
+          author.bookCount > 0 ||
+          author.website ||
+          author.socialLinks.length > 0 ? (
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h2 className="mb-3 font-serif text-lg font-semibold">
+                {tBook('detail.details')}
+              </h2>
+              <dl className="space-y-2.5 text-sm">
+                {author.location ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="flex items-center gap-1.5 text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {t('profile.location')}
+                    </dt>
+                    <dd className="text-right font-medium">{author.location}</dd>
+                  </div>
+                ) : null}
+                {author.birthYear ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-muted-foreground">{t('profile.born')}</dt>
+                    <dd className="text-right font-medium">{author.birthYear}</dd>
+                  </div>
+                ) : null}
+                {author.bookCount > 0 ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-muted-foreground">{t('profile.booksTitle')}</dt>
+                    <dd className="text-right font-medium">
+                      {tBook('card.bookCount', { count: author.bookCount })}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+
+              {author.website || author.socialLinks.length > 0 ? (
+                <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4">
+                  {author.website ? (
+                    <a
+                      href={author.website}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Globe className="h-3.5 w-3.5" />
+                      {t('profile.website')}
+                    </a>
+                  ) : null}
+                  {author.socialLinks.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Link2 className="h-3.5 w-3.5" />
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           ) : null}
         </aside>
       </div>

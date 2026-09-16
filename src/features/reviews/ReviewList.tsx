@@ -35,7 +35,7 @@ function ReviewItem({ review }: { review: Review }) {
   }
 
   return (
-    <li className="border-b border-border py-4 last:border-0">
+    <li className="rounded-lg border border-border bg-card p-4">
       <div className="flex flex-wrap items-center gap-2">
         <RatingStars value={review.rating} size="sm" />
         <span className="font-medium">{review.reviewerName}</span>
@@ -72,7 +72,7 @@ export function ReviewList({ reviews }: { reviews: Review[] }) {
   const { t } = useTranslation('review')
   if (reviews.length === 0) return <EmptyState title={t('list.empty')} />
   return (
-    <ul>
+    <ul className="space-y-3">
       {reviews.map((r) => (
         <ReviewItem key={r.id} review={r} />
       ))}

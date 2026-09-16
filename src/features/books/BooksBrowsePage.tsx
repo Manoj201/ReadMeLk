@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -30,11 +30,27 @@ export function BooksBrowsePage() {
   const isAuthor = useAuthStore((s) => hasRole(s.user, 'author') && !!s.user?.authorProfileId)
   const [params, setParams] = useSearchParams()
 
-  const [genre, setGenre] = useState(params.get('genre') ?? '')
-  const [language, setLanguage] = useState<BookLang | ''>('')
-  const [minRating, setMinRating] = useState(0)
-  const [sort, setSort] = useState<'top' | 'recent'>('top')
+  // genre/language/minRating/sort drive the actual query, so they're kept in the URL
+  // (shareable, survives back/forward); `q` is an instant client-side filter, kept local
+  const genre = params.get('genre') ?? ''
+  const language = (params.get('language') as BookLang | null) ?? ''
+  const minRating = Number(params.get('minRating') ?? 0)
+  const sort = (params.get('sort') as 'top' | 'recent' | null) ?? 'top'
   const [q, setQ] = useState('')
+
+  function updateParam(key: string, value: string) {
+    const p = new URLSearchParams(params)
+    if (value) p.set(key, value)
+    else p.delete(key)
+    setParams(p, { replace: true })
+  }
+
+  const hasActiveFilters = !!genre || !!language || minRating > 0 || sort !== 'top' || !!q
+
+  function clearFilters() {
+    setParams(new URLSearchParams(), { replace: true })
+    setQ('')
+  }
 
   const filters: BookFilters = useMemo(
     () => ({ genre: genre || undefined, language, minRating, sort }),
@@ -67,70 +83,78 @@ export function BooksBrowsePage() {
         )}
       </div>
 
-      <div className="mb-6 flex flex-wrap items-end gap-3">
-        <Input
-          className="w-full max-w-xs"
-          placeholder={t('browse.searchPlaceholder')}
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-        />
-        <Select
-          value={genre || ANY}
-          onValueChange={(v) => {
-            const next = v === ANY ? '' : v
-            setGenre(next)
-            const p = new URLSearchParams(params)
-            if (next) p.set('genre', next)
-            else p.delete('genre')
-            setParams(p, { replace: true })
-          }}
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder={t('browse.filters.genre')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ANY}>{t('browse.filters.anyGenre')}</SelectItem>
-            {GENRES.map((g) => (
-              <SelectItem key={g.value} value={g.value}>
-                {genreLabel(g.value, active)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={language || ANY}
-          onValueChange={(v) => setLanguage(v === ANY ? '' : (v as BookLang))}
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder={t('browse.filters.language')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ANY}>{t('browse.filters.anyLanguage')}</SelectItem>
-            <SelectItem value="si">{t('language.si')}</SelectItem>
-            <SelectItem value="en">{t('language.en')}</SelectItem>
-            <SelectItem value="bilingual">{t('language.bilingual')}</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={String(minRating)} onValueChange={(v) => setMinRating(Number(v))}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder={t('browse.filters.minRating')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">{t('browse.filters.anyRating')}</SelectItem>
-            <SelectItem value="3">3+</SelectItem>
-            <SelectItem value="4">4+</SelectItem>
-            <SelectItem value="4.5">4.5+</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={sort} onValueChange={(v) => setSort(v as 'top' | 'recent')}>
-          <SelectTrigger className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="top">{t('browse.sort.top')}</SelectItem>
-            <SelectItem value="recent">{t('browse.sort.recent')}</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="mb-6 rounded-xl border border-border bg-card p-4">
+        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end">
+          <Input
+            className="col-span-2 sm:w-56"
+            placeholder={t('browse.searchPlaceholder')}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+          <Select
+            value={genre || ANY}
+            onValueChange={(v) => updateParam('genre', v === ANY ? '' : v)}
+          >
+            <SelectTrigger className="sm:w-40">
+              <SelectValue placeholder={t('browse.filters.genre')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ANY}>{t('browse.filters.anyGenre')}</SelectItem>
+              {GENRES.map((g) => (
+                <SelectItem key={g.value} value={g.value}>
+                  {genreLabel(g.value, active)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={language || ANY}
+            onValueChange={(v) => updateParam('language', v === ANY ? '' : v)}
+          >
+            <SelectTrigger className="sm:w-36">
+              <SelectValue placeholder={t('browse.filters.language')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ANY}>{t('browse.filters.anyLanguage')}</SelectItem>
+              <SelectItem value="si">{t('language.si')}</SelectItem>
+              <SelectItem value="en">{t('language.en')}</SelectItem>
+              <SelectItem value="bilingual">{t('language.bilingual')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={String(minRating)}
+            onValueChange={(v) => updateParam('minRating', v === '0' ? '' : v)}
+          >
+            <SelectTrigger className="sm:w-36">
+              <SelectValue placeholder={t('browse.filters.minRating')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">{t('browse.filters.anyRating')}</SelectItem>
+              <SelectItem value="3">3+</SelectItem>
+              <SelectItem value="4">4+</SelectItem>
+              <SelectItem value="4.5">4.5+</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sort} onValueChange={(v) => updateParam('sort', v === 'top' ? '' : v)}>
+            <SelectTrigger className="sm:w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="top">{t('browse.sort.top')}</SelectItem>
+              <SelectItem value="recent">{t('browse.sort.recent')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm text-muted-foreground">
+          <span>{isLoading ? ' ' : t('browse.resultsCount', { count: shown.length })}</span>
+          {hasActiveFilters ? (
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <X className="h-3.5 w-3.5" />
+              {t('browse.clearFilters')}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {isLoading ? (
@@ -138,7 +162,16 @@ export function BooksBrowsePage() {
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : shown.length === 0 ? (
-        <EmptyState title={t('browse.empty')} />
+        <EmptyState
+          title={t('browse.empty')}
+          action={
+            hasActiveFilters ? (
+              <Button variant="outline" size="sm" onClick={clearFilters}>
+                {t('browse.clearFilters')}
+              </Button>
+            ) : undefined
+          }
+        />
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {shown.map((b) => (

@@ -87,14 +87,18 @@ function SpotlightBlock({
               <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--header-gradient-2))]/90 via-transparent to-transparent" />
               {/* badge stays inset within the cover so it never overlaps the text column beside it */}
               <div className="absolute right-3 top-3 flex flex-col items-center gap-0.5 rounded-xl border border-white/10 bg-[hsl(var(--header-gradient-1))]/95 px-3 py-2 text-center shadow-lg backdrop-blur">
-                <span className="font-serif text-lg font-bold text-brand-accent">{badgeValue}</span>
+                <span className="font-serif text-lg font-bold text-brand-accent">
+                  {badgeValue}
+                </span>
                 <span className="text-[10px] text-white/60">{badgeCaption}</span>
               </div>
               <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-4">
                 {avatar ? (
                   <Avatar className="h-12 w-12 shrink-0 border-2 border-white/80 shadow-md">
                     {avatar.src ? <AvatarImage src={avatar.src} alt="" /> : null}
-                    <AvatarFallback className="font-serif text-sm">{avatar.fallback}</AvatarFallback>
+                    <AvatarFallback className="font-serif text-sm">
+                      {avatar.fallback}
+                    </AvatarFallback>
                   </Avatar>
                 ) : null}
                 <div className="min-w-0">
@@ -118,7 +122,9 @@ function SpotlightBlock({
             >
               {overlayTitle}
             </Link>
-            <p className="break-words text-base leading-relaxed text-white/75">{description}</p>
+            <p className="line-clamp-3 break-words text-base leading-relaxed text-white/75">
+              {description}
+            </p>
 
             {quote ? (
               <blockquote className="break-words border-l-2 border-brand-accent/60 pl-4 font-serif text-base italic leading-relaxed text-white/85">
@@ -179,7 +185,10 @@ export function SpotlightSection({
             to={`/books/${book.id}`}
             image={book.coverURL}
             imageFallback={
-              <CoverFallback seed={book.id.charCodeAt(0) + book.id.length} className="h-full w-full" />
+              <CoverFallback
+                seed={book.id.charCodeAt(0) + book.id.length}
+                className="h-full w-full"
+              />
             }
             overlayLabel={book.genres[0] ? genreLabel(book.genres[0], active) : undefined}
             overlayTitle={pick(book.titleEn, book.titleSi).value || '—'}
@@ -237,7 +246,9 @@ export function SpotlightSection({
             }
             avatar={{
               src: author.photoURL,
-              fallback: (pick(author.nameEn, author.nameSi).value || '—').slice(0, 2).toUpperCase(),
+              fallback: (pick(author.nameEn, author.nameSi).value || '—')
+                .slice(0, 2)
+                .toUpperCase(),
             }}
             overlayLabel={author.genres[0] ? genreLabel(author.genres[0], active) : undefined}
             overlayTitle={pick(author.nameEn, author.nameSi).value || '—'}

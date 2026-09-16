@@ -15,7 +15,10 @@
       "top": "Best reviewed",
       "recent": "Recently added"
     },
-    "empty": "No books match your filters yet."
+    "empty": "No books match your filters yet.",
+    "clearFilters": "Clear filters",
+    "resultsCount": "{{count}} book",
+    "resultsCount_other": "{{count}} books"
   },
   "detail": {
     "by": "by {{name}}",
