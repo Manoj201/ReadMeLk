@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState } from '@/components/StateBlocks'
+import { Skeleton } from '@/components/ui/skeleton'
 import { RatingStars } from '@/components/RatingStars'
 import { toast } from '@/hooks/use-toast'
 import type { Report } from '@/types'
@@ -41,7 +42,10 @@ function ReportRow({ report }: { report: Report }) {
       {report.note ? <p className="text-sm text-muted-foreground">{report.note}</p> : null}
 
       {isLoading ? (
-        <LoadingBlock rows={1} />
+        <div className="space-y-2 rounded-md bg-muted/50 p-3">
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-3 w-full" />
+        </div>
       ) : review ? (
         <div className="rounded-md bg-muted/50 p-3 text-sm">
           <div className="flex items-center gap-2">
@@ -91,7 +95,28 @@ export function ReportsPage() {
   const { t } = useTranslation('admin')
   const { data, isLoading } = useOpenReports()
 
-  if (isLoading) return <LoadingBlock rows={4} />
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-7 w-40" />
+        <ul className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <li key={i} className="space-y-3 rounded-lg border border-border bg-card p-4">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+              <Skeleton className="h-16 w-full rounded-md" />
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-24 rounded-md" />
+                <Skeleton className="h-8 w-20 rounded-md" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
   if (!data || data.length === 0) return <EmptyState title={t('reports.empty')} />
 
   return (

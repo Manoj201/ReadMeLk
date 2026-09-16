@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState } from '@/components/StateBlocks'
+import { AdminListSkeleton } from '@/components/Skeletons'
 import { toast } from '@/hooks/use-toast'
 import { adminDeleteBook, setBookApproval, setBookFeatured } from './api'
 import { useActor, useAdminBooks } from './hooks'
@@ -66,7 +67,7 @@ export function BooksAdminPage() {
         />
       </div>
       {isLoading ? (
-        <LoadingBlock rows={4} />
+        <AdminListSkeleton />
       ) : rows.length === 0 ? (
         <EmptyState title={t('books.title')} />
       ) : (

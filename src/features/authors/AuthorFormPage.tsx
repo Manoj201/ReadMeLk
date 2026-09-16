@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { GenreCheckboxes, ImageField } from '@/components/forms'
-import { LoadingBlock } from '@/components/StateBlocks'
+import { FormSkeleton } from '@/components/Skeletons'
 import { toast } from '@/hooks/use-toast'
 import { uploadImage, authorPhotoDir, AVATAR_IMAGE, COVER_IMAGE } from '@/lib/storage'
 import { updateDoc, serverTimestamp } from 'firebase/firestore'
@@ -62,7 +62,7 @@ export function AuthorFormPage() {
     }
   }, [existing])
 
-  if (editing && isLoading) return <LoadingBlock className="container py-12" />
+  if (editing && isLoading) return <FormSkeleton />
   if (!user) return null
   if (!editing && user.authorProfileId) {
     return (

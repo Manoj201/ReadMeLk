@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState } from '@/components/StateBlocks'
+import { ThinListSkeleton } from '@/components/Skeletons'
 import { formatRelative } from '@/lib/format'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import { useAdminStats, useRecentActions } from './hooks'
@@ -45,7 +46,7 @@ export function DashboardPage() {
         </CardHeader>
         <CardContent>
           {actions.isLoading ? (
-            <LoadingBlock />
+            <ThinListSkeleton rows={5} />
           ) : actions.data && actions.data.length > 0 ? (
             <ul className="divide-y divide-border text-sm">
               {actions.data.map((a) => (

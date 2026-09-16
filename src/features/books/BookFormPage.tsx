@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { GenreCheckboxes, ImageField } from '@/components/forms'
-import { LoadingBlock } from '@/components/StateBlocks'
+import { FormSkeleton } from '@/components/Skeletons'
 import { toast } from '@/hooks/use-toast'
 import { bookDoc } from '@/lib/firestore'
 import { bookCoverDir, COVER_IMAGE, uploadImage } from '@/lib/storage'
@@ -72,7 +72,7 @@ export function BookFormPage() {
     }
   }, [existing])
 
-  if (editing && isLoading) return <LoadingBlock className="container py-12" />
+  if (editing && isLoading) return <FormSkeleton />
   if (!user) return null
 
   if (!editing && !user.authorProfileId) {

@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState } from '@/components/StateBlocks'
+import { AdminReviewListSkeleton } from '@/components/Skeletons'
 import { RatingStars } from '@/components/RatingStars'
 import { toast } from '@/hooks/use-toast'
 import type { Review } from '@/types'
@@ -68,7 +69,7 @@ export function ReviewsAdminPage() {
       </div>
 
       {isLoading ? (
-        <LoadingBlock rows={4} />
+        <AdminReviewListSkeleton />
       ) : rows.length === 0 ? (
         <EmptyState title={t('reviews.title')} />
       ) : (

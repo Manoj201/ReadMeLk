@@ -4,7 +4,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState } from '@/components/StateBlocks'
+import { AdminListSkeleton } from '@/components/Skeletons'
 import { toast } from '@/hooks/use-toast'
 import { setUserAuthorRole } from './api'
 import { useActor, useAdminUsers } from './hooks'
@@ -36,7 +37,7 @@ export function UsersAdminPage() {
         onChange={(e) => setQ(e.target.value)}
       />
       {isLoading ? (
-        <LoadingBlock rows={4} />
+        <AdminListSkeleton />
       ) : rows.length === 0 ? (
         <EmptyState title={t('users.title')} />
       ) : (

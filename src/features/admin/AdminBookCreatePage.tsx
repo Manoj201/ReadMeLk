@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { GenreCheckboxes, ImageField } from '@/components/forms'
-import { LoadingBlock } from '@/components/StateBlocks'
+import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from '@/hooks/use-toast'
 import { bookDoc } from '@/lib/firestore'
 import { bookCoverDir, COVER_IMAGE, uploadImage } from '@/lib/storage'
@@ -109,7 +109,7 @@ export function AdminBookCreatePage() {
             <div className="space-y-1.5">
               <Label htmlFor="author">{ta('books.selectAuthor')}</Label>
               {authorsLoading ? (
-                <LoadingBlock rows={1} />
+                <Skeleton className="h-10 w-full" />
               ) : (
                 <Select value={authorId} onValueChange={setAuthorId}>
                   <SelectTrigger id="author">

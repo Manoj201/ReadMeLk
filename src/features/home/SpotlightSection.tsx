@@ -5,7 +5,6 @@ import { ArrowRight, Crown, Globe, Link2 } from 'lucide-react'
 import { CoverFallback } from '@/components/artwork'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { RatingStars } from '@/components/RatingStars'
-import { LoadingBlock } from '@/components/StateBlocks'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
 import { formatRating } from '@/lib/format'
 import { genreLabel } from '@/lib/genres'
@@ -33,6 +32,24 @@ function PillLink({
     <Link to={to} className={className}>
       {children}
     </Link>
+  )
+}
+
+/** Mirrors SpotlightBlock's card shell so the loading state doesn't flash a mismatched shape. */
+function SpotlightSkeleton() {
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-brand-accent/25 bg-white/[0.05] p-5 sm:p-6">
+      <div className="mb-5 h-6 w-40 animate-pulse rounded-full bg-white/10" />
+      <div className="grid flex-1 gap-6 xl:grid-cols-[minmax(0,240px)_minmax(0,1fr)]">
+        <div className="mx-auto aspect-[3/4] w-full max-w-sm animate-pulse rounded-2xl bg-white/10" />
+        <div className="flex h-full min-w-0 flex-col gap-3 xl:pt-1">
+          <div className="h-7 w-2/3 animate-pulse rounded-md bg-white/10" />
+          <div className="h-4 w-full animate-pulse rounded-md bg-white/10" />
+          <div className="h-4 w-5/6 animate-pulse rounded-md bg-white/10" />
+          <div className="mt-auto h-9 w-32 animate-pulse rounded-full bg-white/10" />
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -178,7 +195,7 @@ export function SpotlightSection({
 
       <div className="container relative mt-12 grid gap-12 lg:grid-cols-2 lg:items-stretch lg:gap-10">
         {bookLoading ? (
-          <LoadingBlock rows={3} />
+          <SpotlightSkeleton />
         ) : book ? (
           <SpotlightBlock
             eyebrow={t('spotlight.book.eyebrow')}
@@ -227,7 +244,7 @@ export function SpotlightSection({
         ) : null}
 
         {authorLoading ? (
-          <LoadingBlock rows={3} />
+          <SpotlightSkeleton />
         ) : author ? (
           <SpotlightBlock
             eyebrow={t('spotlight.author.eyebrow')}

@@ -42,7 +42,7 @@ export const useUiStore = create<UiState>()(
   persist(
     (set, get) => ({
       language: 'en',
-      theme: 'system',
+      theme: 'dark',
       mobileNavOpen: false,
       reviewDrafts: {},
 

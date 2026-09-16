@@ -127,7 +127,7 @@ export function ReviewForm({ targetType, targetId }: Props) {
           </p>
         ) : null}
         <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
             <Label htmlFor="rating">{t('form.ratingLabel')}</Label>
             <RatingInput id="rating" value={rating} onChange={setRating} />
           </div>
@@ -206,7 +206,7 @@ export function ReviewForm({ targetType, targetId }: Props) {
             <p className="text-xs text-muted-foreground">
               {t('form.signInPrompt')}{' '}
               <Link to="/signin" className="underline underline-offset-4">
-                {t('form.asGuest')}
+                {t('form.signInCta')}
               </Link>
             </p>
           ) : null}

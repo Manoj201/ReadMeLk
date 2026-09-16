@@ -67,7 +67,11 @@
   "footer": {
     "rights": "Built for Sri Lankan readers",
     "builtWith": "A RavenBees Project",
-    "heritage": "Books · Authors · Reviews"
+    "heritage": "Books · Authors · Reviews",
+    "exploreHeading": "Explore",
+    "accountHeading": "Account",
+    "preferencesHeading": "Preferences",
+    "copyright": "© {{year}} {{name}}"
   },
   "notFound": {
     "title": "Page not found",

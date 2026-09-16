@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
-import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState, ErrorState } from '@/components/StateBlocks'
+import { AuthorCardSkeleton } from '@/components/Skeletons'
 import { OpenBookBanner } from '@/components/artwork'
 import { AuthorCard } from './AuthorCard'
 import { useAuthors } from './hooks'
@@ -32,7 +33,11 @@ export function AuthorsBrowsePage() {
         onChange={(e) => setQ(e.target.value)}
       />
       {isLoading ? (
-        <LoadingBlock rows={6} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <AuthorCardSkeleton key={i} />
+          ))}
+        </div>
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : filtered.length === 0 ? (

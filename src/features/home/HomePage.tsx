@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BookOpen, ChevronDown, Star, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { EmptyState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState } from '@/components/StateBlocks'
+import {
+  AuthorCardSkeleton,
+  BookCardSkeleton,
+  BookHighlightSkeleton,
+  ThinListSkeleton,
+} from '@/components/Skeletons'
 import { MotifDivider } from '@/components/motifs'
 import { GENRES, genreLabel } from '@/lib/genres'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
@@ -134,7 +140,11 @@ export function HomePage() {
           <section>
             <SectionHeading title={t('featured.title')} subtitle={t('featured.subtitle')} />
             {featuredBooks.isLoading ? (
-              <LoadingBlock rows={2} />
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <BookHighlightSkeleton key={i} />
+                ))}
+              </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {(featuredBooks.data ?? []).map((b) => (
@@ -151,7 +161,11 @@ export function HomePage() {
             subtitle={t('bestReviewed.subtitle')}
           />
           {bestBooks.isLoading ? (
-            <LoadingBlock rows={2} />
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <BookCardSkeleton key={i} />
+              ))}
+            </div>
           ) : bestBooks.data && bestBooks.data.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {bestBooks.data.map((b) => (
@@ -166,7 +180,11 @@ export function HomePage() {
         <section>
           <SectionHeading title={t('topAuthors.title')} />
           {topAuthors.isLoading ? (
-            <LoadingBlock rows={2} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <AuthorCardSkeleton key={i} />
+              ))}
+            </div>
           ) : topAuthors.data && topAuthors.data.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {topAuthors.data.map((a) => (
@@ -182,7 +200,9 @@ export function HomePage() {
           <section>
             <SectionHeading title={t('recentlyReviewed.title')} />
             {recent.isLoading ? (
-              <LoadingBlock rows={3} />
+              <div className="rounded-lg border border-border bg-card px-4">
+                <ThinListSkeleton rows={3} />
+              </div>
             ) : recent.data && recent.data.length > 0 ? (
               <ul className="divide-y divide-border rounded-lg border border-border bg-card">
                 {recent.data.map((r) => (

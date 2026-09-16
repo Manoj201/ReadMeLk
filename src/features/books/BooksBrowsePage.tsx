@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState, ErrorState } from '@/components/StateBlocks'
+import { BookCardSkeleton } from '@/components/Skeletons'
 import { ShelfBanner } from '@/components/artwork'
 import { GENRES, genreLabel } from '@/lib/genres'
 import { useLocalizedField } from '@/hooks/useLocalizedField'
@@ -158,7 +159,11 @@ export function BooksBrowsePage() {
       </div>
 
       {isLoading ? (
-        <LoadingBlock rows={4} />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <BookCardSkeleton key={i} />
+          ))}
+        </div>
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : shown.length === 0 ? (

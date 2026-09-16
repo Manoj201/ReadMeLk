@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { BrandMark, MotifDivider, WovenStrip } from '@/components/motifs'
+import { BrandMark, MotifDivider } from '@/components/motifs'
 import { cn } from '@/lib/utils'
 import { useAuthStore, hasRole } from '@/stores/authStore'
 import { signOut } from '@/features/auth/authApi'
@@ -169,15 +169,83 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="mt-16 border-t border-border bg-card">
-        <WovenStrip className="text-border" />
-        <div className="container flex flex-col items-center gap-3 py-10 text-center">
-          <BrandMark className="h-6 w-6" />
-          <MotifDivider className="max-w-xs" />
-          <p className="text-sm text-muted-foreground">{t('footer.heritage')}</p>
-          <p className="text-xs text-muted-foreground">
-            {t('app.name')} · {t('footer.rights')} · {t('footer.builtWith')}
-          </p>
+      <footer
+        className={cn(
+          'relative mt-16 text-white',
+          'bg-[linear-gradient(115deg,hsl(var(--header-gradient-3))_0%,hsl(var(--header-gradient-2))_55%,hsl(var(--header-gradient-1))_100%)]',
+          'before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-brand-accent/70 before:to-transparent',
+        )}
+      >
+        <div className="container grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-col gap-3 sm:col-span-2 lg:col-span-1">
+            <Link to="/" className="flex items-center gap-2 font-serif text-lg font-semibold">
+              <BrandMark className="text-white" />
+              <span>{t('app.name')}</span>
+            </Link>
+            <p className="max-w-xs text-sm text-white/70">{t('app.tagline')}</p>
+            <MotifDivider className="max-w-[8rem] text-white/20" />
+            <p className="text-xs uppercase tracking-wide text-white/50">
+              {t('footer.heritage')}
+            </p>
+          </div>
+
+          <nav aria-label={t('footer.exploreHeading')} className="flex flex-col gap-3">
+            <p className="text-sm font-semibold uppercase tracking-wide text-brand-accent">
+              {t('footer.exploreHeading')}
+            </p>
+            <Link to="/" className="text-sm text-white/75 transition-colors hover:text-white">
+              {t('nav.home')}
+            </Link>
+            <Link
+              to="/books"
+              className="text-sm text-white/75 transition-colors hover:text-white"
+            >
+              {t('nav.books')}
+            </Link>
+            <Link
+              to="/authors"
+              className="text-sm text-white/75 transition-colors hover:text-white"
+            >
+              {t('nav.authors')}
+            </Link>
+          </nav>
+
+          <nav aria-label={t('footer.accountHeading')} className="flex flex-col gap-3">
+            <p className="text-sm font-semibold uppercase tracking-wide text-brand-accent">
+              {t('footer.accountHeading')}
+            </p>
+            <Link
+              to="/signin"
+              className="text-sm text-white/75 transition-colors hover:text-white"
+            >
+              {t('nav.signIn')}
+            </Link>
+            <Link
+              to="/register/author"
+              className="text-sm text-white/75 transition-colors hover:text-white"
+            >
+              {t('nav.becomeAuthor')}
+            </Link>
+          </nav>
+
+          <div className="flex flex-col gap-3">
+            <p className="text-sm font-semibold uppercase tracking-wide text-brand-accent">
+              {t('footer.preferencesHeading')}
+            </p>
+            <div className="flex flex-wrap items-center gap-1">
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10">
+          <div className="container flex flex-col items-center gap-2 py-6 text-xs text-white/60 sm:flex-row sm:justify-between">
+            <p>
+              {t('footer.copyright', { year: new Date().getFullYear(), name: t('app.name') })} ·{' '}
+              {t('footer.rights')}
+            </p>
+            <p>{t('footer.builtWith')}</p>
+          </div>
         </div>
       </footer>
     </div>

@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState, ErrorState } from '@/components/StateBlocks'
+import {
+  AuthorProfileSkeleton,
+  BookCardSkeleton,
+  ReviewListSkeleton,
+} from '@/components/Skeletons'
 import { GenreBadges, BilingualChip } from '@/components/forms'
 import { RatingStars } from '@/components/RatingStars'
 import { RatingSummary } from '@/components/RatingSummary'
@@ -38,7 +43,7 @@ export function AuthorProfilePage() {
   const booksQ = useBooksByAuthor(authorId, canSeeAllBooks)
   const reviewsQ = useReviews('author', authorId)
 
-  if (authorQ.isLoading) return <LoadingBlock className="container py-12" />
+  if (authorQ.isLoading) return <AuthorProfileSkeleton />
   if (authorQ.isError) return <ErrorState onRetry={() => authorQ.refetch()} />
   const author = authorQ.data
   if (!author) return <EmptyState title={t('profile.notFound')} />
@@ -59,46 +64,50 @@ export function AuthorProfilePage() {
             <SubtleTexture className="text-foreground opacity-[0.06]" />
           </div>
         )}
-        <div className="container relative -mt-12 flex flex-col gap-4 pb-6 sm:flex-row sm:items-end">
-          <Avatar className="h-24 w-24 border-4 border-background">
+        <div className="container relative pb-6 pt-16 sm:pt-6">
+          <Avatar className="absolute -top-12 left-4 h-24 w-24 border-4 border-background">
             {author.photoURL ? <AvatarImage src={author.photoURL} alt="" /> : null}
             <AvatarFallback className="text-xl">
               {name.value.slice(0, 2).toUpperCase() || '?'}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <h1 className="flex items-center gap-2 font-serif text-2xl font-semibold sm:text-3xl">
-              {name.value || '—'}
-              {author.verified ? (
-                <span className="inline-flex items-center gap-1 text-sm font-normal text-primary">
-                  <BadgeCheck className="h-4 w-4" />
-                  {t('profile.verified')}
-                </span>
-              ) : null}
-            </h1>
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              <GenreBadges genres={author.genres} />
-              {author.ratingCount > 0 ? (
-                <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <RatingStars value={author.ratingAvg} size="sm" />
-                  <span className="font-medium text-foreground">
-                    {formatRating(author.ratingAvg, active)}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:pl-32">
+            <div className="flex-1">
+              <h1 className="flex items-center gap-2 font-serif text-2xl font-semibold sm:text-3xl">
+                {name.value || '—'}
+                {author.verified ? (
+                  <span className="inline-flex items-center gap-1 text-sm font-normal text-primary">
+                    <BadgeCheck className="h-4 w-4" />
+                    {t('profile.verified')}
                   </span>
-                  <span>{tBook('card.ratingsCount', { count: author.ratingCount })}</span>
-                </span>
-              ) : (
-                <span className="text-sm text-muted-foreground">{tBook('card.noRatings')}</span>
-              )}
+                ) : null}
+              </h1>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <GenreBadges genres={author.genres} />
+                {author.ratingCount > 0 ? (
+                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <RatingStars value={author.ratingAvg} size="sm" />
+                    <span className="font-medium text-foreground">
+                      {formatRating(author.ratingAvg, active)}
+                    </span>
+                    <span>{tBook('card.ratingsCount', { count: author.ratingCount })}</span>
+                  </span>
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    {tBook('card.noRatings')}
+                  </span>
+                )}
+              </div>
             </div>
+            {isOwner ? (
+              <Button asChild variant="outline" size="sm">
+                <Link to={`/authors/${author.id}/edit`}>
+                  <Pencil className="h-4 w-4" />
+                  {t('form.editTitle')}
+                </Link>
+              </Button>
+            ) : null}
           </div>
-          {isOwner ? (
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/authors/${author.id}/edit`}>
-                <Pencil className="h-4 w-4" />
-                {t('form.editTitle')}
-              </Link>
-            </Button>
-          ) : null}
         </div>
       </div>
 
@@ -137,7 +146,11 @@ export function AuthorProfilePage() {
               ) : null}
             </div>
             {booksQ.isLoading ? (
-              <LoadingBlock />
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <BookCardSkeleton key={i} />
+                ))}
+              </div>
             ) : booksQ.data && booksQ.data.length > 0 ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {booksQ.data.map((b) => (
@@ -173,7 +186,7 @@ export function AuthorProfilePage() {
                 <ReviewForm targetType="author" targetId={author.id} />
               </div>
             ) : null}
-            {reviewsQ.isLoading ? <LoadingBlock /> : <ReviewList reviews={reviews} />}
+            {reviewsQ.isLoading ? <ReviewListSkeleton /> : <ReviewList reviews={reviews} />}
           </section>
         </div>
 

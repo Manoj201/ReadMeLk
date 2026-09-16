@@ -67,7 +67,11 @@
   "footer": {
     "rights": "ශ්‍රී ලාංකික පාඨකයන් සඳහා නිර්මාණය කර ඇත",
     "builtWith": "RavenBees නිෂ්පාදනයකි",
-    "heritage": "පොත් · කතුවරුන් · විචාර"
+    "heritage": "පොත් · කතුවරුන් · විචාර",
+    "exploreHeading": "ගවේෂණය",
+    "accountHeading": "ගිණුම",
+    "preferencesHeading": "මනාපයන්",
+    "copyright": "© {{year}} {{name}}"
   },
   "notFound": {
     "title": "පිටුව හමු නොවීය",

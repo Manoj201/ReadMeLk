@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Pencil } from 'lucide-react'
 import { CoverFallback } from '@/components/artwork'
 import { Button } from '@/components/ui/button'
-import { EmptyState, ErrorState, LoadingBlock } from '@/components/StateBlocks'
+import { EmptyState, ErrorState } from '@/components/StateBlocks'
+import { BookDetailSkeleton, ReviewListSkeleton } from '@/components/Skeletons'
 import { BilingualChip, GenreBadges } from '@/components/forms'
 import { RatingStars } from '@/components/RatingStars'
 import { RatingSummary } from '@/components/RatingSummary'
@@ -27,7 +28,7 @@ export function BookDetailPage() {
   const bookQ = useBook(bookId)
   const reviewsQ = useReviews('book', bookId)
 
-  if (bookQ.isLoading) return <LoadingBlock className="container py-12" />
+  if (bookQ.isLoading) return <BookDetailSkeleton />
   if (bookQ.isError) return <ErrorState onRetry={() => bookQ.refetch()} />
   const book = bookQ.data
   if (!book) return <EmptyState title={t('detail.notFound')} />
@@ -138,7 +139,7 @@ export function BookDetailPage() {
               <ReviewForm targetType="book" targetId={book.id} />
             </div>
           ) : null}
-          {reviewsQ.isLoading ? <LoadingBlock /> : <ReviewList reviews={reviews} />}
+          {reviewsQ.isLoading ? <ReviewListSkeleton /> : <ReviewList reviews={reviews} />}
         </section>
       </div>
 
